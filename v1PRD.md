@@ -1,7 +1,7 @@
 # [name TBD]: help a non-technical professional finish one real task with AI — and do it again
 
 **DRI:** Tarun | **Pod:** Solo founder — Learning Tech & AI (Case Study 4, Cohort 8)
-**Status:** Define | **Created:** 2026-08-18 | **Last Updated:** 2026-08-18
+**Status:** Define | **Created:** 2026-08-18 | **Last Updated:** 2026-08-19
 **Figma:** none yet — `design.md` pending (owner) | **ERD / Engineering Docs:** written after design is finalised | **Analytics:** the instrumentation IS the experiment; exact event spec after design
 
 **Document lineage:** This PRD converts our locked product detailing (`v1ProductDetailing.md`, reached via two `/grill-me` sessions) and `ProblemSolutionBase.md` into the template format, grounded in the primary-research workbook (n=160, strict target cut n=44). Once the engineering implementation plan exists, that plan becomes the execution source of truth.
@@ -40,6 +40,7 @@ Unlike a greenfield idea, most of our **problem and user** claims are 🟢 — t
 | Change | Date | People | Comments / link |
 |---|---|---|---|
 | Initial PRD, converted from product detailing | 2026-08-18 | Tarun | Source: `v1ProductDetailing.md` |
+| Grounded §16 rubric in named large-N sources; hardened rubric mechanics via `/grill-me` (stage-tuning, hybrid evaluation, core/advisory win + loop cap, quality-not-outcome, English-only, subject-line scope); added trust reasoning (§12) + off-scope guardrail (§13) | 2026-08-19 | Tarun + Claude | Sources: Gong, Boomerang, Backlinko, Woodpecker, Lavender, Josh Braun |
 
 ---
 
@@ -186,12 +187,14 @@ Targets are marked *[TBD — set with owner]*: we defined the *shape* of success
 
 | Metric | Baseline | Target | Kill signal | Type | Confidence | Hypothesis |
 |---|---|---|---|---|---|---|
-| First real win (rubric-passing artifact produced) | 0 | *[TBD]* | Users can't reach a good draft | Primary | 🔵 | H1 |
+| First real win (artifact clears the **core** criteria B1/B2/B4) | 0 | *[TBD]* | Users can't reach a good draft | Primary | 🔵 | H1 |
 | Feedback is trusted and acted on (revises toward rubric) | 0 | *[TBD]* | Users ignore the feedback | Primary | 🔵 | H2 |
 | Later unaided attempt actually fires | 0 | *[TBD]* | Nobody returns | Primary | 🔵 | H3 |
 | Capability delta on the later attempt (less help/turns/time) | 0 | *[TBD]* | No measurable improvement | Primary | 🔵 | H4 |
 | Auto-mask never persists raw PII | — | 100% | Raw identifiers stored/sent | Guardrail | 🔵 | H5 |
 | Core loop works without depending on the return | — | Yes | v1 blocked on return behaviour | Guardrail | 🔵 | H6 |
+
+*A "win" = the draft clears the **core** criteria (B1/B2/B4); advisory criteria (B3/B5) are surfaced but don't gate, and after **max 3** revise loops the user may ship with noted misses. This keeps the win from becoming a perfectionism trap (§16, Decision 4).*
 
 ---
 
@@ -217,6 +220,8 @@ Targets are marked *[TBD — set with owner]*: we defined the *shape* of success
 - Image generation (despite being the audience's #2 actual AI use)
 - The other 3 task types (research/decision, spreadsheet/data, workflow-figuring-out)
 - Non-Marketing/Sales roles in v1
+- Non-English drafts (v1 is English-only; Hinglish/Hindi is v-next — the rubric's signals are English-validated, §16)
+- Subject-line evaluation (outside the 5-criterion body backbone for v1, §16)
 - Paid tier / paywall
 - Any human facilitator
 - Product naming / branding (deferred)
@@ -264,9 +269,15 @@ Concrete-example front door → conversational personalize (with auto-mask) → 
 | v1 never depends on the return attempt | Measure it, don't gate on it | Decision 4 |
 | Model is invisible; the product owns the calls | Not a tool-picker | ProblemSolutionBase 🟡 |
 
-### Why not just tell them to use ChatGPT
+### Why not just tell them to use ChatGPT — and why they can trust us
 
-They already do — 64% daily — and still stay unconfident (36%). 🟢 The missing pieces are guided application, credible feedback, and a repeatable rep, which raw chat doesn't give.
+They already do — 64% daily — and still stay unconfident (36%). 🟢 The missing pieces are guided application, credible feedback, and a repeatable rep, which raw chat doesn't give. Concretely, the edge is three things:
+
+- **A fixed, evidence-based standard vs. a flattering one.** Raw ChatGPT judges a draft against whatever it feels like in the moment and leans toward pleasing the user — it will call a weak message great. Our judgment applies the **same criteria every time, each grounded in large-N evidence** (§16), so it won't wave through the things the data says kill replies. *This* is why the user can trust the feedback: it's not the model's mood, and it's consistent enough to build on.
+- **It catches the specific failure patterns raw AI produces.** Left alone, ChatGPT tends to write long, "I hope this finds you well," multiple-ask emails — because it optimizes for sounding *complete*, not for getting a reply. Our criteria (one clear ask, ~50–125 words, plain language, no fluff) are tuned to the opposite.
+- **The user learns *why*.** ChatGPT hands over output and the user learns nothing repeatable; our feedback points at *their* actual draft and explains the fix — the mechanism that's meant to build lasting capability.
+
+**Honest caveat:** the model *underneath* us may be the same kind of LLM. The edge isn't a smarter engine — it's the **guardrails around it** (a grounded standard, a feedback loop, fading help). Whether that produces *lasting* capability is still 🔵 — it's exactly what v1 exists to test. Grounding makes our *standard* credible; only real users prove the *product* works.
 
 ---
 
@@ -276,7 +287,7 @@ They already do — 64% daily — and still stay unconfident (36%). 🟢 The mis
 
 | # | Feature | Description | Impact | Effort | Owner |
 |---|---|---|---|---|---|
-| 1 | Recognition home | 3–4 concrete Marketing/Sales outreach situations + a "something else" escape | HIGH | LOW 🔵 | Tarun |
+| 1 | Recognition home | 3–4 concrete Marketing/Sales outreach situations + a scoped "something else" escape (a *"got a different outreach message?"* intake, not an open box) | HIGH | LOW 🔵 | Tarun |
 | 2 | Personalize intake | Few-word conversational fill-in of the picked situation | HIGH | LOW 🔵 | Tarun |
 | 3 | Auto-mask | Silent PII → placeholder + reassurance, before persist/model-send | HIGH | MED 🔵 | Tarun |
 | 4 | Guided fading-scaffold draft | AI drafts with visible reasoning, hands the user 1–2 key decisions | HIGH | MED 🔵 | Tarun |
@@ -286,6 +297,8 @@ They already do — 64% daily — and still stay unconfident (36%). 🟢 The mis
 | 8 | Unaided-attempt capture | Instrument help requests / AI turns / time | HIGH | MED 🔵 | Tarun |
 
 *(Effort tags are 🔵 — not yet engineering-estimated.)*
+
+**Scope guardrail (off-scope inputs).** The "something else" box is a scoped outreach-intake, so most off-scope requests never arise — but a free-text box will still catch some. A **soft funnel** handles them (never an open ChatGPT): a lightweight intent check routes the input — an **outreach message** of any flavor flows straight into the normal loop (personalized criteria mapped from the nearest curated situation); a **real-but-off-scope task** (spreadsheet, LinkedIn post, a different role's work) gets a *warm boundary*, not a dead end — "that's not something I do yet; right now I'm great at outreach messages" plus an optional "want me to remember you asked for this?" (roadmap signal for v-next); **abuse / prompt-injection / harmful** input is refused safely and never executed. When the check is unsure, treat it as outreach and continue. Masking (Decision 9) applies to whatever they type. *Rationale: a hard "we only do outreach, goodbye" gate would turn the friendly escape into a trapdoor for an already-overwhelmed user; an open best-effort box would make us generic ChatGPT and void the rubric — the soft funnel is the only path that stays friendly and holds the scope line.* 🔵
 
 ### P1
 
@@ -340,7 +353,75 @@ The instrumentation **is** the experiment (§8). Product-level events below; exa
 
 ### The judgment model (product-level, not code)
 
-A **fixed expert rubric backbone** for an outreach message — clear single ask, personalization, right tone, appropriate length, no fluff — plus **1–2 criteria personalized** from the user's stated goal. The numeric score is kept **internal** (for measurement); the user sees only concrete fixes. 🔵 *(the backbone must be validated as genuinely expert)*
+The judgment the user can't supply for themselves (they use AI daily yet 36% can't tell if the output is good 🟢) comes from a **fixed expert rubric backbone** — the same five criteria every time — plus **1–2 criteria personalized** from the user's stated goal. The user never sees the rubric, a checklist, or a score: they see one or two concrete, draft-specific fixes at a time, framed as an edit *they* make. *(Decision 8.)*
+
+**A provenance note, up front (so the tags below aren't misread):** our survey established *that* this user can't judge quality — it never asked *what makes a good outreach message*. So only the **need** for external judgment is 🟢. The five backbone criteria are now **grounded in named, large-sample evidence** — Gong (304,174 emails), Boomerang (40M emails), Backlinko (12M emails), Woodpecker (20M emails), Lavender, and the practitioner 4-T framework (Josh Braun) — **secondary evidence, 🟡, not survey-verified and not academic** (these are large-N vendor analyses + expert frameworks, cited per-criterion below). The evidence is *not uniform*: B1/B2/B4 are data-backed 🟡; **B3 (tone) is our weakest — guide-level consensus only, 🟡‑weak**; B5 is data-adjacent 🟡. The specific pass/fail *lines*, the choice of five, and the per-goal criteria remain our design **🔵**. This matters because the experiment's credibility rests entirely on this backbone being genuinely expert (§18, Decision 8). Grounding closes the *provenance* half of that gate; the *remaining* half — a discrimination test that the rubric correctly separates known-good from known-bad real messages — stays a **before-build** step (§24).
+
+#### The fixed backbone (5 criteria, same every message) 🟡
+
+Each criterion is scored internally as **pass / needs-work**. "Personalization" here means *earned relevance + recipient-centered framing* — a real reason this reaches this person, and value framed around them — **not** a token first name (an expert fails a mail-merge that only swaps `{FirstName}`).
+
+**The five are universal — the message *stage* tunes them, it doesn't change the set.** The intake tells us whether this is a cold, warm, or follow-up message; that stage adjusts how **B1** and **B3** are *evaluated and phrased*, not which criteria apply. (Gong's 304K-email data: a soft "interest" ask wins on a cold first touch, a specific-time ask wins once the prospect is engaged — same criterion B1, stage-tuned bar.)
+
+| # | What an expert checks | Why it's the bar | Passes when | Fails when | How the user hears it (never a score) | Evidence |
+|---|---|---|---|---|---|---|
+| **B1** | **One clear, low-friction ask** | The reader must know exactly what to do and find it easy; two asks or a vague one kills the reply; a *high-friction* ask on a cold touch suppresses replies | Exactly one action, stated plainly; friction matched to stage — a low-commitment "interest" ask when cold, a specific-time ask once engaged | No ask / multiple asks (stacking asks = "reasons to do nothing") / vague ("let me know your thoughts") / high-friction on a cold touch ("30-min call this week?") | "You're asking for a call *and* a doc review — a busy prospect does at most one, so pick the one you want most." / "Your ask is in the last line; move it up so they see it at a glance." | Gong 304K — single, stage-appropriate CTA (🟡) |
+| **B2** | **Earned relevance & recipient-centered framing** (this is "personalization") | Interchangeable blasts get ignored; a *situational* reason-for-contact and a *their-side* benefit earn the read — **situational awareness, not demographic/token merge** | Opens with a true, specific reason it reaches *them* now; value framed around their goal/problem | "I hope this finds you well" / could go to anyone / a token first-name merge with no real reason / every line is "I / we / our product" | "This could go to anyone — add the one detail that makes it clearly about *them*." / "Every sentence is what *you* offer; say what changes for *them*." | Backlinko 12M (+32.7% personalized body), Woodpecker 20M, Apollo (situational>demographic), Josh Braun 4-T (🟡) |
+| **B3** | **Right tone for the relationship** | Tone must fit cold vs. warm vs. follow-up and the power balance; pushy burns the lead, groveling loses credibility; a follow-up should add value, not guilt | Matches the relationship; confident and respectful; a follow-up is graceful (offers an easy out), not guilt-trippy | Presumptuous on a cold touch ("as we agreed") / apologetic / aggressive ("circling back AGAIN") / "just checking in" with no new value | "This reads a bit pushy for a first touch — make it an offer they can decline." / "No need to apologize for following up; one confident line is enough." | Practitioner best-practice consensus (SuperOffice et al.) — **🟡‑weak, guide-level, no big-N data** |
+| **B4** | **Respects their time** (length & scannability) | Prospects skim on mobile in seconds; density buries the point; simpler language measurably lifts replies | ~50–125 words; 3–4 short sentences / short paragraphs; plain, ~3rd-grade-readable language; graspable in one glance | Wall of text; 150+ words / several long paragraphs; complex, college-level phrasing; the point is buried | "This is four dense paragraphs — a prospect skims in ~8 seconds. Cut it to the ask plus one reason." | Boomerang 40M (50–125 words; 3rd-grade level +36%), Gong (≤100 words / 3–4 sentences), Lavender (🟡) |
+| **B5** | **No fluff — plain, direct language** | Filler dilutes the ask and signals a template; hedging and clichés read as auto-generated | No clichés, hedging, or filler pleasantries; every line advances relevance, value, or the ask; says it directly | "I wanted to reach out," "just checking in," "circle back," "synergy," "maybe we could possibly…" | "'I wanted to reach out to see if maybe…' — say it directly: 'Can we…'." | Boomerang (plain language lifts replies), Gong / Lavender (cut filler) — data-adjacent (🟡) |
+
+*(B4 is about **length/structure**; B5 is about **language directness** — distinct axes that used to blur together.)*
+
+#### How each criterion is evaluated (hybrid — this is what keeps the *judgment* trustworthy) 🔵
+
+Grounding the *criteria* isn't enough: deciding whether a given draft **passes** a criterion is itself a judgment, and if we let an LLM do all of it, we've reintroduced the same untrustworthy AI-opinion the user can't rely on. So evaluation is **split by what's measurable**:
+
+- **Deterministic (computed from the text, not an opinion):** **B4** — word count (~50–125), sentence/paragraph structure, and reading level (~3rd-grade target) are measured with real text metrics. A number, not a vibe.
+- **Anchored LLM judgment (with worked pass/fail examples in the prompt):** **B1, B2, B3, B5** genuinely need reading comprehension. The model returns pass / needs-work **plus the exact quote it's reacting to** — never a bare verdict — against fixed anchor examples so it stays consistent.
+
+This hybrid is the single biggest credibility lever in the rubric (§18 names the residual risk); the before-build discrimination test (§24) validates it end-to-end.
+
+#### The personalized criteria (1–2, from the user's goal) 🔵
+
+After intake, the product layers **1–2 extra pass/needs-work criteria** onto the backbone, drawn from a **curated library** mapped to the known situations — **not generated fresh per task** (Decision 8 explicitly rejected an invented per-task rubric; on the free-text "something else" path we map to the *nearest curated* criterion rather than inventing one). These are **advisory, not win-gating** — they sharpen relevance but never block the win (see Internal scoring). Curated mapping:
+
+| Situation (recognition-home scenario) | Added criterion |
+|---|---|
+| Re-engage a prospect who went quiet | Gives a **graceful, low-pressure reason to reply now** — a fresh hook, not just "following up" |
+| Book a demo / meeting | Makes the meeting the **obvious low-friction next step** — specific, short, with a clear payoff for their time |
+| Cold intro to a new prospect | **Establishes credibility fast** — one relevant proof point, without bragging |
+| Follow up after an event | **Anchors to the shared context** — references the specific event/conversation naturally |
+
+#### Internal scoring (never shown to the user) 🔵
+
+Not all criteria gate the win — otherwise an overwhelmed user who can't clear one is trapped in a loop, which is the exact failure we're built to avoid (Decision 4). So:
+
+- **Core (must-pass to count as a clean win):** **B1** (clear ask), **B2** (earned relevance), **B4** (respects their time). These are our data-backed criteria.
+- **Advisory (surfaced, never win-gating):** **B3** (tone), **B5** (fluff), and the personalized criteria.
+- **Loop cap:** after **max 3** feedback→revise loops, the user may ship with any remaining misses noted gently — and we **record** what shipped un-cleared (it's useful capability data, not a failure).
+
+| | Definition | Feeds |
+|---|---|---|
+| **Rubric pass** (the boolean in §14) | All **core** criteria (B1/B2/B4) in "pass" state; advisory criteria are logged but don't gate | `draft_completed.rubric_pass`, `unaided_completed.rubric_pass` |
+| **Capability signal** | *Which* criteria passed on the **first** draft (before any revision) + *how many* feedback→revise loops it took to clear | The delta in H4 — on the later unaided attempt, does the user clear more criteria on the first try, with fewer loops? |
+
+**Measurement-validity caveat (be honest about the confound):** part of the raw guided→unaided delta (help requests, AI turns) reflects the scaffold **fading by design**, not learning — of course an AI-led first attempt uses more AI than a user-led later one. The *cleaner* capability read is **within the drafts themselves**: which criteria the user clears on their **first unaided draft** (no scaffold), and how few loops it takes — compared against the guided attempt's first draft. That isolates "got better" from "we removed the help."
+
+The user is never shown a count, a total, or "X/5" — that's the grade Decision 8 forbids. This score exists only for the measurement in §8/§14.
+
+#### Feedback-delivery rules (product-level)
+
+- Surface the **1–2 highest-impact misses first**, never the full list at once — dumping five fixes on an already-overwhelmed user is the overwhelm we're killing (§2 🟢).
+- Every fix **quotes or points at the actual draft** — generic tips are the theory this audience rejects (Rule 6 below).
+- Framed as *"here's the change to make,"* never *"here's what's wrong / your score is."*
+- **Claim quality, never outcome.** The product may say *"this is a strong message by expert standards"* — never *"this will get a reply."* A reply depends on timing, targeting, and luck we don't control; one ignored-but-good message would otherwise shatter the trust we built. The Aha's "genuinely good" means *meets the expert bar*, not *guaranteed to land*.
+- **When criteria conflict, brevity/clarity wins the tie.** Earned relevance (B2) can pull toward adding detail while "respects their time" (B4) pulls toward cutting — resolve toward the ask plus one earned reason, not more.
+
+#### v1 scope of the rubric (deliberate, overridable)
+
+- **English outreach only.** Every signal we grounded — reading level, cliché/fluff detection, the word-count norms — comes from **English** studies; we can't credibly judge a Hindi or Hinglish draft with an English-validated rubric. v1 is English-only, stated to the user; Hinglish/Hindi is v-next. *Honest flag: this likely trims the addressable user set (India audience) and is worth validating — but pretending the rubric works in Hindi would be the ungrounded overreach we're removing.* 🔵
+- **Subject line is out of the 5-criterion body backbone.** It affects replies (Backlinko), but it isn't what the guided draft and feedback loop operate on; kept out to preserve the clean "same five every time." Revisit post-v1. 🟡
 
 ### The capability-delta model
 
@@ -355,6 +436,10 @@ Compare the guided attempt vs. the later unaided attempt on: help requests, AI t
 | 5 | Sell utility; never frame as a lesson | No "course"/"lesson" language anywhere |
 | 6 | Feedback must reference the actual draft | Generic tips = the theory they already reject |
 | 7 | One nudge per completed task, tied to a real occurrence | No streaks / daily mechanics |
+| 8 | Surface only the 1–2 highest-impact rubric misses at a time | Never dump all five fixes — that recreates the overwhelm (§2 🟢) |
+| 9 | Only **core** criteria (B1/B2/B4) gate the win; cap at 3 revise loops | Advisory misses (B3/B5/personalized) are noted, never trap the user (Decision 4) |
+| 10 | Claim quality, never a reply/outcome | "Strong by expert standards," not "this will land" |
+| 11 | Read the delta from the **first unaided draft**, not raw AI-turn counts | Raw turns fall by design as the scaffold fades — that's not learning |
 
 *(Technical rules — validation, timeouts, model routing — deferred to engineering.)*
 
@@ -411,7 +496,8 @@ Compare the guided attempt vs. the later unaided attempt on: help requests, AI t
 |---|---|---|
 | Comprehension risk (still doesn't understand) | Fails North Star | Watch unaided-attempt data; adjust the scaffold |
 | Return dependency (nobody comes back) | North Star unmeasurable | First win still counts; utility hook, not a streak |
-| Rubric not genuinely expert | Silently invalidates the experiment | Expert-author and validate the backbone |
+| Rubric criteria not genuinely expert | Silently invalidates the experiment | **Grounded** in named large-N sources (§16); before-build discrimination test remains (§24) |
+| Rubric *evaluation* unreliable (the LLM applying the criteria is inconsistent / hallucinates a pass) | A grounded rubric applied badly is still untrustworthy | **Hybrid** — deterministic metrics for B4, anchored-example LLM judgment for B1/B2/B3/B5 (§16); validated by the before-build test |
 | Core mechanism wrong (practice doesn't transfer) | The thesis fails | That's the point — v1 *is* the test (Decision 1) |
 | Model / API / DB dependencies | — | Deferred to engineering |
 
@@ -472,7 +558,10 @@ Two `/grill-me` sessions produced this direction (problem/solution convergence, 
 |---|---|---|
 | Define the Aha Moment | Tarun + Claude | ✅ Resolved 2026-08-18 (see §12) |
 | Set numeric targets in Success Criteria (§9) | Tarun | Before build |
-| Exact rubric backbone criteria for an outreach message | Tarun | Before/at build |
+| ~~Exact rubric backbone criteria for an outreach message~~ | Tarun | ✅ Drafted 2026-08-18 (§16, 5 backbone + per-goal criteria) |
+| ~~Ground the rubric backbone in named expert sources~~ | Tarun | ✅ Done 2026-08-19 — grounded in Gong (304K), Boomerang (40M), Backlinko (12M), Woodpecker (20M), Lavender, Josh Braun 4-T (§16) |
+| **Validate the rubric** — discrimination test: does it correctly separate known-good from known-bad real messages? | Tarun | Before build — the *remaining* half of the credibility gate (§18); grounding done, empirical test pending |
+| ~~Rubric mechanics: stage-tuning, hybrid evaluation, win threshold + loop cap, quality-not-outcome, English-only, subject-line scope, off-scope guardrail~~ | Tarun + Claude | ✅ Resolved 2026-08-19 via `/grill-me` (§16, §13) |
 | Auto-mask mechanism (detect-and-mask vs. guide-abstract) | Design pass | `design.md` |
 | Does practice actually transfer? (the core bet) | — | Validated by v1 itself |
 
