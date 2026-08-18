@@ -1,0 +1,5 @@
+# Raw survey data — contains PII (emails, names, timestamps). NEVER commit.
+*.xlsx
+
+# macOS
+.DS_Store
