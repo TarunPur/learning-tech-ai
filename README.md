@@ -6,16 +6,16 @@ An AI-learning product for **non-technical professionals in India** who already 
 
 ---
 
-## Where we are right now (2026-08-18)
+## Where we are right now (2026-08-19)
 
 - ✅ **Research complete** — secondary + primary (160-response survey; strict target cut n=44). Synthesized into `research/`.
 - ✅ **Product direction locked** — `ProblemSolutionBase.md`.
 - ✅ **Product detailing locked** — `v1ProductDetailing.md`: **10 decisions, each with its *why* and the rejected alternative.** These are settled; build on them, don't relitigate them.
-- 🚧 **PRD in progress** — `v1PRD.md`. Structure complete; the **Aha Moment is done**. Remaining `[TBD]` placeholders are tracked in the PRD's **§24 Open questions**.
-- ⏭️ **Not started (intentionally, in this order):** finish PRD placeholders → `design.md` (owner will share; must precede engineering) → ERD + technical architecture + implementation plan → build.
+- ✅ **PRD substantially complete** — `v1PRD.md`. Aha Moment done; **§16 rubric now grounded** in named large-N sources (Gong 304K, Boomerang 40M, Backlinko 12M, Woodpecker 20M, Lavender, Josh Braun 4-T) **and hardened** via `/grill-me` (hybrid evaluation, core/advisory win + loop cap, quality-not-outcome, English-only). §12 trust reasoning + §13 off-scope guardrail added. Only intentional deferrals remain (see §24).
+- ⏭️ **Next (intentionally, in this order):** `design.md` (**next artifact — build together**; must precede engineering) → ERD + technical architecture + implementation plan → build.
 
 ### The immediate next action
-Continue closing the PRD's open placeholders. The highest-leverage one still open is the **exact rubric backbone for an outreach message (`v1PRD.md` §16)** — it's what makes the whole experiment credible. Numeric success targets (§9) are deliberately deferred until we know the test-cohort size. **Do not write the ERD / architecture / build milestones until `design.md` exists.**
+**Create `design.md`** — the visual/UX design for v1, grounded in the locked core loop (`v1PRD.md` §15) and the "super-friendly for an overwhelmed non-tech user" mandate. As part of it, resolve the design-owned open questions in §24 (auto-mask mechanism; Aha-staging "rough → shaped" contrast; how the rubric surfaces as feedback in the UI). **Deferred, do not do now:** numeric success targets (§9) stay `[TBD — before build]`, to be set *after* design, framed within-subject; and the rubric's empirical discrimination test is a before-build gate. **Do not write the ERD / architecture / build milestones until `design.md` is finalised.**
 
 ---
 
