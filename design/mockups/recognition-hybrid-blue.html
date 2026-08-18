@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 1 — Blue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#FFFFFF;
+  --ink:#1F2A28;
+  --ink-soft:#5B6664;
+  --ink-faint:#8B9694;
+  --line:rgba(31,42,40,0.10);
+  --line-soft:rgba(31,42,40,0.07);
+  --teal:#2F6FE0;
+  --teal-deep:#1E52B0;
+  --teal-bright:#5B8DEF;
+  --teal-tint:rgba(47,111,224,0.10);
+  --teal-tint-2:rgba(47,111,224,0.16);
+  --mint-1:#EAF1FE;
+  --mint-2:#D9E7FC;
+  --card:#FFFFFF;
+  --shadow-card:0 1px 2px rgba(20,60,54,0.05),0 10px 24px -14px rgba(20,60,54,0.20);
+  --shadow-lift:0 6px 16px -6px rgba(20,60,54,0.14),0 24px 44px -20px rgba(20,60,54,0.28);
+  --r:16px;
+}
+*{box-sizing:border-box;}
+body{margin:0;color:var(--ink);background:var(--bg);font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+::selection{background:var(--teal-tint-2);color:var(--teal-deep);}
+:focus-visible{outline:2.5px solid var(--teal);outline-offset:3px;border-radius:10px;}
+button{font-family:inherit;color:inherit;}
+
+.stage{display:grid;grid-template-columns:1fr;min-height:100vh;}
+
+/* left */
+.left{padding:30px 24px 36px;display:flex;flex-direction:column;}
+.left-in{max-width:460px;margin:0 auto;width:100%;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:34px;}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--teal);display:grid;place-items:center;}
+.brand .wm{font-weight:700;letter-spacing:-0.01em;font-size:16px;color:var(--ink);}
+.brand .wm small{display:block;font-weight:500;font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:1px;}
+
+h1{font-family:"Bricolage Grotesque";font-weight:600;font-size:clamp(26px,2.4vw,32px);line-height:1.1;letter-spacing:-0.02em;margin:0 0 8px;color:var(--ink);text-wrap:balance;}
+.lead{margin:0 0 22px;color:var(--ink-soft);font-size:15.5px;line-height:1.45;}
+
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;box-shadow:var(--shadow-card);transition:transform .24s cubic-bezier(.16,1,.3,1),box-shadow .24s ease,border-color .2s ease;}
+.opt:hover,.opt:focus-visible{transform:translateY(-2px);box-shadow:var(--shadow-lift);border-color:var(--teal-tint-2);outline:none;}
+.opt .ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--teal-tint);color:var(--teal);display:grid;place-items:center;transition:background .2s,color .2s;}
+.opt:hover .ic{background:var(--teal);color:#fff;}
+.opt .ic svg{width:22px;height:22px;}
+.tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+.opt .t{font-family:"Bricolage Grotesque";font-weight:600;font-size:16px;letter-spacing:-0.01em;color:var(--ink);line-height:1.2;margin-bottom:2px;}
+.opt .e{font-size:13px;line-height:1.4;color:var(--ink-soft);}
+.opt .e i{font-style:normal;color:var(--ink-faint);}
+.opt .go{flex:none;color:var(--ink-faint);opacity:.7;transition:color .2s,transform .24s,opacity .2s;}
+.opt:hover .go{color:var(--teal);transform:translateX(3px);opacity:1;}
+
+.escape{margin-top:11px;display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;background:transparent;border:1.5px dashed var(--line);border-radius:var(--r);padding:13px 15px;transition:border-color .2s,background .2s;}
+.escape:hover{border-color:var(--teal);background:#fbfefe;}
+.escape .ic{width:40px;height:40px;border-radius:12px;border:1.5px dashed var(--line);display:grid;place-items:center;color:var(--ink-faint);}
+.escape .t{font-family:"Bricolage Grotesque";font-weight:600;font-size:15px;}
+.escape .e{font-size:13px;color:var(--ink-soft);}
+
+.foot{margin-top:auto;padding-top:26px;display:flex;align-items:center;gap:8px;color:var(--ink-soft);font-size:12.5px;}
+.foot svg{color:var(--teal);flex:none;}
+
+/* right illustrative scene */
+.right{position:relative;overflow:hidden;background:radial-gradient(120% 100% at 80% 10%, var(--mint-1), var(--mint-2));display:none;}
+.deco{position:absolute;pointer-events:none;}
+.dots{display:grid;grid-template-columns:repeat(3,7px);gap:11px;}
+.dots span{width:7px;height:7px;border-radius:50%;background:var(--teal);opacity:.35;}
+.scene{position:absolute;inset:0;display:grid;place-items:center;padding-right:150px;}
+.mailcard{position:relative;width:340px;background:#fff;border-radius:18px;box-shadow:0 20px 50px -20px rgba(20,60,54,0.35),0 4px 12px -6px rgba(20,60,54,0.18);padding:20px 22px;}
+.mailcard .from{display:flex;align-items:center;gap:9px;margin-bottom:13px;}
+.mailcard .glogo{width:22px;height:22px;}
+.mailcard .to{font-size:12.5px;color:var(--ink-faint);font-weight:600;}
+.mailcard .subj{font-weight:700;font-size:14.5px;margin:0 0 9px;color:var(--ink);}
+.mailcard p{margin:0;font-size:13.5px;line-height:1.6;color:#8A8177;font-style:italic;}
+.mailcard .u-fix{color:var(--ink);font-style:normal;background:linear-gradient(transparent 62%, var(--teal-tint-2) 0);padding:0 1px;}
+.avatar{position:absolute;width:66px;height:66px;border-radius:50%;border:4px solid #fff;box-shadow:0 8px 18px -8px rgba(20,60,54,.4);background:linear-gradient(135deg,#93b4f5,#2f6fe0);top:-30px;left:-24px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:22px;font-family:"Bricolage Grotesque";}
+.pill{position:absolute;display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--teal-tint-2);border-radius:999px;padding:9px 15px 9px 12px;font-size:13px;font-weight:600;color:var(--ink);box-shadow:0 10px 24px -12px rgba(20,60,54,.32);white-space:nowrap;}
+.pill svg{color:var(--teal);flex:none;}
+.pill.p1{top:23%;right:4%;}
+.pill.p2{top:47%;right:1%;}
+.pill.p3{top:71%;right:7%;}
+.spark{color:var(--teal);opacity:.7;}
+.squig{color:var(--teal);opacity:.55;}
+
+@media (prefers-reduced-motion:no-preference){
+  .anim{opacity:0;transform:translateY(10px);animation:s .6s cubic-bezier(.16,1,.3,1) forwards;}
+  .d1{animation-delay:.04s}.d2{animation-delay:.10s}.d3{animation-delay:.16s}.d4{animation-delay:.22s}.d5{animation-delay:.28s}.d6{animation-delay:.34s}
+  .pill{opacity:0;transform:translateY(8px) scale(.96);animation:pop .5s cubic-bezier(.16,1,.3,1) forwards;}
+  .pill.p1{animation-delay:.5s}.pill.p2{animation-delay:.66s}.pill.p3{animation-delay:.82s}
+  @keyframes s{to{opacity:1;transform:none}}
+  @keyframes pop{to{opacity:1;transform:none}}
+}
+
+@media (min-width:900px){
+  .stage{grid-template-columns:1fr 1fr;}
+  .left{justify-content:center;padding:56px;}
+  .left-in{margin:0;max-width:480px;}
+  .right{display:block;}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="left">
+    <div class="left-in">
+      <div class="brand anim d1">
+        <span class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wm">Outreach Bench<small>placeholder name</small></span>
+      </div>
+      <h1 class="anim d2">Which message do you need to send?</h1>
+      <p class="lead anim d2">Pick the one closest to your situation — that's the whole start.</p>
+      <div class="opts">
+        <button class="opt anim d3" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10.5 8v3M13.5 8v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="tx"><span class="t">A prospect went quiet</span><span class="e"><i>e.g.</i> They were keen, then stopped replying two weeks ago.</span></span><span class="go"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="opt anim d4" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5.5" width="16" height="14" rx="2.6" stroke="currentColor" stroke-width="1.7"/><path d="M4 9.5h16M8 3.5v3M16 3.5v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 14.2l2 2 3.5-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tx"><span class="t">Book a meeting or demo</span><span class="e"><i>e.g.</i> Get 20 minutes on their calendar this week.</span></span><span class="go"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="opt anim d5" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M6 19.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M19 5.5v3M17.5 7h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="tx"><span class="t">Reach out to someone new</span><span class="e"><i>e.g.</i> A first message to a prospect who's never heard of you.</span></span><span class="go"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="opt anim d6" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 11.2 11 4.7a2 2 0 0 1 1.5-.6l4.3.2a2 2 0 0 1 1.9 1.9l.2 4.3a2 2 0 0 1-.6 1.5l-6.5 6.5a2 2 0 0 1-2.8 0l-4.2-4.2a2 2 0 0 1 0-2.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="15.4" cy="8.6" r="1.3" fill="currentColor"/></svg></span><span class="tx"><span class="t">Follow up after meeting them</span><span class="e"><i>e.g.</i> You spoke at an event and said you'd be in touch.</span></span><span class="go"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      </div>
+      <button class="escape anim d6" type="button"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="tx"><span class="t">Something else</span><span class="e">A different outreach message you need to write.</span></span></button>
+      <div class="foot anim d6"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 1.8 3 4v4.2c0 3.7 2.5 6.3 6 8 3.5-1.7 6-4.3 6-8V4L9 1.8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.4 9.1l1.7 1.7L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Real names are swapped out before anything is saved.</div>
+    </div>
+  </section>
+
+  <aside class="right">
+    <div class="deco dots" style="top:12%;left:14%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="deco dots" style="bottom:14%;right:12%;"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <svg class="deco spark" style="top:20%;right:20%;" width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M17 2v30M2 17h30M6 6l22 22M28 6L6 28" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <svg class="deco squig" style="bottom:20%;right:26%;" width="70" height="34" viewBox="0 0 70 34" fill="none"><path d="M2 24c8-22 18 8 26-4s16-20 24-6 14 4 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+
+    <div class="scene">
+      <div class="mailcard">
+        <div class="avatar" aria-hidden="true">A</div>
+        <div class="from">
+          <svg class="glogo" viewBox="0 0 48 48" fill="none"><rect x="4" y="10" width="40" height="28" rx="4" fill="#F1F3F4"/><path d="M6 13l18 13L42 13" stroke="#EA4335" stroke-width="3" fill="none"/></svg>
+          <span class="to">To: Jen · Re: Following up</span>
+        </div>
+        <p class="subj">Your draft</p>
+        <p>“just circling back again — <span class="u-fix">any thoughts on my note?</span> free for a quick call this week?? thanks!!”</p>
+      </div>
+      <span class="pill p1"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Make the one ask clear</span>
+      <span class="pill p2"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" transform="rotate(45 8 8)"/></svg>Cut the fluff</span>
+      <span class="pill p3"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2Zm-2 6h4" stroke="currentColor" stroke-width="1.5"/></svg>Sound less pushy</span>
+    </div>
+  </aside>
+</div>
+</body>
+</html>

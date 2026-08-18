@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recognition Home — checkpoint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/*
+  DIRECTION CONTRACT — recognition home (mobile-first, user-grounded, grilled)
+  THESIS: A warm helper meets an overwhelmed non-tech seller with their own real situations, phone-first — friendly and calm, refusing the edtech card-grid, the AI-chat blank box, and the heritage-craft costume.
+  OWN-WORLD: Warm off-white ground, a calm confident green primary ("proceed / capable / correct"), white situation cards with gentle depth, a soft-green welcome panel only as a desktop enhancement. Rounded, human, modern. Bricolage Grotesque display, Hanken Grotesk UI.
+  STORY: "This is friendly and made for me — my exact situation is right here, one tap starts it, and it feels supportive and credible, not a course."
+  FIRST VIEWPORT (phone): compact mark, one plain question, a warm partnership line, four real-scene cards thumb-high, a quieter escape, then two honest trust chips. Desktop adds a welcome panel with a rough->good motif.
+  FORM: user-grounded friendly-modern world; a REPLACEMENT for the rolled instrument world on product-truth grounds. Seed key 936f6a3b.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+*/
+:root{
+  --bg:#F5F2EB;
+  --panel:#ECE7DC;
+  --panel-2:#E3DCCC;
+  --card:#FFFFFF;
+  --ink:#23211C;
+  --ink-soft:#665F52;
+  --ink-faint:#948D7C;
+  --line:rgba(40,36,28,0.11);
+  --line-soft:rgba(40,36,28,0.07);
+  /* single calm blue accent — carries trust + action + the "verified" signal (not a grade) */
+  --green:#35618E;
+  --green-bright:#4E7DAE;
+  --green-deep:#294F76;
+  --green-tint:rgba(53,97,142,0.10);
+  --green-tint-2:rgba(53,97,142,0.16);
+  --warm:#C08A4E;
+  --warm-tint:rgba(176,120,60,0.15);
+  --shadow-card:0 1px 2px rgba(23,50,38,0.05),0 10px 24px -14px rgba(23,50,38,0.20);
+  --shadow-lift:0 4px 10px rgba(23,50,38,0.09),0 22px 42px -18px rgba(23,50,38,0.28);
+  --r:18px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;color:var(--ink);background:var(--bg);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh;
+}
+::selection{background:var(--green-tint-2);color:var(--green-deep);}
+:focus-visible{outline:2.5px solid var(--green);outline-offset:3px;border-radius:10px;}
+button{font-family:inherit;color:inherit;}
+
+.stage{display:grid;grid-template-columns:1fr;min-height:100vh;}
+
+/* ---------- desktop-only welcome panel ---------- */
+.panel{display:none;}
+
+/* ---------- work surface (the complete mobile experience) ---------- */
+.work{position:relative;background:var(--bg);padding:22px 20px 34px;}
+.work-in{max-width:560px;margin:0 auto;}
+
+/* mobile header */
+.mhead{display:flex;align-items:center;gap:11px;margin-bottom:22px;}
+.mark{flex:none;}
+.wordmark{font-weight:700;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--green-deep);}
+.wordmark small{display:block;font-weight:500;font-size:9.5px;letter-spacing:0.1em;color:var(--ink-faint);margin-top:3px;text-transform:none;}
+
+.work h2{
+  font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;
+  font-size:clamp(25px,7vw,31px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 10px;max-width:15ch;text-wrap:balance;
+}
+.work .lead{margin:0 0 20px;color:var(--ink-soft);font-size:15.5px;line-height:1.45;max-width:38ch;}
+.work .lead b{color:var(--green-deep);font-weight:600;}
+
+.cards{display:flex;flex-direction:column;gap:11px;}
+.card{
+  position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:15px 15px;box-shadow:var(--shadow-card);
+  transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,border-color .22s ease;
+}
+.card:hover,.card:focus-visible{transform:translateY(-2px);box-shadow:var(--shadow-lift);border-color:var(--green-tint-2);outline:none;}
+.card:active{transform:translateY(0);}
+
+.medal{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:var(--green);background:var(--green-tint);transition:background .22s ease,color .22s ease;}
+.medal svg{width:23px;height:23px;display:block;}
+.card:hover .medal,.card:focus-visible .medal{background:var(--green);color:#fff;}
+
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+.txt .t{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;font-size:16.5px;letter-spacing:-0.01em;line-height:1.2;color:var(--ink);margin:0 0 3px;}
+.txt .e{display:block;font-size:13.5px;line-height:1.4;color:var(--ink-soft);margin:0;}
+.txt .e i{font-style:normal;color:var(--ink-faint);}
+
+.go{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--ink-faint);opacity:.7;transition:color .22s ease,opacity .22s ease,transform .28s cubic-bezier(.16,1,.3,1),background .22s ease;}
+.card:hover .go,.card:focus-visible .go{color:var(--green);opacity:1;transform:translateX(3px);background:var(--green-tint);}
+
+.escape{margin-top:12px;display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;background:transparent;border:1.5px dashed var(--line);border-radius:var(--r);padding:14px 15px;transition:border-color .22s ease,background .22s ease;}
+.escape:hover,.escape:focus-visible{border-color:var(--green);background:var(--card);outline:none;}
+.escape .medal{background:transparent;border:1.5px dashed var(--line);width:44px;height:44px;color:var(--ink-faint);}
+.escape:hover .medal{color:var(--green);border-color:var(--green-tint-2);}
+.escape .t{font-size:15px;}
+
+/* trust + saved */
+.trust{margin-top:22px;display:flex;flex-direction:column;gap:11px;}
+.tchip{display:flex;align-items:center;gap:9px;font-size:12.5px;line-height:1.35;color:var(--ink-soft);}
+.tchip svg{flex:none;color:var(--green);}
+.trust hr{height:1px;background:var(--line-soft);border:0;margin:5px 0 1px;}
+.saved{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:transparent;border:0;cursor:pointer;padding:3px 2px;color:var(--ink-soft);font-size:13.5px;font-weight:600;}
+.saved .l{display:flex;align-items:center;gap:9px;}
+.saved svg{color:var(--green);}
+.saved .n{color:var(--ink-faint);font-variant-numeric:tabular-nums;}
+
+/* entrance */
+@media (prefers-reduced-motion:no-preference){
+  .anim{opacity:0;transform:translateY(10px);animation:settle .66s cubic-bezier(.16,1,.3,1) forwards;}
+  .dp1{animation-delay:.03s}.dp2{animation-delay:.09s}.dp3{animation-delay:.15s}
+  .c1{animation-delay:.14s}.c2{animation-delay:.20s}.c3{animation-delay:.26s}.c4{animation-delay:.32s}.c5{animation-delay:.38s}.c6{animation-delay:.45s}
+  @keyframes settle{to{opacity:1;transform:none;}}
+  .ink{stroke-dasharray:1;stroke-dashoffset:1;animation:write 1.4s cubic-bezier(.62,0,.2,1) .6s forwards;}
+  @keyframes write{to{stroke-dashoffset:0;}}
+}
+@media (prefers-reduced-motion:reduce){.ink{stroke-dashoffset:0;}}
+
+/* ---------- desktop enhancement ---------- */
+@media (min-width:900px){
+  .stage{grid-template-columns:minmax(360px,38%) 1fr;}
+  .mhead{display:none;}
+
+  .panel{
+    display:flex;position:relative;overflow:hidden;padding:46px 40px 40px;
+    background:
+      radial-gradient(120% 90% at 12% 6%, rgba(255,255,255,0.7), transparent 50%),
+      radial-gradient(90% 80% at 96% 100%, rgba(53,97,142,0.13), transparent 55%),
+      linear-gradient(158deg, var(--panel), var(--panel-2));
+  }
+  .panel-in{position:relative;z-index:2;display:flex;flex-direction:column;gap:20px;height:100%;width:100%;}
+  .panel .brandrow{display:flex;align-items:center;gap:11px;}
+  .panel .greet h1{font-family:"Bricolage Grotesque";font-weight:600;font-size:clamp(30px,3vw,38px);line-height:1.08;letter-spacing:-0.02em;margin:8px 0 0;color:var(--ink);text-wrap:balance;}
+  .panel .greet h1 .u{color:var(--green);}
+  .panel .greet p{margin:14px 0 0;font-size:15.5px;line-height:1.5;color:var(--ink-soft);max-width:34ch;}
+
+  .motif{margin-top:6px;}
+  .motif .bubble{background:var(--card);border:1px solid var(--line);border-radius:18px;border-bottom-left-radius:6px;padding:17px 19px 18px;box-shadow:var(--shadow-card);max-width:310px;}
+  .motif .cap{margin:0 0 9px;}
+  .motif .cap .who{font-size:10.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-faint);}
+  .motif .rough{margin:0;font-size:13px;line-height:1.5;color:#9A8B7C;font-style:italic;}
+  .motif .grow{display:flex;align-items:center;gap:7px;margin:13px 0;color:var(--green);font-size:11.5px;font-weight:700;letter-spacing:0.02em;position:relative;}
+  .motif .grow svg{flex:none;}
+  .motif .grow::after{content:"";flex:1;height:1px;background:var(--green-tint-2);}
+  .motif .good{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink);font-weight:500;}
+  .motif .mask{display:inline-block;color:var(--green-deep);background:var(--green-tint);border-radius:5px;padding:0 5px;font-weight:600;font-style:normal;}
+  .motif .check{margin-top:15px;display:inline-flex;align-items:center;gap:8px;color:var(--green-deep);font-size:12.5px;font-weight:600;background:var(--green-tint);border-radius:999px;padding:6px 13px 6px 9px;}
+
+  .panel-foot{margin-top:auto;padding-top:18px;}
+  .panel-foot .tchip{color:var(--ink-soft);}
+
+  .work{display:flex;align-items:center;justify-content:center;padding:56px;}
+  .work-in{margin:0;max-width:540px;}
+  .work h2{font-size:clamp(28px,2.4vw,33px);}
+  /* privacy shown in panel on desktop; keep only expert chip + saved in work */
+  .trust .priv-m{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- desktop-only welcome panel -->
+  <aside class="panel">
+    <div class="panel-in">
+      <div class="brandrow">
+        <span class="mark" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect x="1" y="1" width="38" height="38" rx="12" fill="#35618E"/>
+            <path d="M11 15.5A2.5 2.5 0 0 1 13.5 13h13A2.5 2.5 0 0 1 29 15.5v6A2.5 2.5 0 0 1 26.5 24H18l-4.5 3.6V24h-.5" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M16.5 18.7l2 2 4-4.3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="wordmark">Outreach Bench<small>placeholder name</small></span>
+      </div>
+
+      <div class="greet">
+        <h1>Let's get your message right — <span class="u">together.</span></h1>
+        <p>You make the key calls; we help you shape it — and you'll see exactly what makes it good.</p>
+      </div>
+
+      <div class="motif">
+        <div class="bubble">
+          <div class="cap"><span class="who">Your rough words</span></div>
+          <p class="rough">“just circling back again — any thoughts on my note? free for a quick call this week??”</p>
+          <div class="grow">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V5M8 5L4.5 8.5M8 5l3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            shaped together
+          </div>
+          <p class="good">Hi <span class="mask">[Name]</span> — saw your Q3 hiring push. We cut new-rep onboarding 40%. Worth 15 minutes Thursday?</p>
+          <span class="check">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l2.8 2.8L12.5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Good by expert standards
+          </span>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <span class="tchip">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.8 3 4v4.2c0 3.7 2.5 6.3 6 8 3.5-1.7 6-4.3 6-8V4L9 1.8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.4 9.1l1.7 1.7L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Real names are swapped out before anything is saved.
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- work surface (complete on mobile) -->
+  <main class="work">
+    <div class="work-in">
+
+      <div class="mhead anim dp1">
+        <span class="mark" aria-hidden="true">
+          <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+            <rect x="1" y="1" width="38" height="38" rx="12" fill="#35618E"/>
+            <path d="M11 15.5A2.5 2.5 0 0 1 13.5 13h13A2.5 2.5 0 0 1 29 15.5v6A2.5 2.5 0 0 1 26.5 24H18l-4.5 3.6V24h-.5" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M16.5 18.7l2 2 4-4.3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="wordmark">Outreach Bench<small>placeholder name</small></span>
+      </div>
+
+      <h2 class="anim dp2">Which message do you need to send?</h2>
+      <p class="lead anim dp3">Pick the one closest to your situation — <b>you make the calls, we shape it with you.</b></p>
+
+      <div class="cards" role="list">
+
+        <button class="card anim c1" type="button" role="listitem">
+          <span class="medal"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10.5 8v3M13.5 8v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <span class="txt"><span class="t">A prospect went quiet</span><span class="e"><i>e.g.</i> They were keen, then stopped replying two weeks ago.</span></span>
+          <span class="go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+
+        <button class="card anim c2" type="button" role="listitem">
+          <span class="medal"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2.6" stroke="currentColor" stroke-width="1.7"/><path d="M4 9.5h16M8 3.5v3M16 3.5v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 14.2l2 2 3.5-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="txt"><span class="t">Book a meeting or demo</span><span class="e"><i>e.g.</i> Get 20 minutes on their calendar this week.</span></span>
+          <span class="go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+
+        <button class="card anim c3" type="button" role="listitem">
+          <span class="medal"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="9" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M6 19.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M19 5.5v3M17.5 7h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <span class="txt"><span class="t">Reach out to someone new</span><span class="e"><i>e.g.</i> A first message to a prospect who's never heard of you.</span></span>
+          <span class="go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+
+        <button class="card anim c4" type="button" role="listitem">
+          <span class="medal"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 11.2 11 4.7a2 2 0 0 1 1.5-.6l4.3.2a2 2 0 0 1 1.9 1.9l.2 4.3a2 2 0 0 1-.6 1.5l-6.5 6.5a2 2 0 0 1-2.8 0l-4.2-4.2a2 2 0 0 1 0-2.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="15.4" cy="8.6" r="1.3" fill="currentColor"/></svg></span>
+          <span class="txt"><span class="t">Follow up after meeting them</span><span class="e"><i>e.g.</i> You spoke at an event and said you'd be in touch.</span></span>
+          <span class="go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+
+      </div>
+
+      <button class="escape anim c5" type="button">
+        <span class="medal"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+        <span class="txt"><span class="t">Something else</span><span class="e">A different outreach message you need to write.</span></span>
+        <span class="go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+
+      <div class="trust anim c6">
+        <span class="tchip priv-m">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 1.8 3 4v4.2c0 3.7 2.5 6.3 6 8 3.5-1.7 6-4.3 6-8V4L9 1.8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.4 9.1l1.7 1.7L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Real names are swapped out before anything is saved.
+        </span>
+        <span class="tchip">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.9 3.9 4.3.6-3.1 3 .7 4.3L9 14.8 5.3 16.8l.7-4.3-3.1-3 4.3-.6L9 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Checked against what expert outreach writers actually do — not guesswork.
+        </span>
+        <hr />
+        <button class="saved" type="button">
+          <span class="l"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4 2.5h10a1 1 0 0 1 1 1v12l-6-3-6 3v-12a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Your saved messages</span>
+          <span class="l"><span class="n">0</span><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#35618E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

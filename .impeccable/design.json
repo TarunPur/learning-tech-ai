@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-19T00:00:00Z",
+  "title": "Design System: Outreach Bench",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": { "role": "primary", "displayName": "Signal Blue", "canonical": "#2F6FE0", "tonalRamp": ["#0E2A5E", "#133A7E", "#1B4CA0", "#2560C4", "#2F6FE0", "#5B8DEA", "#8FB0F1", "#C7D9F8"] },
+      "signal-blue-deep": { "role": "primary", "displayName": "Signal Blue Deep", "canonical": "#1E52B0" },
+      "warm-paper": { "role": "neutral", "displayName": "Warm Paper", "canonical": "#F6F5F1", "tonalRamp": ["#5A574E", "#7B7869", "#9C9887", "#BDB9A6", "#D8D5C8", "#E8E5DB", "#F6F5F1", "#FCFBF7"] },
+      "card-white": { "role": "neutral", "displayName": "Card White", "canonical": "#FFFFFF" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1A1A1A", "tonalRamp": ["#0A0A0A", "#161616", "#262626", "#3A3A3A", "#5F5F58", "#7C7C73", "#A6A69E", "#D0D0C9"] },
+      "ink-strong": { "role": "neutral", "displayName": "Ink Strong", "canonical": "#3A3A3A" },
+      "ink-soft": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#5F5F58" },
+      "ink-faint": { "role": "neutral", "displayName": "Ink Faint", "canonical": "#7C7C73" },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#E4E3DC" },
+      "hairline-strong": { "role": "neutral", "displayName": "Hairline Strong", "canonical": "#D8D7CF" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The left-column statement headline. One per screen." },
+      "title": { "displayName": "Title", "purpose": "Situation-card titles — the user's real situation, in serif." },
+      "body": { "displayName": "Body", "purpose": "Personal sub-line and reading copy." },
+      "body-small": { "displayName": "Body Small", "purpose": "Card descriptions / examples." },
+      "label": { "displayName": "Label", "purpose": "Card index numbers 01–04, in serif with light tracking." }
+    },
+    "shadows": [
+      { "name": "card-ambient", "value": "0 1px 2px rgba(28,40,72,0.05), 0 14px 30px -18px rgba(28,40,72,0.20)", "purpose": "Resting lift for situation cards, floating them off the warm paper." },
+      { "name": "card-lift", "value": "0 6px 16px -8px rgba(30,50,90,0.14), 0 26px 50px -24px rgba(30,50,90,0.26)", "purpose": "Situation-card hover/focus state." },
+      { "name": "logo-glow", "value": "0 8px 18px -7px rgba(47,111,224,0.55)", "purpose": "Blue ambient glow under the brand mark only." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entrance reveals and hover lifts; a soft exponential ease-out." },
+      { "name": "entrance", "value": "translateY(12px) + fade, 0.66s, staggered", "purpose": "One orchestrated reveal on load; respects prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "editorial", "value": "940px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Situation Card",
+      "kind": "card",
+      "refersTo": "card-situation",
+      "description": "Signature component: a square-cornered recognition card — index number, serif situation title, plain example — that lifts and turns blue on hover.",
+      "html": "<button class=\"ds-card-situation\"><span class=\"ds-num\">01</span><span class=\"ds-body\"><h3>A prospect went quiet</h3><p>e.g. They were keen, then stopped replying two weeks ago.</p></span><span class=\"ds-go\" aria-hidden=\"true\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M4 10h12M11 5l5 5-5 5\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button>",
+      "css": ".ds-card-situation { position: relative; display: flex; flex-direction: column; min-height: 250px; width: 300px; background: #FFFFFF; border: 1px solid #E4E3DC; padding: 30px 28px 26px; box-shadow: 0 1px 2px rgba(28,40,72,0.05), 0 14px 30px -18px rgba(28,40,72,0.20); cursor: pointer; text-align: left; transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s ease, border-color .22s ease; } .ds-card-situation:hover, .ds-card-situation:focus-visible { transform: translateY(-3px); box-shadow: 0 6px 16px -8px rgba(30,50,90,0.14), 0 26px 50px -24px rgba(30,50,90,0.26); border-color: #2F6FE0; outline: none; } .ds-card-situation .ds-num { font-family: Spectral, Georgia, serif; font-size: 14px; letter-spacing: 0.04em; color: #7C7C73; transition: color .22s; } .ds-card-situation:hover .ds-num { color: #2F6FE0; } .ds-card-situation .ds-body { margin-top: auto; } .ds-card-situation h3 { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.12; letter-spacing: -0.01em; color: #1A1A1A; margin: 0 0 10px; } .ds-card-situation p { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 14px; line-height: 1.5; color: #5F5F58; margin: 0; } .ds-card-situation .ds-go { position: absolute; right: 22px; bottom: 22px; color: #2F6FE0; opacity: 0; transform: translateX(-4px); transition: opacity .24s, transform .28s; } .ds-card-situation:hover .ds-go { opacity: 1; transform: none; }"
+    },
+    {
+      "name": "Scoped Intake Field",
+      "kind": "input",
+      "refersTo": "intake-arrow",
+      "description": "The secondary 'something else' escape: an underlined single-line field with a circular arrow that fills blue on hover/focus. Never the primary entry.",
+      "html": "<div class=\"ds-intake\"><input type=\"text\" placeholder=\"Got a different outreach message?\" aria-label=\"Describe a different outreach message\"><button type=\"button\" aria-label=\"Continue\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M4 10h12M11 5l5 5-5 5\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></div>",
+      "css": ".ds-intake { display: flex; align-items: center; gap: 12px; max-width: 440px; border-bottom: 1.5px solid #1A1A1A; padding: 9px 2px; transition: border-color .2s; } .ds-intake:focus-within, .ds-intake:hover { border-color: #2F6FE0; } .ds-intake input { flex: 1; border: 0; background: transparent; font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 16px; color: #1A1A1A; } .ds-intake input::placeholder { color: #7C7C73; } .ds-intake input:focus { outline: none; } .ds-intake button { width: 34px; height: 34px; flex: none; border: 0; border-radius: 9999px; background: transparent; color: #5F5F58; display: grid; place-items: center; cursor: pointer; transition: background .2s, color .2s, transform .24s; } .ds-intake:hover button, .ds-intake:focus-within button { background: #2F6FE0; color: #fff; transform: translateX(2px); }"
+    },
+    {
+      "name": "Brand Mark",
+      "kind": "custom",
+      "refersTo": "brand-logo",
+      "description": "Blue rounded-square logo with a 'message + check' glyph, brand name in heavy sans, and a blue tagline.",
+      "html": "<div class=\"ds-brand\"><span class=\"ds-logo\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/><path d=\"M9.5 9.2l1.8 1.8 3.4-3.7\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-wm\">Outreach Bench<small>Outreach, shaped with you</small></span></div>",
+      "css": ".ds-brand { display: flex; align-items: center; gap: 14px; } .ds-brand .ds-logo { width: 52px; height: 52px; border-radius: 15px; background: #2F6FE0; display: grid; place-items: center; box-shadow: 0 8px 18px -7px rgba(47,111,224,0.55); } .ds-brand .ds-wm { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.02em; line-height: 1.08; color: #1A1A1A; } .ds-brand .ds-wm small { display: block; font-weight: 600; font-size: 13px; color: #1E52B0; margin-top: 4px; }"
+    },
+    {
+      "name": "Statement Headline",
+      "kind": "custom",
+      "refersTo": "display",
+      "description": "The editorial serif statement with a single italic blue emphasis word.",
+      "html": "<h1 class=\"ds-headline\">Let's finish one real message you need to send — <em>together.</em></h1>",
+      "css": ".ds-headline { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: clamp(31px, 3.6vw, 46px); line-height: 1.08; letter-spacing: -0.018em; color: #1A1A1A; margin: 0; max-width: 13ch; } .ds-headline em { font-style: italic; color: #1E52B0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Correspondent",
+    "overview": "The interface behaves like a calm, genuinely expert colleague who sits down to help you write — never a teacher, never a slick tool. It meets an overwhelmed, low-confidence user with a confident editorial voice and a warm paper surface, and hands them their own real situation to pick from. Authority comes from restraint: a large serif statement, generous whitespace, one quiet blue, and clean square-cornered cards. Warmth does the reassurance; a single blue does the trust and action. The target feeling is calm confidence — capable and in good hands, not taught or graded.",
+    "keyCharacteristics": [
+      "Warm off-white canvas, near-black ink, one restrained blue accent — no green.",
+      "Editorial serif (Spectral) for statements; humanist sans (Hanken Grotesk) for everything you read to act.",
+      "Square-cornered cards floating on a soft ambient shadow.",
+      "Recognition over recall: the entry is concrete situations, never a blank box."
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "There is exactly one accent, and it is blue. Blue also is the positive/verified signal — so the system never needs a green 'pass' color. Green is banned: in a product whose core promise is feedback, never a grade, green reads as grading.", "section": "colors" },
+      { "name": "The Serif-Statement / Sans-Support Rule", "body": "Spectral appears only on statements and situation titles. Everything the user reads in order to act — sub-lines, descriptions, inputs, captions — is Hanken. Never set UI controls in the serif.", "section": "typography" },
+      { "name": "The Flat-But-Floating Rule", "body": "Nothing is beveled or glassy. Cards are flat rectangles that merely float; the shadow's job is separation from the paper, not decoration.", "section": "elevation" },
+      { "name": "The Sharp-Card Rule", "body": "Situation cards are never rounded. Rounding them turns editorial into generic-SaaS.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep blue rare — accent, focus, and the 'verified/expert-standard' signal only.",
+      "Do set statements and situation titles in Spectral; everything functional in Hanken.",
+      "Do keep situation cards square-cornered and floating on the ambient shadow.",
+      "Do keep the four situations concrete: a real situation title + a plain 'e.g.' example.",
+      "Do keep readable text at Ink Faint (#7C7C73) or darker — never lighter."
+    ],
+    "donts": [
+      "Don't introduce green or any pass/fail color coding — this product shows feedback, never a grade.",
+      "Don't make the primary entry an open/blank input; recognition cards are the entry, the scoped field is secondary.",
+      "Don't round the situation cards or add glass/bevel/gradient decoration.",
+      "Don't use 'course', 'lesson', 'learn', 'score', 'grade', 'quiz', or 'streak' anywhere in the UI."
+    ]
+  }
+}

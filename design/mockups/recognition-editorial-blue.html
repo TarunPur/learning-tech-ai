@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 1 — Editorial (blue)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F6F5F1;
+  --card:#FFFFFF;
+  --ink:#1A1A1A;
+  --ink-2:#3A3A3A;
+  --ink-soft:#5F5F58;
+  --ink-faint:#7C7C73;
+  --line:#E4E3DC;
+  --line-2:#D8D7CF;
+  --blue:#2F6FE0;
+  --blue-deep:#1E52B0;
+  --blue-tint:rgba(47,111,224,0.08);
+  --blue-tint-2:rgba(47,111,224,0.16);
+  --shadow-lift:0 6px 16px -8px rgba(30,50,90,0.14),0 26px 50px -24px rgba(30,50,90,0.26);
+}
+*{box-sizing:border-box;}
+body{margin:0;color:var(--ink);background:var(--bg);font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh;}
+::selection{background:var(--blue-tint-2);color:var(--blue-deep);}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;border-radius:6px;}
+button{font-family:inherit;color:inherit;}
+
+.stage{max-width:1240px;margin:0 auto;min-height:100vh;display:grid;grid-template-columns:1fr;gap:44px;padding:40px 34px;align-content:center;}
+
+/* left */
+.intro{display:flex;flex-direction:column;}
+.mark{display:flex;align-items:center;gap:14px;margin-bottom:40px;}
+.mark .logo{width:52px;height:52px;border-radius:15px;background:var(--blue);display:grid;place-items:center;box-shadow:0 8px 18px -7px rgba(47,111,224,0.55);}
+.mark .wm{font-weight:800;font-size:22px;letter-spacing:-0.02em;line-height:1.08;}
+.mark .wm small{display:block;font-weight:600;font-size:13px;letter-spacing:0;text-transform:none;color:var(--blue-deep);margin-top:4px;}
+
+.intro h1{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(31px,3.6vw,46px);line-height:1.08;letter-spacing:-0.018em;margin:0;color:var(--ink);}
+.intro h1 em{font-style:italic;color:var(--blue-deep);}
+.intro .sub{margin:26px 0 0;color:var(--ink-soft);font-size:17px;line-height:1.5;max-width:36ch;}
+
+.escape{margin-top:44px;max-width:440px;}
+.escape .field{display:flex;align-items:center;gap:12px;border-bottom:1.5px solid var(--ink);padding:9px 2px;cursor:text;transition:border-color .2s;}
+.escape .field:focus-within,.escape .field:hover{border-color:var(--blue);}
+.escape input{flex:1;border:0;background:transparent;font-family:inherit;font-size:16px;color:var(--ink);padding:0;}
+.escape input::placeholder{color:var(--ink-faint);}
+.escape input:focus{outline:none;}
+.escape .arrow{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--ink-soft);cursor:pointer;transition:color .2s,background .2s,transform .24s;}
+.escape .field:hover .arrow,.escape .field:focus-within .arrow{color:#fff;background:var(--blue);transform:translateX(2px);}
+.escape .cap{margin:11px 2px 0;font-size:12.5px;color:var(--ink-faint);}
+
+.priv{margin-top:34px;display:flex;align-items:center;gap:9px;color:var(--ink-soft);font-size:12.5px;}
+.priv svg{color:var(--blue);flex:none;}
+
+/* right — staggered card grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;}
+.col{display:flex;flex-direction:column;gap:26px;}
+.col.b{margin-top:0;}
+
+.card{position:relative;display:block;width:100%;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);padding:26px 24px 24px;min-height:230px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(28,40,72,0.05),0 14px 30px -18px rgba(28,40,72,0.20);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,border-color .22s ease;}
+.card:hover,.card:focus-visible{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--blue);outline:none;}
+.card .num{font-family:"Spectral",serif;font-size:14px;color:var(--ink-faint);letter-spacing:0.04em;transition:color .22s;}
+.card:hover .num,.card:focus-visible .num{color:var(--blue);}
+.card .body{margin-top:auto;}
+.card h2{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:23px;line-height:1.12;letter-spacing:-0.01em;margin:0 0 10px;color:var(--ink);max-width:12ch;}
+.card p{margin:0;font-size:14px;line-height:1.5;color:var(--ink-soft);}
+.card p i{font-style:normal;color:var(--ink-faint);}
+.card .go{position:absolute;right:22px;bottom:22px;color:var(--blue);opacity:0;transform:translateX(-4px);transition:opacity .24s,transform .28s;}
+.card:hover .go,.card:focus-visible .go{opacity:1;transform:none;}
+
+@media (prefers-reduced-motion:no-preference){
+  .anim{opacity:0;transform:translateY(12px);animation:s .66s cubic-bezier(.16,1,.3,1) forwards;}
+  .d1{animation-delay:.04s}.d2{animation-delay:.11s}.d3{animation-delay:.18s}
+  .k1{animation-delay:.16s}.k2{animation-delay:.26s}.k3{animation-delay:.34s}.k4{animation-delay:.44s}
+  @keyframes s{to{opacity:1;transform:none}}
+}
+
+@media (min-width:940px){
+  .stage{grid-template-columns:0.86fr 1.14fr;gap:64px;padding:56px 44px;}
+  .intro{padding-right:10px;}
+  .col.b{margin-top:88px;}
+  .card{min-height:250px;padding:30px 28px 26px;}
+  .card h2{font-size:26px;}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <section class="intro">
+    <div class="mark anim d1">
+      <span class="logo" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="wm">Outreach Bench<small>Outreach, shaped with you</small></span>
+    </div>
+    <h1 class="anim d2">Let's finish one real message you need to send — <em>together.</em></h1>
+    <p class="sub anim d2">Tell me who you're stuck on, and we'll shape it side by side — until it's a message you'd be glad to send.</p>
+
+    <div class="escape anim d3">
+      <div class="field">
+        <input type="text" placeholder="Got a different outreach message?" aria-label="Describe a different outreach message" />
+        <button class="arrow" type="button" aria-label="Continue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <p class="cap">Any outreach message — we'll shape it the same way.</p>
+    </div>
+
+  </section>
+
+  <section class="grid" aria-label="Pick a situation">
+    <div class="col a">
+      <button class="card anim k1" type="button">
+        <span class="num">01</span>
+        <span class="body"><h2>A prospect went quiet</h2><p><i>e.g.</i> They were keen, then stopped replying two weeks ago.</p></span>
+        <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="card anim k3" type="button">
+        <span class="num">03</span>
+        <span class="body"><h2>Reach out to someone new</h2><p><i>e.g.</i> A first message to a prospect who's never heard of you.</p></span>
+        <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+    </div>
+    <div class="col b">
+      <button class="card anim k2" type="button">
+        <span class="num">02</span>
+        <span class="body"><h2>Book a meeting or demo</h2><p><i>e.g.</i> Get 20 minutes on their calendar this week.</p></span>
+        <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="card anim k4" type="button">
+        <span class="num">04</span>
+        <span class="body"><h2>Follow up after an event</h2><p><i>e.g.</i> You spoke with them and said you'd be in touch.</p></span>
+        <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
