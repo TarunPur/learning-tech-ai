@@ -12,10 +12,13 @@ An AI-learning product for **non-technical professionals in India** who already 
 - ✅ **Product direction locked** — `ProblemSolutionBase.md`.
 - ✅ **Product detailing locked** — `v1ProductDetailing.md`: **10 decisions, each with its *why* and the rejected alternative.** These are settled; build on them, don't relitigate them.
 - ✅ **PRD substantially complete** — `v1PRD.md`. Aha Moment done; **§16 rubric now grounded** in named large-N sources (Gong 304K, Boomerang 40M, Backlinko 12M, Woodpecker 20M, Lavender, Josh Braun 4-T) **and hardened** via `/grill-me` (hybrid evaluation, core/advisory win + loop cap, quality-not-outcome, English-only). §12 trust reasoning + §13 off-scope guardrail added. Only intentional deferrals remain (see §24).
-- ⏭️ **Next (intentionally, in this order):** `design.md` (**next artifact — build together**; must precede engineering) → ERD + technical architecture + implementation plan → build.
+- 🎨 **Design in progress** — `PRODUCT.md` (impeccable product context) + `DESIGN.md` (design system, canonical format) created. **Screen 1 (recognition home)** has a committed *direction* — **editorial, warm-neutral + a single blue accent (no green), serif statement + staggered recognition cards** — built at `design/mockups/recognition-editorial-blue.html`. Visual system named **"The Calm Correspondent."** Desktop-primary for now. **⚠️ Screen 1 is WIP / not signed off** (open questions in `DESIGN.md` → "Status & Roadmap"). Built with the `impeccable` skill; mockups render standalone (serve `design/mockups/` over http and open the file).
+- ⏭️ **Next (in order):** lock Screen 1 → design screens **2–6** (Personalize + auto-mask → guided fading-scaffold draft → feedback-not-score → artifact/portfolio → return nudge) and resolve the three §24 design decisions → ERD + implementation plan → build.
+
+> **Note (macOS):** on this case-insensitive filesystem `design.md` and `DESIGN.md` are the **same file** — the canonical impeccable `DESIGN.md`.
 
 ### The immediate next action
-**Create `design.md`** — the visual/UX design for v1, grounded in the locked core loop (`v1PRD.md` §15) and the "super-friendly for an overwhelmed non-tech user" mandate. As part of it, resolve the design-owned open questions in §24 (auto-mask mechanism; Aha-staging "rough → shaped" contrast; how the rubric surfaces as feedback in the UI). **Deferred, do not do now:** numeric success targets (§9) stay `[TBD — before build]`, to be set *after* design, framed within-subject; and the rubric's empirical discrimination test is a before-build gate. **Do not write the ERD / architecture / build milestones until `design.md` is finalised.**
+**Finalize Screen 1, then design screens 2–6.** The visual/UX design is underway (see `DESIGN.md` + `design/mockups/`). Screen 1's *direction* is set but **not locked** — open design questions remain (serif warmth vs. a low-confidence user; whether the "something else" scoped input should demote to a link; reintroducing a credibility/"expert-standard" cue on entry; mobile treatment; placeholder name). Resolve the design-owned §24 questions as part of screens 2–6 (auto-mask mechanism; Aha-staging "rough → shaped"; how the rubric surfaces as feedback). **Deferred, do not do now:** numeric success targets (§9) stay `[TBD — before build]`; **do not write the ERD / architecture / build milestones until design is finalised.**
 
 ---
 
@@ -43,6 +46,10 @@ If you believe one of these is wrong, read its *why* and rejected-alternative in
 | `README.md` | This file — current state + next action | Always first |
 | `v1PRD.md` | **The living PRD we are building on** | Primary working doc |
 | `v1ProductDetailing.md` | The 10 locked decisions + deferred scope | Before proposing any product change |
+| `DESIGN.md` (== `design.md`) | Design system (canonical impeccable format) + Screen 1 spec + Status/Roadmap | Before any design/UI work |
+| `PRODUCT.md` | Durable product context the `impeccable` design skill reads | Design tooling context |
+| `design/mockups/` | Screen-1 HTML explorations (authoritative: `recognition-editorial-blue.html`) | To see / iterate the actual screens |
+| `.impeccable/` | Design-system sidecar (`design.json`) + skill config | Design tooling internals |
 | `ProblemSolutionBase.md` | Product direction / ground truth | Background on *why this product* |
 | `codexmemory.md` | Session-handover log + data-integrity rules | To understand history & guardrails |
 | `research/` | Evidence & lineage (insights, secondary/primary research, sources, dashboard) | To trace any claim back to its source |

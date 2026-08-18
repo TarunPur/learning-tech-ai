@@ -3,3 +3,6 @@
 
 # macOS
 .DS_Store
+
+# impeccable design-hook cache (transient)
+.impeccable/hook.cache.json
