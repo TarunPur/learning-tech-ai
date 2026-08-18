@@ -8,6 +8,8 @@ An AI-learning product for **non-technical professionals in India** who already 
 
 ## Where we are right now (2026-08-19)
 
+> **Resuming a session?** Read **`NEXT-SESSION.md`** first — it's the paste-ready handoff, kept current at the end of every session (per `CLAUDE.md`).
+
 - ✅ **Research complete** — secondary + primary (160-response survey; strict target cut n=44). Synthesized into `research/`.
 - ✅ **Product direction locked** — `ProblemSolutionBase.md`.
 - ✅ **Product detailing locked** — `v1ProductDetailing.md`: **10 decisions, each with its *why* and the rejected alternative.** These are settled; build on them, don't relitigate them.
@@ -44,6 +46,8 @@ If you believe one of these is wrong, read its *why* and rejected-alternative in
 | Path | What it is | When you need it |
 |---|---|---|
 | `README.md` | This file — current state + next action | Always first |
+| `NEXT-SESSION.md` | Paste-ready handoff to resume; refreshed at each session's end | To resume from where we left off |
+| `CLAUDE.md` | Standing session instructions (incl. the handoff-update rule) | Auto-loaded each session |
 | `v1PRD.md` | **The living PRD we are building on** | Primary working doc |
 | `v1ProductDetailing.md` | The 10 locked decisions + deferred scope | Before proposing any product change |
 | `DESIGN.md` (== `design.md`) | Design system (canonical impeccable format) + Screen 1 spec + Status/Roadmap | Before any design/UI work |
