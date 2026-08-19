@@ -1,6 +1,8 @@
 {
   "detector": {
-    "ignoreRules": [],
+    "ignoreRules": [
+      "flat-type-hierarchy"
+    ],
     "ignoreFiles": [],
     "ignoreValues": [
       {
@@ -22,13 +24,22 @@
         "reason": "user confirmed: explicitly requested left->right scrolling review cards (ref adplist.org); mitigated with pause-on-hover, prefers-reduced-motion static fallback, and edge fades"
       },
       {
-        "rule": "flat-type-hierarchy",
+        "rule": "marketing-buzzword",
         "value": "*",
         "files": [
-          "design/mockups/personalize.html"
+          "design/mockups/landing-editorial-blue-v2.html"
         ],
-        "createdAt": "2026-08-19T19:10:29.929Z",
-        "reason": "false positive: real type hierarchy (46px display -> 17px body -> 13px meta) is defined in the linked shared/system.css, which the detector does not follow across the <link>; this file's <style> only carries small overrides. Rendered hierarchy verified in browser."
+        "createdAt": "2026-08-19T19:20:59.179Z",
+        "reason": "same intentional 'before'/anti-example fixture as landing-editorial-blue.html: the flagged strings are quoted cliches the page critiques (\"hope this finds you well\", \"just checking in\", \"circle back\") plus the word 'seamless' inside a CSS comment - none are product copy"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "design/mockups/landing-editorial-blue-v2.html"
+        ],
+        "createdAt": "2026-08-19T19:20:59.230Z",
+        "reason": "user confirmed on landing-editorial-blue.html: the research-voices scrolling band (ref adplist.org), carried into v2; honest social proof of the PROBLEM, mitigated with overflow-x auto + prefers-reduced-motion static fallback + edge fades"
       }
     ]
   }

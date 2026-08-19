@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 5 — Saved message (NOD)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,600&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/system.css" />
+<style>
+/* screen-specific: saved message + running history */
+.intro .sub{max-width:35ch;}
+.proof{margin-top:30px;display:flex;gap:11px;align-items:flex-start;max-width:37ch;
+  font-size:13.5px;line-height:1.5;color:var(--ink-soft);}
+.proof svg{color:var(--blue);flex:none;margin-top:2px;}
+.proof b{color:var(--ink-2);font-weight:600;}
+
+.rightcol{display:flex;flex-direction:column;gap:26px;}
+
+/* the finished message */
+.final{padding:0;overflow:hidden;}
+.final .head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 26px;border-bottom:1px solid var(--line);}
+.final .head .status{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;
+  font-weight:600;color:var(--blue-deep);}
+.final .head .status svg{color:var(--blue);}
+.final .head .to{font-size:12.5px;color:var(--ink-faint);}
+.final .msg{padding:26px 30px;font-size:16.5px;line-height:1.72;color:var(--ink);}
+.final .msg p{margin:0 0 15px;}
+.final .msg p:last-child{margin-bottom:0;}
+.final .foot{display:flex;align-items:center;gap:16px;padding:0 30px 26px;flex-wrap:wrap;}
+.final .note{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-faint);}
+.final .note svg{color:var(--blue);flex:none;}
+.copied{font-size:13px;font-weight:600;color:var(--blue-deep);opacity:0;transition:opacity .2s;}
+.copied.show{opacity:1;}
+
+/* running history — plain, proof of what you can do */
+.saved{padding:24px 28px 12px;}
+.saved h2{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+.saved .ssub{font-size:12.5px;color:var(--ink-faint);margin:0 0 18px;}
+.rec{display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-top:1px solid var(--line);
+  cursor:pointer;transition:transform .2s;}
+.rec:hover{transform:translateX(4px);}
+.rec .tick{flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue-tint);
+  display:grid;place-items:center;color:var(--blue);margin-top:1px;}
+.rec .tick svg{width:15px;height:15px;}
+.rec .rc{flex:1;min-width:0;}
+.rec .rtop{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.rec .rt{font-size:14px;font-weight:600;color:var(--ink);}
+.rec .rd{font-size:12px;color:var(--ink-faint);flex:none;}
+.rec .rp{margin:3px 0 0;font-size:13px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;}
+.rec .reuse{font-size:12.5px;font-weight:600;color:var(--blue);opacity:0;transition:opacity .2s;
+  white-space:nowrap;}
+.rec:hover .reuse{opacity:1;}
+.rec.fresh .rt::after{content:"just saved";margin-left:9px;font-family:var(--sans);font-size:11px;
+  font-weight:600;color:var(--blue-deep);background:var(--blue-tint);padding:2px 7px;
+  vertical-align:middle;letter-spacing:0.01em;}
+
+@media (min-width:940px){
+  .final .msg{padding:30px 34px;}
+  .saved{padding:26px 32px 14px;}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <section class="intro">
+    <div class="mark anim d1">
+      <span class="logo" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
+    </div>
+
+    <h1 class="h-display anim d2">It's ready — <em>and it's yours to keep.</em></h1>
+    <p class="sub anim d3">Copy it and send it your way. It's saved with the ones before it — a plain record of what you can do, in your own words.</p>
+
+    <div class="proof anim d3">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l3.2 3L16.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>Three messages, ready to reuse.</b> Next time a situation like this comes up, you can start from one of these instead of a blank page.</span>
+    </div>
+  </section>
+
+  <div class="rightcol">
+
+    <section class="final card anim k2" aria-label="Your finished message">
+      <div class="head">
+        <span class="status"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Meets the standard · saved</span>
+        <span class="to">Follow-up · to Nidhi</span>
+      </div>
+      <div class="msg" id="msg">
+        <p>Hi Nidhi — it's live now, and you'd asked me to follow up once we launched.</p>
+        <p>Would a 20-minute call next week be a useful way to see if it fits what your team is working on?</p>
+      </div>
+      <div class="foot">
+        <button class="btn" id="copy" type="button">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 7V4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5v7A1.5 1.5 0 0 1 15.5 13H13M4.5 7h7A1.5 1.5 0 0 1 13 8.5v7A1.5 1.5 0 0 1 11.5 17h-7A1.5 1.5 0 0 1 3 15.5v-7A1.5 1.5 0 0 1 4.5 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Copy message
+        </button>
+        <span class="copied" id="copied">Copied — real names filled back in.</span>
+        <span class="note"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 9V6.5a4 4 0 0 1 8 0V9M5 9h10a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Stored with names masked</span>
+      </div>
+    </section>
+
+    <section class="saved card anim k3" aria-label="Your saved messages">
+      <h2>Your saved messages</h2>
+      <p class="ssub">A record you carry — reuse any of them as a starting point.</p>
+
+      <div class="rec fresh">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="rc">
+          <div class="rtop"><span class="rt">A prospect went quiet</span><span class="rd">just now</span></div>
+          <p class="rp">Hi Nidhi — it's live now, and you'd asked me to follow up once we launched…</p>
+        </div>
+        <span class="reuse">Reuse →</span>
+      </div>
+
+      <div class="rec">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="rc">
+          <div class="rtop"><span class="rt">Cold intro to a new prospect</span><span class="rd">14 Aug</span></div>
+          <p class="rp">Hi Arjun — I saw your team just opened a Pune office, and reaching out because…</p>
+        </div>
+        <span class="reuse">Reuse →</span>
+      </div>
+
+      <div class="rec">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="rc">
+          <div class="rtop"><span class="rt">Follow up after an event</span><span class="rd">9 Aug</span></div>
+          <p class="rp">Hi Meera — good to meet at the SaaS meetup on Friday; you'd mentioned…</p>
+        </div>
+        <span class="reuse">Reuse →</span>
+      </div>
+    </section>
+
+    <div class="anim k4" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn ghost" href="recognition-editorial-blue-v3.html" style="text-decoration:none;">
+        Start another message
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var copy=document.getElementById('copy'),
+      copied=document.getElementById('copied');
+  copy.addEventListener('click',function(){
+    var text="Hi Nidhi — it's live now, and you'd asked me to follow up once we launched.\n\nWould a 20-minute call next week be a useful way to see if it fits what your team is working on?";
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).catch(function(){});
+    }
+    copied.classList.add('show');
+    setTimeout(function(){ copied.classList.remove('show'); },2600);
+  });
+})();
+</script>
+</body>
+</html>
