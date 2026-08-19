@@ -1,30 +1,31 @@
-<!-- STATUS: WORK-IN-PROGRESS. Extracted from the built Screen 1 mockup (design/mockups/recognition-editorial-blue.html). Screen 1 direction only; screens 2–6 not yet designed. Not signed off. See "Status & Roadmap" at the end. -->
+<!-- STATUS: current as of 2026-08-20. Documents the LOCKED v1 design (all 6 screens built). Brand = NOD. The canonical implementation lives in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. See "Status & Roadmap" at the end. -->
 ---
-name: Outreach Bench
-description: Help a non-technical professional finish one real outreach message, with help that fades.
+name: NOD
+description: Help a non-technical professional finish one real outreach message, with help that fades — and know it's good before they send.
+tagline: Know it's good before you send — and get sharper each time.
 colors:
   warm-paper: "#F6F5F1"
   card-white: "#FFFFFF"
   ink: "#1A1A1A"
   ink-strong: "#3A3A3A"
   ink-soft: "#5F5F58"
-  ink-faint: "#7C7C73"
+  ink-faint: "#6B6B61"
   hairline: "#E4E3DC"
   hairline-strong: "#D8D7CF"
   signal-blue: "#2F6FE0"
   signal-blue-deep: "#1E52B0"
-  blue-wash: "rgba(47,111,224,0.08)"
-  blue-wash-strong: "rgba(47,111,224,0.16)"
+  blue-tint: "rgba(47,111,224,0.08)"
+  blue-tint-strong: "rgba(47,111,224,0.16)"
 typography:
   display:
     fontFamily: "Spectral, Georgia, serif"
-    fontSize: "clamp(31px, 3.6vw, 46px)"
+    fontSize: "clamp(27px, 3.6vw, 46px)"
     fontWeight: 600
     lineHeight: 1.08
     letterSpacing: "-0.018em"
   title:
     fontFamily: "Spectral, Georgia, serif"
-    fontSize: "26px"
+    fontSize: "23px–26px"
     fontWeight: 600
     lineHeight: 1.12
     letterSpacing: "-0.01em"
@@ -35,14 +36,15 @@ typography:
     lineHeight: 1.5
   body-small:
     fontFamily: "Hanken Grotesk, system-ui, sans-serif"
-    fontSize: "14px"
+    fontSize: "13px–14px"
     fontWeight: 400
     lineHeight: 1.5
-  label:
-    fontFamily: "Spectral, Georgia, serif"
-    fontSize: "14px"
-    fontWeight: 400
+  meta-label:
+    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontSize: "12px"
+    fontWeight: 600
     letterSpacing: "0.04em"
+    textTransform: "uppercase"
 rounded:
   sharp: "0"
   logo: "15px"
@@ -54,39 +56,34 @@ spacing:
   lg: "44px"
   xl: "64px"
 components:
-  card-situation:
+  situation-card:
     backgroundColor: "{colors.card-white}"
     textColor: "{colors.ink}"
-    typography: "{typography.title}"
     rounded: "{rounded.sharp}"
     padding: "30px 28px 26px"
-  card-situation-hover:
-    backgroundColor: "{colors.card-white}"
-    textColor: "{colors.ink}"
+    anatomy: "scenario title (Spectral) → benefit line → persistent CTA-with-arrow"
   brand-logo:
     backgroundColor: "{colors.signal-blue}"
     textColor: "{colors.card-white}"
     rounded: "{rounded.logo}"
     size: "52px"
-  intake-arrow:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink-soft}"
-    rounded: "{rounded.pill}"
-    size: "34px"
-  intake-arrow-hover:
+  pill-button:
     backgroundColor: "{colors.signal-blue}"
     textColor: "{colors.card-white}"
     rounded: "{rounded.pill}"
-    size: "34px"
+    padding: "15px 26px"
+  field:
+    style: "bottom-border only (1.5px), no box"
+    focus: "border → signal-blue"
 ---
 
-# Design System: Outreach Bench
+# Design System: NOD
 
 ## Overview
 
 **Creative North Star: "The Calm Correspondent"**
 
-The interface behaves like a calm, genuinely expert colleague who sits down to help you write — never a teacher, never a slick tool. It meets an overwhelmed, low-confidence user with a confident editorial voice and a warm paper surface, and hands them their own real situation to pick from. Authority comes from restraint: a large serif statement, generous whitespace, one quiet blue, and clean square-cornered cards that read as considered rather than decorated.
+The interface behaves like a calm, genuinely expert colleague who sits down to help you write — never a teacher, never a slick tool. It meets an overwhelmed, low-confidence user with a confident editorial voice on a warm paper surface, and hands them their own real situation to pick from. Authority comes from restraint: a large serif statement, generous whitespace, one quiet blue, and clean square-cornered cards that read as considered rather than decorated.
 
 The system is **light, warm-neutral, and editorial**. Warmth (the paper ground, the human first-person copy) does the reassurance; a single blue does the trust and action. Nothing is loud, gamified, or corporate-cold. The target feeling is **calm confidence** — the visitor should feel capable and in good hands, not taught or graded.
 
@@ -98,111 +95,136 @@ Deliberately rejected worlds: a heritage "brass/instrument" look (too formal/old
 - Square-cornered cards floating on a soft ambient shadow.
 - Recognition over recall: the entry is concrete situations, never a blank box.
 
+## Brand
+
+- **Name: NOD** — the honest "yes, that's good — send it." Warm, human, banned-word-safe. The blue message+**check** logo literally *is* the nod. (Retired the earlier placeholder "Outreach Bench": in Indian professional culture "on the bench / benched" reads as *idle / unstaffed* — wrong signal for this audience. Do not reintroduce "bench" anywhere.)
+- **Tagline: "Know it's good before you send — and get sharper each time."** (An earlier draft ended "…and then learn" — dropped because **"learn" is a banned UI word** and the positioning is *sell utility, not learning*.)
+- **Logo:** signal-blue rounded-square tile (52px, 15px radius) with a white "message + check" glyph and a soft blue glow.
+
 ## Colors
 
 A warm-neutral canvas carried almost entirely by paper and ink, with a single blue that appears sparingly for brand, action, and verification.
 
 ### Primary
-- **Signal Blue** (#2F6FE0): the one accent. Brand mark, the italic emphasis word in the headline, focus rings, card-hover borders, the intake arrow, and — by intent — the "verified / meets the expert standard" signal. Used sparingly, never as a fill across regions.
-- **Signal Blue Deep** (#1E52B0): the tagline, the headline's italic word, and pressed/emphasis states of the blue.
+- **Signal Blue** (#2F6FE0): the one accent — brand mark, the italic emphasis word in the headline, focus rings, card-hover borders, the field arrow, and — by intent — the "verified / meets the expert standard" signal. Used sparingly, never as a fill across regions.
+- **Signal Blue Deep** (#1E52B0): the tagline, the headline's italic word, and pressed/emphasis states.
 
 ### Neutral
 - **Warm Paper** (#F6F5F1): the app ground; warm enough to feel human, quiet enough to recede.
-- **Card White** (#FFFFFF): situation-card surfaces, lifted off the paper.
+- **Card White** (#FFFFFF): card surfaces, lifted off the paper.
 - **Ink** (#1A1A1A): headlines, titles, primary text.
 - **Ink Strong** (#3A3A3A) / **Ink Soft** (#5F5F58): secondary and body text.
-- **Ink Faint** (#7C7C73): index numbers, "e.g." lead-ins, placeholder text — darkened to stay readable (AA), never lighter.
+- **Ink Faint** (#6B6B61): captions, hints, meta labels, placeholder text. **Darkened from the original #7C7C73 to clear WCAG AA (~4.8:1 on paper)** — never lighter than this.
 - **Hairline** (#E4E3DC) / **Hairline Strong** (#D8D7CF): card borders and dividers.
 
 ### Named Rules
-**The One Blue Rule.** There is exactly one accent, and it is blue. Blue also *is* the positive/verified signal — so the system never needs a green "pass" color. Green is banned: in a product whose core promise is *feedback, never a grade*, green reads as grading.
+**The One Blue Rule.** There is exactly one accent, and it is blue. Blue also *is* the positive/verified signal — so the system never needs a green "pass" color. **Green is banned:** in a product whose core promise is *feedback, never a grade*, green reads as grading. Fix-targets and problems use a **neutral** marker (dotted ink underline / faint wash), never red or amber — pass/fail color coding is forbidden.
 
 ## Typography
 
-**Display Font:** Spectral (with Georgia, serif fallback)
-**Body Font:** Hanken Grotesk (with system-ui, sans-serif fallback)
+**Display Font:** Spectral (Georgia, serif fallback) · **Body Font:** Hanken Grotesk (system-ui, sans-serif fallback)
 
-**Character:** An editorial serif carries the statements and the situation titles — confident, premium, "in expert hands." A clean humanist sans carries everything functional, keeping the interface approachable and legible for a non-technical reader.
+- **Display** (Spectral 600, clamp(27–46px), lh 1.08): the left-column statement headline. One per screen; an italic Signal-Blue-Deep word carries the emphasis.
+- **Title** (Spectral 600, 23–26px): situation-card titles and finished-message headings.
+- **Body** (Hanken 400, 17px, max ~36ch): sub-lines and reading copy; also draft/message body at ~16.5px.
+- **Body Small** (Hanken 400, 13–14px): card descriptions, captions, list rows.
+- **Meta label** (Hanken 600, 12px, tracking 0.04em, uppercase): section labels ("THE TONE", "THE ONE THING TO TIGHTEN", "A SITUATION LIKE…").
 
-### Hierarchy
-- **Display** (Spectral 600, clamp(31–46px), lh 1.08): the left-column statement headline. One per screen.
-- **Title** (Spectral 600, 23–26px, lh 1.12): situation-card titles (the user's real situation).
-- **Body** (Hanken 400, 17px, lh 1.5, max ~36ch): the personal sub-line and reading copy.
-- **Body Small** (Hanken 400, 14px, lh 1.5): card descriptions / examples.
-- **Label** (Spectral 400, 14px, tracking 0.04em): card index numbers (01–04).
-- **Brand** (Hanken 800, 22px) + tagline (Hanken 600, 13px, Signal Blue Deep).
-
-### Named Rules
-**The Serif-Statement / Sans-Support Rule.** Spectral appears only on statements and situation titles. Everything the user reads *in order to act* — sub-lines, descriptions, inputs, captions — is Hanken. Never set UI controls in the serif.
+### Named Rule
+**The Serif-Statement / Sans-Support Rule.** Spectral appears only on statements, titles, and quoted lines. Everything the user reads *in order to act* — sub-lines, labels, inputs, captions, buttons — is Hanken. Never set UI controls in the serif.
 
 ## Layout
 
-A two-column editorial composition centered in a max-width **1240px** stage, vertically centered on the viewport. Desktop (≥940px) splits **0.86fr / 1.14fr** with a **64px** column gap: left is the statement column (mark, headline, sub, scoped intake field), right is the recognition grid. Below 940px it collapses to a single column (mobile treatment still pending — desktop is primary for now).
+A two-column editorial composition centered in a max-width **1240px** stage, vertically centered in the viewport. On desktop (≥940px) it splits **0.86fr / 1.14fr** with a **64px** gap: left is the statement column (mark, headline, sub, plus a reassurance/context line), right is the working surface (recognition grid, intake card, draft, feedback, saved messages, or a single situation card). Below 940px the stage collapses to a single column.
 
-The recognition grid is a **staggered two-column layout**: the right column is pushed down **88px** so cards 02 and 04 sit offset below 01 and 03. Card gap **26px**.
+Screen 1's recognition grid is an **aligned 2×2** of situation cards (26px gap). *(This replaced the earlier staggered/zig-zag numbered layout.)*
 
 ## Elevation & Depth
 
-Flat-but-floating. Surfaces are flat and matte; the only depth is a soft ambient shadow under the situation cards (so they float on the warm paper) and a blue-tinted glow under the brand logo. Depth deepens only in response to state — cards lift on hover.
+Flat-but-floating. Surfaces are flat and matte; the only depth is a soft ambient shadow under cards (so they float on the paper) and a blue-tinted glow under the brand logo. Depth deepens only in response to state — cards lift on hover.
 
-### Shadow Vocabulary
-- **Card ambient** (`box-shadow: 0 1px 2px rgba(28,40,72,0.05), 0 14px 30px -18px rgba(28,40,72,0.20)`): resting lift for situation cards.
-- **Card lift** (`box-shadow: 0 6px 16px -8px rgba(30,50,90,0.14), 0 26px 50px -24px rgba(30,50,90,0.26)`): hover/focus state.
-- **Logo glow** (`box-shadow: 0 8px 18px -7px rgba(47,111,224,0.55)`): blue ambient under the brand mark only.
+- **Card ambient** (`0 1px 2px rgba(28,40,72,0.05), 0 14px 30px -18px rgba(28,40,72,0.20)`): resting.
+- **Card lift** (`0 6px 16px -8px rgba(30,50,90,0.14), 0 26px 50px -24px rgba(30,50,90,0.26)`): hover/focus.
+- **Logo glow** (`0 8px 18px -7px rgba(47,111,224,0.55)`): blue ambient under the brand mark only.
 
-### Named Rules
 **The Flat-But-Floating Rule.** Nothing is beveled or glassy. Cards are flat rectangles that merely *float*; the shadow's job is separation from the paper, not decoration.
 
 ## Shapes
 
-The signature is the tension between **sharp cards and soft controls**. Situation cards have **square corners (0 radius)** — the editorial, considered gesture. The only rounded shapes are the brand logo (15px rounded square) and circular controls (the intake arrow, `pill` radius). Focus rings use a 6px radius.
+The signature is the tension between **sharp cards and soft controls**. Cards have **square corners (0 radius)** — the editorial, considered gesture. The only rounded shapes are the brand logo (15px rounded square), circular controls (the field arrow, pill radius), and the primary pill button. Focus rings use a 6px radius.
 
-### Named Rules
-**The Sharp-Card Rule.** Situation cards are never rounded. Rounding them turns editorial into generic-SaaS.
+**The Sharp-Card Rule.** Cards are never rounded. Rounding them turns editorial into generic-SaaS.
 
 ## Components
 
-### Cards / Containers — Situation Card (signature component)
-- **Corner Style:** square (0 radius) — see The Sharp-Card Rule.
-- **Background:** Card White on Warm Paper.
-- **Border:** 1px Hairline (#E4E3DC).
-- **Shadow Strategy:** Card ambient at rest → Card lift on hover (see Elevation).
-- **Internal Padding:** 30px 28px 26px (desktop).
-- **Anatomy:** index number (Label) top-left; the title + description pushed to the lower half (`margin-top:auto`), giving the card its editorial breathing room.
-- **Hover / Focus:** translateY(-3px), border shifts to Signal Blue, index number turns blue, and a blue arrow fades in at the bottom-right.
+### Situation Card (signature component)
+- **Corner Style:** square (0 radius). **Background:** Card White on Warm Paper. **Border:** 1px Hairline. **Shadow:** ambient → lift on hover.
+- **Anatomy (current):** a scenario **title** (Spectral) → a plain **benefit** line → a **persistent CTA-with-arrow** in Signal Blue (e.g. "Create follow-up →"). *Index numbers (01–04) and "e.g." lead-ins were removed — the numbers implied a sequence; the CTA is always visible, not hover-only.*
+- **Hover / Focus:** translateY(-3px), border → Signal Blue, CTA text → blue-deep, arrow slides right. Cards are native `<button>`s (keyboard-safe). A `.is-loading` pulse acknowledges the tap.
 
-### Inputs / Fields — Scoped Intake ("something else")
-- **Style:** a single-line field with a 1.5px Ink **bottom border only** (no box), plus a circular arrow button.
-- **Focus / Hover:** bottom border shifts to Signal Blue; the arrow button fills Signal Blue with a white glyph and nudges right.
-- **Role:** the *secondary* escape — a scoped outreach intake, never the primary entry, and never a full open box.
+### Field (intake primitive)
+- A single-line field with a **1.5px bottom border only** (no box); focus/hover shifts the border to Signal Blue. Paired with a circular arrow button that fills blue on hover and stays **disabled until there's text** (error prevention). Used for the "something else" escape (Screen 1) and the Personalize questions (Screen 2).
+
+### Pill Button
+- Signal-Blue pill (9999px), white label + sliding arrow, soft blue shadow; hover → blue-deep. A `.ghost` variant is transparent/ink-soft for secondary actions.
+
+### Decision Chips (Screen 3)
+- Square 1px-bordered chips; selected state = blue border + blue tint + blue-deep text (`aria-pressed`). Used for the two hand-off decisions (tone, the ask).
+
+### Feedback fix (Screen 4)
+- The fix-target in the draft gets a **neutral dotted marker** (never red/green); once edited it resolves to a blue "cleared" state. The fix is presented as *Your line → why it's worth changing → a tighter version*, framed as an edit the user accepts ("Use this edit") or declines ("Keep mine") — **advisory, never a gate**.
+
+### Saved-message list (Screen 5)
+- Plain rows (blue tick, situation title, date, one-line peek, hover "Reuse →"). The freshest row carries a small "just saved" chip. Called **"Your saved messages"** (never "bench").
 
 ### Brand Mark
-- Signal-Blue rounded-square logo (52px, 15px radius) with a white "message + check" glyph and a blue glow; brand name in Hanken 800; tagline in Hanken 600 Signal-Blue-Deep.
+- Blue logo tile + name in Hanken 800 + tagline in Hanken 600 Signal-Blue-Deep beneath.
 
 ### Motion
-- **Entrance:** one staggered reveal (translateY(12px) + fade, `cubic-bezier(.16,1,.3,1)`, ~0.66s), sequenced left-to-right then down the cards. Respects `prefers-reduced-motion`.
+- **Entrance:** one staggered reveal (translateY(12px) + fade, `cubic-bezier(.16,1,.3,1)`, ~0.66s), sequenced down the page. **Micro-interactions:** hover lifts, arrow slides, live reshape of the draft when a decision chip changes. **All motion respects `prefers-reduced-motion`** (entrance reveals are gated behind `no-preference`, so reduced-motion yields finished states). Never animate layout properties (width/height/padding/margin) — use transform/opacity.
+
+## Shared System Architecture
+
+- **`design/mockups/shared/system.css`** holds the tokens + reusable primitives (stage, mark, statement type, field, buttons, privacy line, card base, motion helpers). **New screens `<link>` this file** — a shared token/primitive change is then a single edit.
+- The two **locked baseline** files (`recognition-editorial-blue-v3.html`, `landing-editorial-blue-v2.html`) are **self-contained frozen snapshots** and do NOT link system.css (they carry their own copy of the tokens). When the landing is next reworked, that's the moment to relink it to system.css.
+
+## Responsive & Accessibility
+
+- **Desktop-primary**, but every screen has mobile media queries (≤600/640px): the stage collapses to one column, Screen 1's 2×2 grid stacks to a single column, paddings tighten, the statement scales down, and interactive controls (field arrows, chips) get **≥44px tap targets**. *(Mobile CSS is CSSOM-verified; a real-device pass is still owed — the tooling can't render below ~1456px.)*
+- **WCAG AA:** body/secondary text and the AA-darkened `--ink-faint` clear 4.5:1 on paper; focus-visible rings (2.5px blue) on all interactives; reduced-motion honored; English-only copy in v1.
 
 ## Do's and Don'ts
 
-### Do:
-- **Do** keep blue rare — accent, focus, and the "verified/expert-standard" signal only (The One Blue Rule).
-- **Do** set statements and situation titles in Spectral; everything functional in Hanken (The Serif-Statement Rule).
-- **Do** keep situation cards square-cornered and floating on the ambient shadow.
-- **Do** keep the four situations concrete: a real situation title + a plain "e.g." example.
-- **Do** keep readable text at Ink Faint (#7C7C73) or darker — never lighter.
+### Do
+- Keep blue rare — accent, focus, and the "verified / meets-the-standard" signal only.
+- Set statements/titles/quoted lines in Spectral; everything functional in Hanken.
+- Keep cards square-cornered and floating on the ambient shadow.
+- Keep the recognition entry concrete (real situations, persistent CTA), never a blank box.
+- Keep readable text at Ink Faint (#6B6B61) or darker — never lighter.
+- Frame feedback as one concrete fix pointing at the user's actual words; keep help fading.
 
-### Don't:
-- **Don't** introduce green or any pass/fail color coding — this product shows feedback, never a grade.
-- **Don't** make the primary entry an open/blank input; recognition cards are the entry, the scoped field is secondary.
-- **Don't** round the situation cards or add glass/bevel/gradient decoration.
-- **Don't** use "course," "lesson," "learn," "score," "grade," "quiz," or "streak" anywhere in the UI.
+### Don't
+- Introduce green, red, or any pass/fail color coding — this product shows feedback, never a grade or score.
+- Show a score, checklist, or "X/5" — surface 1–2 concrete fixes at a time instead.
+- Make the primary entry an open/blank input; recognition is the entry.
+- Round the cards or add glass/bevel/gradient decoration.
+- Use "course / lesson / learn / grade / score / quiz / streak" — or "bench" — anywhere in the UI.
+- Claim an outcome ("get a reply"); claim quality by the fixed standard only.
 
 ---
 
-## Status & Roadmap (non-canonical, project note)
+## Status & Roadmap (project note)
 
-**This captures Screen 1 (Recognition Home) only, and it is not locked.** Open questions still live from the design grill: the serif's premium/formal lean vs. warmth for a low-confidence user; whether the scoped intake input should demote to a quieter link (blank-box risk); whether to reintroduce a small credibility/"expert standard" cue on entry; auto-mask reassurance moving to the Personalize screen; the placeholder product name; and the mobile treatment.
+**All six v1 screens are built and committed** (in `design/mockups/`, on `main`; brand = NOD):
+1. `recognition-editorial-blue-v3.html` — Recognition home (LOCKED baseline)
+2. `personalize.html` — Personalize + silent auto-mask (detect-and-mask + calm inline reassurance, never a gate)
+3. `draft.html` — Guided draft / fading scaffold (moves + why-notes, two hand-off decisions, reshapes live)
+4. `feedback.html` — Feedback, not a score (one anchored fix at a time, blue = meets-the-standard, advisory)
+5. `artifact.html` — Saved message + "Your saved messages" history
+6. `return.html` — Return nudge → unaided re-attempt (scaffolding only on request)
 
-**Still to design (screens 2–6):** Personalize (+ silent auto-mask) · Guided fading-scaffold draft · Feedback (not a score) · Artifact + portfolio · Return nudge / unaided attempt. Plus the three §24 design decisions (auto-mask mechanism, Aha-staging, rubric-as-feedback UI).
+Plus the marketing **landing** (`landing-editorial-blue-v2.html`, LOCKED baseline).
 
-**Authoritative asset:** `design/mockups/recognition-editorial-blue.html`. Superseded explorations kept for reference: `recognition-home.html`, `recognition-A-grammarly.html`, `recognition-hybrid-blue.html`, `recognition-hybrid-violet.html`, `recognition-B-headspace.html`, `recognition-C-superhuman.html`.
+**Design decisions resolved this phase (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; Aha-staging = show reasoning inline for ownership, do **not** force a rough-attempt capture; rubric-as-feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist.
+
+**Still to do:** (a) a real-device **mobile** verification pass (tooling can't render narrow); (b) then ERD / technical architecture / build. Do not start the ERD/build before this design is signed off.
