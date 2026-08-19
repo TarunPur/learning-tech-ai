@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-08-19T14:06:44.228Z",
         "reason": "user confirmed: explicitly requested left->right scrolling review cards (ref adplist.org); mitigated with pause-on-hover, prefers-reduced-motion static fallback, and edge fades"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "design/mockups/personalize.html"
+        ],
+        "createdAt": "2026-08-19T19:10:29.929Z",
+        "reason": "false positive: real type hierarchy (46px display -> 17px body -> 13px meta) is defined in the linked shared/system.css, which the detector does not follow across the <link>; this file's <style> only carries small overrides. Rendered hierarchy verified in browser."
       }
     ]
   }

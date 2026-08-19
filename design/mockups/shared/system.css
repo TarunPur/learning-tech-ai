@@ -1,0 +1,105 @@
+/* ============================================================
+   Outreach Bench — shared design system ("The Calm Correspondent")
+   Seeded from the LOCKED v1 baseline (recognition-editorial-blue-v3,
+   landing-editorial-blue-v2). New screens link this file so a shared
+   token/primitive change is a single edit. The two locked baseline
+   files stay self-contained frozen snapshots and do NOT link this.
+   Font <link> (Spectral + Hanken Grotesk) stays per-page in <head>.
+   ============================================================ */
+
+:root{
+  --bg:#F6F5F1;
+  --card:#FFFFFF;
+  --ink:#1A1A1A;
+  --ink-2:#3A3A3A;
+  --ink-soft:#5F5F58;
+  --ink-faint:#7C7C73;
+  --line:#E4E3DC;
+  --line-2:#D8D7CF;
+  --blue:#2F6FE0;
+  --blue-deep:#1E52B0;
+  --blue-tint:rgba(47,111,224,0.08);
+  --blue-tint-2:rgba(47,111,224,0.16);
+  --shadow-card:0 1px 2px rgba(28,40,72,0.05),0 14px 30px -18px rgba(28,40,72,0.20);
+  --shadow-lift:0 6px 16px -8px rgba(30,50,90,0.14),0 26px 50px -24px rgba(30,50,90,0.26);
+  --serif:"Spectral",Georgia,serif;
+  --sans:"Hanken Grotesk",system-ui,sans-serif;
+}
+
+/* --- reset & base --- */
+*{box-sizing:border-box;}
+body{margin:0;color:var(--ink);background:var(--bg);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh;}
+::selection{background:var(--blue-tint-2);color:var(--blue-deep);}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;border-radius:6px;}
+button{font-family:inherit;color:inherit;}
+
+/* --- editorial stage (two-column, centered) --- */
+.stage{max-width:1240px;margin:0 auto;min-height:100vh;display:grid;
+  grid-template-columns:1fr;gap:44px;padding:40px 34px;align-content:center;}
+
+/* --- brand mark --- */
+.mark{display:flex;align-items:center;gap:14px;margin-bottom:40px;}
+.mark .logo{width:52px;height:52px;border-radius:15px;background:var(--blue);
+  display:grid;place-items:center;box-shadow:0 8px 18px -7px rgba(47,111,224,0.55);}
+.mark .wm{font-weight:800;font-size:22px;letter-spacing:-0.02em;line-height:1.08;}
+.mark .wm small{display:block;font-weight:600;font-size:13px;letter-spacing:0;
+  text-transform:none;color:var(--blue-deep);margin-top:4px;}
+
+/* --- statement typography (Serif-Statement rule) --- */
+.h-display{font-family:var(--serif);font-weight:600;font-size:clamp(31px,3.6vw,46px);
+  line-height:1.08;letter-spacing:-0.018em;margin:0;color:var(--ink);}
+.h-display em{font-style:italic;color:var(--blue-deep);}
+.sub{margin:26px 0 0;color:var(--ink-soft);font-size:17px;line-height:1.5;max-width:36ch;}
+.eyebrow{font-family:var(--serif);font-size:14px;font-weight:400;letter-spacing:0.04em;
+  text-transform:uppercase;color:var(--ink-faint);margin:0 0 16px;}
+
+/* --- field primitive: bottom-border only, circular arrow button --- */
+.fld-label{display:block;margin:0 0 13px;font-size:14.5px;font-weight:500;
+  color:var(--ink-2);letter-spacing:-0.005em;}
+.field{display:flex;align-items:center;gap:14px;border-bottom:1.5px solid var(--line-2);
+  padding:8px 2px;cursor:text;transition:border-color .2s;}
+.field:focus-within,.field:hover{border-color:var(--blue);}
+.field input,.field textarea{flex:1;border:0;background:transparent;font-family:inherit;
+  font-size:17px;color:var(--ink);padding:0;resize:none;line-height:1.5;}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-faint);}
+.field input:focus,.field textarea:focus{outline:none;}
+.arrow{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);
+  background:transparent;display:grid;place-items:center;color:var(--ink-soft);cursor:pointer;
+  transition:color .2s,background .2s,border-color .2s,transform .24s;}
+.field:hover .arrow:not([disabled]),.field:focus-within .arrow:not([disabled]){
+  color:#fff;background:var(--blue);border-color:var(--blue);transform:translateX(2px);}
+.arrow:not([disabled]):active{transform:scale(.92);}
+.arrow[disabled]{cursor:not-allowed;color:var(--ink-faint);border-color:var(--line);}
+
+/* --- primary pill button (from landing) --- */
+.btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:9999px;
+  background:var(--blue);color:#fff;font-family:inherit;font-weight:600;font-size:16px;
+  padding:15px 26px;cursor:pointer;box-shadow:0 8px 20px -10px rgba(47,111,224,0.6);
+  transition:background .2s,transform .12s,box-shadow .2s;}
+.btn:hover{background:var(--blue-deep);}
+.btn:active{transform:scale(.98);}
+.btn svg{transition:transform .24s;}
+.btn:hover svg{transform:translateX(3px);}
+.btn.ghost{background:transparent;color:var(--ink-soft);box-shadow:none;padding:14px 4px;}
+.btn.ghost:hover{color:var(--blue);background:transparent;}
+
+/* --- privacy / reassurance line (calm, never a gate) --- */
+.priv{display:inline-flex;align-items:center;gap:9px;color:var(--ink-soft);font-size:12.5px;}
+.priv svg{color:var(--blue);flex:none;}
+
+/* --- square-cornered card (Sharp-Card rule) --- */
+.card{position:relative;background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--shadow-card);}
+
+/* --- motion: one staggered reveal, gated behind reduced-motion --- */
+@media (prefers-reduced-motion:no-preference){
+  .anim{opacity:0;transform:translateY(12px);animation:sysReveal .66s cubic-bezier(.16,1,.3,1) forwards;}
+  .d1{animation-delay:.04s}.d2{animation-delay:.11s}.d3{animation-delay:.18s}.d4{animation-delay:.26s}
+  .k1{animation-delay:.16s}.k2{animation-delay:.26s}.k3{animation-delay:.34s}.k4{animation-delay:.44s}
+  @keyframes sysReveal{to{opacity:1;transform:none}}
+}
+
+@media (min-width:940px){
+  .stage{grid-template-columns:0.86fr 1.14fr;gap:64px;padding:56px 44px;}
+}
