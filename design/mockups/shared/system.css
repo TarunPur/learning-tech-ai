@@ -13,7 +13,7 @@
   --ink:#1A1A1A;
   --ink-2:#3A3A3A;
   --ink-soft:#5F5F58;
-  --ink-faint:#7C7C73;
+  --ink-faint:#6B6B61; /* darkened from #7C7C73 to clear WCAG AA (~4.8:1 on paper) for small captions/hints */
   --line:#E4E3DC;
   --line-2:#D8D7CF;
   --blue:#2F6FE0;
@@ -102,4 +102,15 @@ button{font-family:inherit;color:inherit;}
 
 @media (min-width:940px){
   .stage{grid-template-columns:0.86fr 1.14fr;gap:64px;padding:56px 44px;}
+}
+
+/* --- mobile: tighten the stage, scale the statement, guarantee tap targets --- */
+@media (max-width:600px){
+  .stage{padding:30px 20px;gap:30px;}
+  .mark{margin-bottom:28px;gap:12px;}
+  .mark .logo{width:46px;height:46px;}
+  .h-display{font-size:clamp(27px,7.6vw,34px);}
+  .sub{max-width:100%;font-size:16px;}
+  .arrow{width:44px;height:44px;}            /* WCAG-AA tap target */
+  .btn{padding:15px 22px;min-height:48px;}
 }

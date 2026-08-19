@@ -28,9 +28,10 @@
 
 /* intake card on the right */
 .intake{padding:34px 32px 30px;}
-.q{padding:22px 0;border-bottom:1px solid var(--line);}
+/* no dividers between questions — the input underlines carry the rhythm (avoids a double-hairline) */
+.q{padding:20px 0;}
 .q:first-child{padding-top:4px;}
-.q:last-of-type{border-bottom:0;padding-bottom:6px;}
+.q:last-of-type{padding-bottom:6px;}
 .q .fld-label{margin-bottom:14px;}
 .q .fld-label .opt{font-weight:400;color:var(--ink-faint);font-size:13px;margin-left:6px;}
 
@@ -47,6 +48,11 @@
 
 @media (min-width:940px){
   .intake{padding:38px 36px 32px;}
+}
+@media (max-width:600px){
+  .intake{padding:24px 20px 22px;}
+  .back{margin-bottom:20px;}
+  .chosen{margin-bottom:16px;}
 }
 </style>
 </head>

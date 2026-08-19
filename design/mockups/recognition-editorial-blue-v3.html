@@ -23,6 +23,7 @@
   --blue-tint-2:rgba(47,111,224,0.16);
   --shadow-lift:0 6px 16px -8px rgba(30,50,90,0.14),0 26px 50px -24px rgba(30,50,90,0.26);
 }
+:root{--ink-faint:#6B6B61;} /* AA-contrast override for small captions/placeholders (was #7C7C73 ~3.9:1) */
 *{box-sizing:border-box;}
 body{margin:0;color:var(--ink);background:var(--bg);font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh;}
 ::selection{background:var(--blue-tint-2);color:var(--blue-deep);}
@@ -106,6 +107,20 @@ button{font-family:inherit;color:inherit;}
   .col.b{margin-top:0;}
   .card{min-height:250px;padding:30px 28px 26px;}
   .card h2{font-size:26px;}
+}
+
+/* --- mobile: stack the recognition grid to one column, tighten spacing --- */
+@media (max-width:640px){
+  .stage{padding:28px 20px;gap:30px;}
+  .mark{margin-bottom:28px;}
+  .mark .logo{width:46px;height:46px;}
+  .intro h1{font-size:clamp(27px,7.6vw,34px);}
+  .intro .sub{max-width:100%;}
+  .grid{grid-template-columns:1fr;gap:16px;}
+  .col{display:contents;}        /* let all four cards flow as one column in DOM order */
+  .card{min-height:0;padding:22px 20px;}
+  .card h2{font-size:22px;max-width:100%;}
+  .escape .arrow{width:44px;height:44px;}   /* WCAG-AA tap target */
 }
 </style>
 </head>
