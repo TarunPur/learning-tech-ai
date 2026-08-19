@@ -1,54 +1,82 @@
 # NEXT SESSION — resume here
 
-> **Purpose:** paste this whole file (or read it) at the start of a new session to resume
-> exactly where the last one left off. **Maintenance rule: update this file at the END of
-> every working session** (see `CLAUDE.md`) — refresh "Where we are", "Pick up next", and
-> "Open decisions" so the next session starts forward, not from scratch.
+> **Purpose:** read this whole file at the start of a new session to resume exactly where the last one
+> left off. **Maintenance rule (CLAUDE.md): update this file at the END of every session.**
 >
-> **Last updated:** 2026-08-19 — end of the Screen-1 design session.
+> **Last updated:** 2026-08-20 — end of the "lock baseline → NOD rebrand → Screen 2 build" session.
 
 ---
 
-I'm continuing work on my "Learning Tech & AI" v1 product at `~/Desktop/Learning Tech AI`
-(private GitHub repo `TarunPur/learning-tech-ai`, branch `main` — everything is committed & pushed).
+I'm continuing my "Learning Tech & AI" v1 product at `~/Desktop/Learning Tech AI`
+(private GitHub `TarunPur/learning-tech-ai`, branch `main`).
 
-## Read first, in this order (don't skip; don't re-decide what's locked)
-1. `README.md` — the seam: current state + next action + the 10 locked decisions
-2. `PRODUCT.md` — durable product context (users, purpose, positioning, the 6-stage loop, the B1–B5 rubric, banned UI words, voice)
-3. `v1ProductDetailing.md` — the 10 **LOCKED** product decisions (settled; don't relitigate)
-4. `v1PRD.md` — the living PRD (substantially done; §16 rubric grounded/hardened)
-5. `DESIGN.md` — the design system + Screen 1 spec + a "Status & Roadmap" section
-   - ⚠️ On macOS (case-insensitive FS) `DESIGN.md` and `design.md` are the **same file** (tracked in git as `design.md`). Screen mockups live in `design/mockups/`.
+## Read order at session start
+`README.md` → `PRODUCT.md` → `v1ProductDetailing.md` → `v1PRD.md` → `DESIGN.md`.
+Don't relitigate the 10 locked decisions in `v1ProductDetailing.md`.
+Design work uses the **`impeccable`** skill. Preview mockups: `cd design/mockups && python3 -m http.server 8734`,
+then open the files (the server does NOT persist across sessions — restart it).
+**Chrome viewport note:** in the last session the extension rendered at a fixed ~614px until the window was
+resized + the page reloaded, after which it captured the true 1456px desktop. If you're stuck at a narrow width,
+resize the window and reload. Desktop grids (≥820/940/1040px) otherwise verify statically from CSS.
 
-## Where we are
-Research → product detailing (locked) → PRD (done) are complete. **Now in the DESIGN PHASE**, built with the `impeccable` skill.
+## Where we are now — DESIGN PHASE, baseline LOCKED + committed
+Research → product detailing (locked) → PRD (done) are complete. The v1 visual world is **"The Calm Correspondent"**
+(warm paper #F6F5F1 · ink #1A1A1A · one Signal Blue #2F6FE0, **NO green** · Spectral serif for statements ·
+Hanken Grotesk for UI · square floating cards on soft ambient shadow).
 
-**Screen 1 (recognition home)** has a committed **direction** but is **WIP / NOT signed off**:
-- Visual system: **"The Calm Correspondent"** — editorial, calm, premium.
-- Warm off-white canvas + near-black ink + **ONE blue accent (#2F6FE0). NO GREEN** (green reads as "correct/pass" = grading, which the product must never do — Decision 8). Blue also doubles as the "verified / expert-standard" signal.
-- Type: **Spectral** (serif) for statements + card titles; **Hanken Grotesk** (sans) for UI/body.
-- Layout: two-column editorial — left statement (serif headline + personal sub + scoped "something else" intake); right = **staggered numbered recognition cards (01–04)**.
-- **Desktop-primary for now** (owner's call).
-- Authoritative mockup: `design/mockups/recognition-editorial-blue.html`
-- Open Qs (see `DESIGN.md` → Status & Roadmap): does the serif feel too formal for a low-confidence non-tech user; should the scoped input demote to a quieter link (blank-box risk); reintroduce a small "expert-standard" credibility cue on entry; mobile treatment; product name is a placeholder ("Outreach Bench").
+**Brand is DECIDED:** name **NOD** (the honest "yes — send it"; the message+check logo *is* the nod).
+Tagline **"Know it's good before you send — and get sharper each time."** (owner's first draft ended "…and then
+learn" — swapped because **"learn" is a banned UI word** and the positioning is *sell utility, not learning*).
 
-## Pick up next (in order)
-- **A. Finalize / lock Screen 1.** Owner decides final tweaks — show, don't assume.
-- **B. Design screens 2–6:** Personalize (+ silent auto-mask) → guided fading-scaffold draft → feedback-not-a-score → artifact/portfolio → return nudge / unaided attempt.
-- **C. Resolve the three §24 design-owned decisions** (as part of 2–6): auto-mask mechanism (detect-and-mask vs guide-abstract); Aha-staging (rough→shaped contrast); how the rubric surfaces as feedback in the UI (1–2 fixes, point at the actual draft, never a score).
-- **DO NOT** start ERD / technical architecture / build milestones until design is finalised.
-- **DO NOT** set the numeric success targets (§9) yet.
+**Locked baseline (committed `484b5c2`, then rebranded to NOD):**
+- `design/mockups/landing-editorial-blue-v2.html` — marketing landing. Action-oriented use-cases band +
+  honest **experts/credibility** section citing the REAL §16 sources (Gong 304K · Boomerang 40M/36% ·
+  Backlinko 12M + Woodpecker 20M/+32.7% · Lavender · Josh Braun 4-T). No banned words; "get a reply" appears only
+  in the honest disclaimer. The `.impeccable/config.json` marquee + buzzword-fixture ignores are scoped to the
+  OLDER `landing-editorial-blue.html`; re-scope to `-v2` if the detector re-flags it.
+- `design/mockups/recognition-editorial-blue-v3.html` — Screen 1 (post-login entry). Four situation cards
+  reworked to **scenario → benefit → persistent CTA** (index numbers removed). Native `<button>`s (keyboard-safe).
 
-## How the owner likes to work
-- Use the `impeccable` skill for design. To preview a mockup: serve `design/mockups/` over http (`python3 -m http.server`) and open the file / screenshot via Chrome. **The Chrome screenshot tool pins output at 1456px** regardless of window size — you CANNOT capture a true mobile viewport; flag it, don't fake it.
-- **Own the aesthetic calls** (theme/palette/type) outright, but **ground them in the users, their pain points, and the PRD — not in a metaphor.** When asked to compare, **build the variations** so they can be seen; don't just describe.
-- Keep the PRD's confidence tags (🟢 verified / 🟡 secondary / 🔵 hypothesis); don't invent numbers the data doesn't support.
-- **Incremental commits** (many small). **Never commit or push without explicit OK.** **Never commit the raw survey `.xlsx` files** (PII — gitignored).
-- English-only for v1.
+**Shared design system:** `design/mockups/shared/system.css` — tokens + reusable primitives (stage, mark, field,
+buttons, motion), seeded to match the baseline. **NEW screens link this file** so a shared-token change is a
+one-line edit; the two locked files stay self-contained frozen snapshots (relink only when the landing is next
+reworked). This is the answer to "keep future landing reworks feasible."
+
+**Screen 2 built:** `design/mockups/personalize.html` — conversational 3-field intake (who / the ask / optional
+context) with the **silent auto-mask** demonstrated (design call: detect-and-mask + a calm inline note
+"Kept private — <name> masked before anything's saved," never a blocking gate); the primary "Shape the draft"
+pill gates on the two required fields. Detector flagged a `flat-type-hierarchy` false positive here (real
+hierarchy lives in the linked system.css it can't follow) — suppressed file-scoped in config with an honest
+reason. Expect the SAME false positive on screens 3–6 (they also link system.css); owner has NOT yet decided
+file-ignore-each vs a rule-level ignore for the mockups folder.
+
+## 🔨 PICK UP NEXT — build screens 3–6 (design calls already stated, owner to react)
+- **Screen 3 · Guided draft (fading scaffold):** draft builds in visible "moves" with short *why* notes; hand the
+  user 1–2 decisions (ask wording, tone). **Aha-staging call:** show reasoning inline for ownership; do NOT
+  force-capture a rough attempt first (adds friction; people stall).
+- **Screen 4 · Feedback (not a score):** 1–2 concrete fixes at a time, each pointing at the *actual quoted words*
+  in the draft, framed as an edit the user makes. Never a score/checklist/X-of-5. Blue = "meets the standard".
+- **Screen 5 · Artifact + portfolio:** finished message saved + a quiet running history.
+- **Screen 6 · Return nudge:** one outcome-tied nudge → unaided re-attempt.
+Resolve the remaining §24 decisions (rubric-as-feedback UI on Screen 4) as you build.
 
 ## Open decisions (carry forward)
-- Screen 1: serif warmth vs. low-confidence user · scoped-input demote to link · credibility cue on entry · mobile · placeholder name.
-- Rejected worlds (do not revisit): heritage brass/instrument; friendly green-anchored.
+- **DESIGN.md is STALE** — it still documents the OLD Screen 1 (numbered/staggered cards, "e.g." lead-ins) and
+  name "Outreach Bench". Refresh it to the locked v3 + NOD when convenient.
+- **Detector false positive** on new screens: file-ignore each vs one rule-level ignore for `design/mockups/`
+  (rule-level needs owner's explicit OK).
+- **Mobile** treatment for all surfaces — CSS is responsive but not verified on a real device.
+- **DO NOT** start ERD / architecture / build milestones until design is finalized. **DO NOT** set §9 numeric
+  targets yet.
+
+## How the owner likes to work
+- Own the aesthetic/copy calls, but **ground them in the users / pain points / PRD**, not a metaphor. When
+  comparing, **build the variations** so they can be seen. Prefers the **live localhost link** over screenshots.
+- **Incremental commits** (many small); **never commit/push without explicit OK**; never commit raw `.xlsx` (PII).
+- Guardrails in ALL copy: **sell utility, never "learning"**; **banned UI words**
+  (course/lesson/learn/grade/score/quiz/streak); **claim quality, never outcome** (never "get a reply"); **no
+  fabricated testimonials/metrics/logos**; **one blue, no green**. English-only for v1. Desktop-primary for now.
 
 ---
-*Start by reading the 5 docs, then tell the owner in your own words what Screen 1 is and what's still open — then finalize it before moving to Screen 2.*
+*Start by reading the 5 docs + this file, then `git status`. Then build screens 3–6 on the calls above (or adjust
+with the owner first), and — when convenient — refresh DESIGN.md to the locked v3 + NOD.*
