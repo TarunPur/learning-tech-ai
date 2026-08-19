@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "marketing-buzzword",
+        "value": "*",
+        "files": [
+          "design/mockups/landing-editorial-blue.html"
+        ],
+        "createdAt": "2026-08-19T10:19:26.701Z",
+        "reason": "intentional 'before' email fixture: generic ChatGPT buzzwords are the anti-example the page critiques, not product copy"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "design/mockups/landing-editorial-blue.html"
+        ],
+        "createdAt": "2026-08-19T14:06:44.228Z",
+        "reason": "user confirmed: explicitly requested left->right scrolling review cards (ref adplist.org); mitigated with pause-on-hover, prefers-reduced-motion static fallback, and edge fades"
+      }
+    ]
+  }
+}
