@@ -80,6 +80,51 @@ h1,h2,h3,p{margin:0;}
 .cred{margin:30px auto 0;display:inline-flex;align-items:center;gap:9px;max-width:60ch;color:var(--ink-soft);font-size:13.5px;line-height:1.4;text-align:left;}
 .cred svg{color:var(--blue);flex:none;}
 
+/* two-column hero so the first viewport carries a visual, not a text wall */
+.hero-grid-2{display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,60px);align-items:center;}
+.hero-copy{position:relative;}
+.hero-art{position:relative;display:flex;justify-content:center;}
+@media(min-width:900px){
+  .hero{text-align:left;}
+  .hero-grid-2{grid-template-columns:1.04fr 0.96fr;}
+  .hero-copy h1{margin-left:0;max-width:15ch;}
+  .hero-copy .sub{margin:24px 0 0;max-width:42ch;}
+  .hero-copy .cta{align-items:flex-start;}
+  .hero-copy .cred{margin-left:0;}
+}
+
+/* the animated "draft being checked" scene — original SVG, brand palette, no photos */
+.hero-scene{width:100%;max-width:468px;height:auto;overflow:visible;}
+.hs-shadow{fill:rgba(28,40,72,0.09);}
+.hs-card{fill:var(--card);stroke:var(--line);stroke-width:1.5;}
+.hs-tag{font-family:"Spectral",Georgia,serif;font-size:12px;letter-spacing:.06em;fill:var(--ink-faint);}
+.hs-txt{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;fill:var(--ink-2);}
+.hs-weak{fill:var(--ink-soft);}
+.hs-marker{fill:var(--blue-tint-2);transform-box:fill-box;transform-origin:left center;}
+.hs-div{stroke:var(--line);stroke-width:1;}
+.hs-badge circle{fill:none;stroke:var(--blue);stroke-width:1.7;}
+.hs-badge path{fill:none;stroke:var(--blue);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.hs-fix1{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;font-weight:700;fill:var(--blue-deep);}
+.hs-fix2{font-family:"Spectral",Georgia,serif;font-style:italic;font-size:14px;fill:var(--ink-2);}
+.hs-chip rect{fill:var(--card);stroke:var(--line-2);stroke-width:1;}
+.hs-chip text{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:.02em;fill:var(--blue-deep);}
+/* 3-step "how NOD helps" flow */
+.hs-num{fill:var(--blue);}
+.hs-numtxt{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:15px;font-weight:800;fill:#fff;}
+.hs-title{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:17px;font-weight:700;fill:var(--ink);}
+.hs-sub{font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:14px;fill:var(--ink-soft);}
+.hs-subq{font-family:"Spectral",Georgia,serif;font-style:italic;font-size:14.5px;fill:var(--ink-2);}
+.hs-conn{stroke:var(--blue-tint-2);stroke-width:2.5;transform-box:fill-box;transform-origin:top center;}
+/* base state = finished (covers reduced-motion + no-JS); motion only adds the reveal */
+@media (prefers-reduced-motion:no-preference){
+  .hero-scene .fade{opacity:0;animation:hsFade .6s cubic-bezier(.16,1,.3,1) forwards;}
+  .hero-scene .f1{animation-delay:.2s}.hero-scene .f2{animation-delay:.55s}.hero-scene .f3{animation-delay:.85s}
+  .hero-scene .f4{animation-delay:1.65s}.hero-scene .f5{animation-delay:2.05s}
+  .hero-scene .hs-conn{transform:scaleY(0);animation:hsGrow 1s cubic-bezier(.16,1,.3,1) .35s forwards;}
+  @keyframes hsFade{to{opacity:1}}
+  @keyframes hsGrow{to{transform:scaleY(1)}}
+}
+
 /* hero demonstration — a real draft, annotated */
 .demo-hero{margin:clamp(48px,6vw,76px) auto 0;max-width:600px;position:relative;}
 .note-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:30px 30px 26px;text-align:left;}
@@ -346,6 +391,30 @@ h1,h2,h3,p{margin:0;}
 .td-flag{border-bottom:2px dotted var(--ink-faint);background:rgba(124,124,115,.08);padding:0 2px;color:var(--ink-soft);}
 .td-now{color:var(--ink-2);}
 
+/* ===== ChatGPT section — a complete journey: task -> checked vs the standard -> you improve ===== */
+.journey{margin-top:clamp(28px,4vw,42px);display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch;}
+@media(min-width:920px){ .journey{grid-template-columns:1fr auto 1fr auto 1fr;gap:0;} }
+.jstep{background:var(--card);border:1px solid var(--line-2);box-shadow:var(--shadow-lift);padding:22px 22px 20px;display:flex;flex-direction:column;}
+.jlabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);margin-bottom:12px;}
+.jctx{font-family:"Spectral",Georgia,serif;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px;}
+.jmsg{font-size:14.5px;line-height:1.6;color:var(--ink-2);margin:0;}
+.jweak{background-image:linear-gradient(var(--blue-tint-2),var(--blue-tint-2));background-repeat:no-repeat;background-position:0 92%;background-size:100% 42%;border-radius:2px;}
+.jfix{color:var(--blue-deep);font-weight:600;}
+.jcap{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.5;color:var(--ink-soft);}
+.jcrit{display:flex;flex-direction:column;gap:10px;}
+.jcrit .row{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.35;color:var(--ink-2);}
+.jcrit .row svg{flex:none;margin-top:1px;}
+.jcrit .ok svg{color:var(--blue);}
+.jcrit .gap{color:var(--ink);font-weight:700;}
+.jcrit .gap svg{color:var(--ink-faint);}
+.jnote{margin:15px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-soft);}
+.jnote b{color:var(--ink-2);font-weight:600;}
+.j-takeaway{margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line);font-size:13px;line-height:1.5;color:var(--blue-deep);font-weight:600;}
+.jjoin{display:flex;align-items:center;justify-content:center;color:var(--blue);opacity:.7;padding:0 12px;}
+@media(max-width:919px){ .jjoin{transform:rotate(90deg);padding:2px 0;} }
+.journey-foot{margin:clamp(22px,3vw,32px) auto 0;text-align:center;max-width:66ch;font-size:clamp(15px,1.5vw,17px);line-height:1.6;color:var(--ink-2);}
+.journey-foot b{color:var(--ink);font-weight:700;}
+
 /* ===== authority — "uniquely powerful" 3-step flow ===== */
 .power-flow{margin-top:clamp(30px,4vw,48px);display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch;}
 @media(min-width:900px){ .power-flow{grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0;} }
@@ -363,9 +432,21 @@ h1,h2,h3,p{margin:0;}
 .src-strip{margin-top:clamp(30px,4vw,44px);}
 .src-strip-label{text-align:center;font-size:14px;line-height:1.5;color:var(--ink-soft);max-width:60ch;margin:0 auto 22px;}
 .src-strip-label b{color:var(--ink-2);font-weight:600;}
-.src-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px clamp(24px,3.4vw,44px);padding:22px clamp(20px,3vw,36px);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);}
+/* right-to-left marquee of the research sources (owner-requested); mitigated with
+   pause-on-hover, edge fades, and a static reduced-motion fallback */
+.src-marquee{position:relative;overflow:hidden;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);padding:20px 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);}
+.src-track{display:flex;align-items:center;gap:clamp(28px,3.8vw,52px);width:max-content;padding-left:clamp(28px,3.8vw,52px);animation:srcScroll 30s linear infinite;}
+.src-marquee:hover .src-track,.src-marquee:focus-within .src-track{animation-play-state:paused;}
+@keyframes srcScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .lg{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(19px,2.2vw,25px);letter-spacing:-0.01em;color:var(--ink-2);opacity:.82;white-space:nowrap;}
 .lg-name{font-style:italic;font-weight:500;}
+@media(prefers-reduced-motion:reduce){
+  .src-marquee{-webkit-mask-image:none;mask-image:none;}
+  .src-track{animation:none;width:100%;flex-wrap:wrap;justify-content:center;gap:16px clamp(24px,3.4vw,44px);padding-left:0;}
+  .src-track .dup{display:none;}
+}
 .src-strip .srcnote{margin-top:18px;font-size:13px;font-weight:500;color:var(--ink-faint);}
 .src-strip .srcnote .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink);}
 
@@ -406,24 +487,49 @@ h1,h2,h3,p{margin:0;}
   <!-- HERO -->
   <section class="hero">
     <div class="hero-grid" aria-hidden="true"></div>
-    <div class="wrap">
-      <h1 class="h-anim a1">Finish one real task — and know you can be <em>better at it</em> next time.</h1>
-      <p class="sub h-anim a2">NOD helps you shape it against a proven standard — so you know what to send, and what to do differently next time.</p>
-      <div class="cta h-anim a3">
-        <a class="btn" href="recognition-editorial-blue-v3.html" data-signin>Start with your first task
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <span class="micro">Free to use · one sign-in · names are masked before NOD processes your message</span>
-      </div>
-      <p class="cred h-anim a3"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Built from published outreach research — not a generic AI opinion.</p>
-      <!-- a real, concrete example (not a skeleton): a weak ask flagged and fixed -->
-      <div class="hero-ex h-anim a4">
-        <span class="hero-ex-tag">Your draft, checked against the standard</span>
-        <p class="hero-ex-msg">Hi Nidhi — following up on my last note. <span class="hero-ex-weak">Let me know your thoughts.</span></p>
-        <div class="hero-ex-fix">
-          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span><b>Make the ask easy to answer:</b> "Would Tuesday or Thursday work for a 15-minute call?"</span>
+    <div class="wrap hero-grid-2">
+      <div class="hero-copy">
+        <h1 class="h-anim a1">Finish one real task — and know you can be <em>better at it</em> next time.</h1>
+        <p class="sub h-anim a2">NOD helps you shape it against a proven standard — so you know what to send, and what to do differently next time.</p>
+        <div class="cta h-anim a3">
+          <a class="btn" href="recognition-editorial-blue-v3.html" data-signin>Start with your first task
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <span class="micro">Free to use · one sign-in · names are masked before NOD processes your message</span>
         </div>
+        <p class="cred h-anim a3"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Built from published outreach research — not a generic AI opinion.</p>
+      </div>
+
+      <!-- ORIGINAL animated scene: a real draft gets its weak ask flagged, then fixed and checked -->
+      <div class="hero-art h-anim a4" aria-hidden="true">
+        <svg class="hero-scene" viewBox="0 0 468 372" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How NOD helps: you bring a real task, NOD checks it against a proven standard, and each time you get sharper — until you do it on your own.">
+          <rect class="hs-shadow" x="40" y="52" width="398" height="300"/>
+          <rect class="hs-card" x="30" y="40" width="398" height="300"/>
+          <text class="hs-tag fade f1" x="58" y="80">HOW NOD HELPS</text>
+          <!-- connector spine that grows through the three steps -->
+          <line class="hs-conn fade f1" x1="73" y1="118" x2="73" y2="270"/>
+          <!-- step 1: your real task -->
+          <g class="fade f1">
+            <circle class="hs-num" cx="73" cy="118" r="16"/>
+            <text class="hs-numtxt" x="73" y="123" text-anchor="middle">1</text>
+            <text class="hs-title" x="104" y="112">You bring a real task</text>
+            <text class="hs-subq" x="104" y="135">“Hi Tarun — following up on the demo…”</text>
+          </g>
+          <!-- step 2: NOD checks it -->
+          <g class="fade f2">
+            <circle class="hs-num" cx="73" cy="194" r="16"/>
+            <text class="hs-numtxt" x="73" y="199" text-anchor="middle">2</text>
+            <text class="hs-title" x="104" y="188">NOD checks it against the standard</text>
+            <text class="hs-sub" x="104" y="211">points at the one line to fix — and why</text>
+          </g>
+          <!-- step 3: you get sharper -->
+          <g class="fade f3">
+            <circle class="hs-num" cx="73" cy="270" r="16"/>
+            <text class="hs-numtxt" x="73" y="275" text-anchor="middle">3</text>
+            <text class="hs-title" x="104" y="264">You get sharper each time</text>
+            <text class="hs-sub" x="104" y="287">soon you do it on your own</text>
+          </g>
+        </svg>
       </div>
     </div>
   </section>
@@ -441,11 +547,10 @@ h1,h2,h3,p{margin:0;}
         </a>
         <span class="td-proof"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Held to one fixed standard, the same every time — not a flattering opinion.</span>
       </div>
-      <div class="transform-demo rise d2">
-        <p class="sr-only">A demonstration: a vague follow-up ask, "Let me know your thoughts," is replaced with a clear one, "Would Tuesday or Thursday work for a 15-minute call?" — and the same check carries to the next message you write on your own.</p>
+      <div class="transform-demo rise d2" role="img" aria-label="A live demo you can watch: your vague ask 'Let me know your thoughts' is checked against the standard, replaced with a clear one 'Would Thursday at 4 work for a quick call?', and you learn to write it yourself next time.">
         <div class="demo-card" id="demoCard" aria-hidden="true">
-          <span class="demo-ctx" id="demoCtx">The task · a prospect who isn't replying</span>
-          <p class="demo-mail" id="demoMail">Hi Nidhi — following up on my last note. <span class="demo-ask weak" id="demoAsk">Let me know your thoughts.</span></p>
+          <span class="demo-ctx" id="demoCtx">Your draft · a prospect who went quiet</span>
+          <p class="demo-mail" id="demoMail">Hi Tarun — just checking in. <span class="demo-ask weak" id="demoAsk">Let me know your thoughts.</span></p>
           <div class="demo-note warn" id="demoNote">
             <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 6v5M10 14h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/></svg>
             <span>A vague ask gives them nothing simple to say yes to.</span>
@@ -453,11 +558,12 @@ h1,h2,h3,p{margin:0;}
           <p class="demo-cap" id="demoCap"></p>
         </div>
         <div class="td-progress demo-timeline" aria-hidden="true">
-          <div class="td-step is-active" data-step="0"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">The task</span></div>
-          <div class="td-step" data-step="1"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">NOD improves the ask</span></div>
-          <div class="td-step" data-step="2"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">You use it next time</span></div>
+          <div class="td-step is-active" data-step="0"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">Your draft</span></div>
+          <div class="td-step" data-step="1"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">Checked vs the standard</span></div>
+          <div class="td-step" data-step="2"><div class="td-sbar"><div class="td-sfill"></div></div><span class="td-slabel">You improve</span></div>
         </div>
       </div>
+      <p class="journey-foot rise d3"><b>A chat tool writes it for you.</b> NOD checks your draft against a proven standard and shows you why — so the skill sticks.</p>
     </div>
   </section>
 
@@ -494,13 +600,21 @@ h1,h2,h3,p{margin:0;}
 
       <div class="src-strip rise d1">
         <p class="src-strip-label">Research NOD's standard is built on. <b>Not customers, endorsements, or partnerships.</b></p>
-        <div class="src-row" aria-label="Research sources behind the standard">
-          <span class="lg">Gong</span>
-          <span class="lg">Boomerang</span>
-          <span class="lg">Backlinko</span>
-          <span class="lg">Woodpecker</span>
-          <span class="lg">Lavender</span>
-          <span class="lg lg-name">Josh Braun</span>
+        <div class="src-marquee" aria-label="Research sources behind the standard">
+          <div class="src-track">
+            <span class="lg">Gong</span>
+            <span class="lg">Boomerang</span>
+            <span class="lg">Backlinko</span>
+            <span class="lg">Woodpecker</span>
+            <span class="lg">Lavender</span>
+            <span class="lg lg-name">Josh Braun</span>
+            <span class="lg dup" aria-hidden="true">Gong</span>
+            <span class="lg dup" aria-hidden="true">Boomerang</span>
+            <span class="lg dup" aria-hidden="true">Backlinko</span>
+            <span class="lg dup" aria-hidden="true">Woodpecker</span>
+            <span class="lg dup" aria-hidden="true">Lavender</span>
+            <span class="lg lg-name dup" aria-hidden="true">Josh Braun</span>
+          </div>
         </div>
         <p class="srcnote">Published outreach analyses across <span class="n">70M+</span> real emails.</p>
       </div>
@@ -651,27 +765,28 @@ h1,h2,h3,p{margin:0;}
     }
     function setCap(text){ if(text){ cap.textContent = text; cap.classList.add('show'); } else { cap.classList.remove('show'); cap.textContent = ''; } }
     function stage0(){
-      ctx.textContent = 'The task · a prospect who isn’t replying';
-      mail.innerHTML = 'Hi Nidhi — following up on my last note. <span class="demo-ask weak">Let me know your thoughts.</span>';
+      ctx.textContent = 'Your draft · a prospect who went quiet';
+      mail.innerHTML = 'Hi Tarun — just checking in. <span class="demo-ask weak">Let me know your thoughts.</span>';
       setNote('warn', 'A vague ask gives them nothing simple to say yes to.');
       setCap('');
       setSteps(0);
     }
     function stage1(){
-      // same message; only the ask changes — highlight, then swap its text (no paragraph crossfade)
+      // same message; NOD checks it against the standard and sharpens the weak ask
+      ctx.textContent = 'Checked against the standard';
       var a = mail.querySelector('.demo-ask');
-      if(a){ a.classList.remove('weak'); a.classList.add('fixed'); setTimeout(function(){ if(mail.querySelector('.demo-ask')===a) a.textContent = 'Would Tuesday or Thursday work for a 15-minute call?'; }, reduce?0:650); }
-      setNote('good', '<b>One clear, easy next step</b> gives them something simple to answer.');
+      if(a){ a.classList.remove('weak'); a.classList.add('fixed'); setTimeout(function(){ if(mail.querySelector('.demo-ask')===a) a.textContent = 'Would Thursday at 4 work for a quick call?'; }, reduce?0:650); }
+      setNote('good', 'The standard wants <b>one clear, easy ask</b> — so NOD points at that line, and why.');
       setCap('');
       setSteps(1);
     }
     function stage2(){
-      // a new, independent message — clean sequential swap (fade fully out, swap, fade in): never two texts at once
+      // the value: same message, now sharpened — and you learn the fix for next time
       function apply(){
-        ctx.textContent = 'Next time · you catch it on your own';
-        mail.innerHTML = 'Hi Priya — the demo you ran last week left me with one question. <span class="demo-ask fixed">Would 15 minutes on Thursday be useful?</span>';
-        setNote('good', 'You now know what to check: <b>one clear ask that’s easy to answer.</b>');
-        setCap('A later, similar follow-up — written on your own.');
+        ctx.textContent = 'You improve · the same message, sharpened';
+        mail.innerHTML = 'Hi Tarun — following up after the demo. <span class="demo-ask fixed">Would Thursday at 4 work for a quick call?</span>';
+        setNote('good', 'Now you know the fix — <b>next time you write the clear ask yourself.</b>');
+        setCap('That is the part a chat box skips: the skill sticks.');
       }
       if(reduce){ apply(); }
       else { card.classList.add('swapping'); setTimeout(function(){ apply(); card.classList.remove('swapping'); }, 340); }
