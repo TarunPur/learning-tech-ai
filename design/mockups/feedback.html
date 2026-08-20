@@ -198,7 +198,20 @@
   use.addEventListener('click', useEdit);
   keep.addEventListener('click', keepMine);
   var save=document.getElementById('save');
-  if(save) save.addEventListener('click',function(){ window.location.href='artifact.html'; });
+  if(save) save.addEventListener('click',function(){
+    // persist the finished message + push a real history entry for the artifact
+    if(window.NOD){
+      var s = NOD.store.load(), sn = s.snap || {};
+      var final = { p1: l1.textContent.trim(), p2: l2.textContent.trim(), p3: l3.textContent.trim() };
+      var text = final.p1 + '\n\n' + final.p2 + '\n\n' + final.p3;
+      var entry = { title: sn.artTitle || 'Your message', scenario: s.scenario || 'quiet',
+                    recipient: sn.recipient || '', peek: final.p1, text: text, when: 'just now' };
+      var hist = Array.isArray(s.history) ? s.history.slice() : [];
+      hist.unshift(entry);
+      NOD.store.save({ final: final, finalText: text, history: hist });
+    }
+    window.location.href='artifact.html';
+  });
 })();
 </script>
 </body>
