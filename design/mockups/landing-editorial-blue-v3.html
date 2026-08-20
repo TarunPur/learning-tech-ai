@@ -281,9 +281,20 @@ h1,h2,h3,p{margin:0;}
 .v-h em{font-style:italic;color:var(--blue-deep);}
 .v-sub{margin:20px auto 0;max-width:58ch;font-size:clamp(15px,1.5vw,17px);line-height:1.6;color:var(--ink-soft);}
 
-/* static responsive insight grid (not a testimonial wall) */
-.voices-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:clamp(30px,4vw,44px);}
-@media(min-width:640px){ .voices-grid{grid-template-columns:1fr 1fr;} }
+/* research cards in one right-to-left marquee row (owner-requested); pause on
+   hover, edge fades, static reduced-motion fallback */
+.voices-marquee{position:relative;overflow:hidden;margin-top:clamp(30px,4vw,44px);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
+.voices-vtrack{display:flex;gap:20px;width:max-content;padding:6px clamp(18px,3vw,32px);animation:voicesScroll 60s linear infinite;}
+.voices-marquee:hover .voices-vtrack,.voices-marquee:focus-within .voices-vtrack{animation-play-state:paused;}
+@keyframes voicesScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.voices-marquee .vcard{flex:none;width:clamp(300px,80vw,354px);}
+@media(prefers-reduced-motion:reduce){
+  .voices-marquee{-webkit-mask-image:none;mask-image:none;overflow-x:auto;}
+  .voices-vtrack{animation:none;}
+  .voices-vtrack .dup{display:none;}
+}
 .voices-grouplabel{text-align:center;margin:clamp(28px,4vw,40px) auto 0;font-family:"Spectral",serif;font-size:clamp(17px,1.8vw,20px);font-style:italic;color:var(--ink-2);}
 .vcard{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:22px 26px 22px;display:flex;flex-direction:column;}
 /* explicit research label — these are findings, not testimonials (no photos, names, or star ratings) */
@@ -642,9 +653,10 @@ h1,h2,h3,p{margin:0;}
 
     <p class="voices-grouplabel rise d2">What professionals described before NOD existed</p>
 
-    <div class="voices-grid wrap" aria-label="Insights from our pre-launch research">
+    <div class="voices-marquee" aria-label="Insights from our pre-launch research">
+      <div class="voices-vtrack">
       <figure class="vcard">
-        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><span class="vc-num">01</span></div>
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
         <blockquote>I don't know where to start, or what &ldquo;good&rdquo; even looks like for a cold email.</blockquote>
         <div class="vc-data">
           <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
@@ -654,7 +666,7 @@ h1,h2,h3,p{margin:0;}
         <figcaption>Founder, small business · pre-launch research</figcaption>
       </figure>
       <figure class="vcard">
-        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><span class="vc-num">02</span></div>
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
         <blockquote>ChatGPT gives me something instantly, but instant isn't the same as good, and nothing tells me the difference.</blockquote>
         <div class="vc-data">
           <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
@@ -664,7 +676,7 @@ h1,h2,h3,p{margin:0;}
         <figcaption>Account manager · pre-launch research</figcaption>
       </figure>
       <figure class="vcard">
-        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><span class="vc-num">03</span></div>
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
         <blockquote>When the draft is off, I can't tell why, so I can't fix it. I just send it and hope.</blockquote>
         <div class="vc-data">
           <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">A few times a week</span></div>
@@ -674,7 +686,7 @@ h1,h2,h3,p{margin:0;}
         <figcaption>Operations lead · pre-launch research</figcaption>
       </figure>
       <figure class="vcard">
-        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><span class="vc-num">04</span></div>
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
         <blockquote>Every tool writes it for me. None of them make me any better at writing it myself.</blockquote>
         <div class="vc-data">
           <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
@@ -683,6 +695,47 @@ h1,h2,h3,p{margin:0;}
         </div>
         <figcaption>Partnerships lead · pre-launch research</figcaption>
       </figure>
+      <figure class="vcard dup" aria-hidden="true">
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
+        <blockquote>I don't know where to start, or what &ldquo;good&rdquo; even looks like for a cold email.</blockquote>
+        <div class="vc-data">
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5A1.5 1.5 0 0 1 4 3h8a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 12 10H6l-3 2.4V10H4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Use case pattern</span><span class="vc-v">Cold intros</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 14.5V2.5M4 3h7l-1.4 2.4L11 8H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vc-k">Learning blocker</span><span class="vc-v">Where to start</span></div>
+        </div>
+        <figcaption>Founder, small business · pre-launch research</figcaption>
+      </figure>
+      <figure class="vcard dup" aria-hidden="true">
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
+        <blockquote>ChatGPT gives me something instantly, but instant isn't the same as good, and nothing tells me the difference.</blockquote>
+        <div class="vc-data">
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5A1.5 1.5 0 0 1 4 3h8a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 12 10H6l-3 2.4V10H4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Use case pattern</span><span class="vc-v">Client follow-ups</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 14.5V2.5M4 3h7l-1.4 2.4L11 8H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vc-k">Learning blocker</span><span class="vc-v">Is it any good?</span></div>
+        </div>
+        <figcaption>Account manager · pre-launch research</figcaption>
+      </figure>
+      <figure class="vcard dup" aria-hidden="true">
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
+        <blockquote>When the draft is off, I can't tell why, so I can't fix it. I just send it and hope.</blockquote>
+        <div class="vc-data">
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">A few times a week</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5A1.5 1.5 0 0 1 4 3h8a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 12 10H6l-3 2.4V10H4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Use case pattern</span><span class="vc-v">Re-engaging quiet leads</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 14.5V2.5M4 3h7l-1.4 2.4L11 8H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vc-k">Learning blocker</span><span class="vc-v">Can't tell why</span></div>
+        </div>
+        <figcaption>Operations lead · pre-launch research</figcaption>
+      </figure>
+      <figure class="vcard dup" aria-hidden="true">
+        <div class="vc-head"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span></div>
+        <blockquote>Every tool writes it for me. None of them make me any better at writing it myself.</blockquote>
+        <div class="vc-data">
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.6l1.5 4.9 4.9 1.5-4.9 1.5L8 14.4l-1.5-4.9L1.6 8l4.9-1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Daily AI use</span><span class="vc-v">Every day</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5A1.5 1.5 0 0 1 4 3h8a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 12 10H6l-3 2.4V10H4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="vc-k">Use case pattern</span><span class="vc-v">Partnership outreach</span></div>
+          <div class="vc-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 14.5V2.5M4 3h7l-1.4 2.4L11 8H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vc-k">Learning blocker</span><span class="vc-v">Not enough practice</span></div>
+        </div>
+        <figcaption>Partnerships lead · pre-launch research</figcaption>
+      </figure>
+      </div>
     </div>
 
     <p class="v-note wrap">Paraphrased from our pre-launch research for length — these are research findings, not customer reviews.</p>
