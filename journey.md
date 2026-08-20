@@ -252,6 +252,11 @@ streak. The product's job is to make itself less necessary.
 - **The rubric discrimination test** — does the standard reliably tell good outreach from bad? Consciously
   **un-run**; to be stress-tested right after the demo. A weak standard silently invalidates the whole
   experiment. (v1PRD §16/§24)
+- **The "skill you keep" callout must name the user's OWN learned skill.** On the landing demo the learning
+  callout ("End with one clear, specific ask") is hardcoded to the canned example. In the built product, the
+  feedback step's takeaway must name whichever skill the user's *actual* fix taught (derived from the fix the
+  real evaluator surfaced on their own words) — never a fixed line. Ties the "you get sharper" promise to their
+  real message. (Landing copy is illustrative only.)
 
 **Explicitly the NEXT job, after this design layer is signed off:** rework the six mockups in
 `design/mockups/` to this flow, then ERD → implementation plan → build (including the real evaluator).

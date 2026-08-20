@@ -61,6 +61,8 @@ The six `design/mockups/` now match the two-path loop in `journey.md`. Serve: `c
 2. **Real-device mobile** verification (tool can't render narrow).
 3. Then **ERD + implementation plan + build** — **including the real evaluator endpoint** (length-math in code + one anchored Claude call to replace the `evaluateText()` heuristic), then run the deferred rubric discrimination test. Do not start ERD/build before the reworked mockups are signed off.
 
+**Build note (logged 2026-08-21):** the landing demo's **"The skill you keep"** callout (and the feedback step's takeaway) is currently a hardcoded line ("End with one clear, specific ask"). In the built product it must **name whichever skill the user's own fix actually taught**, derived from the real evaluator's finding on their own words — never a fixed line. See `journey.md` §6.
+
 ## How to work with the owner (important)
 - **Plain, simple, non-jargon language.** No "rounds/frontier/rubric/B1" unless you explain them.
 - **Free-form questions, not multiple-choice** (the owner repeatedly rejected the multiple-choice question tool).
