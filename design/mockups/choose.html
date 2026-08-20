@@ -9,62 +9,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,600&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="shared/system.css" />
 <style>
-/* screen-specific: Choose how to start — the fork (Decision 7). The default
-   is LOUD, the fallback is QUIET; never a 50/50 pair of buttons. */
+/* screen-specific: Choose how to start — the fork (Decision 7). Two REAL,
+   comparable options (like Buy Now / Add to Cart): both proper filled buttons,
+   but the default clearly leads (first, "Recommended", solid blue). The fallback
+   is a genuine option, never a 50/50 match for the default. */
 .eyebrow-situation{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 16px;
   font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
 .eyebrow-situation #chipLabel{color:var(--ink);}
 .eyebrow-situation .eb-sep{color:var(--line-2);}
 .eb-change{color:var(--blue);text-decoration:none;letter-spacing:.08em;transition:color .18s;}
 .eb-change:hover,.eb-change:focus-visible{color:var(--blue-deep);outline:none;text-decoration:underline;text-underline-offset:3px;}
-.intro .sub{max-width:35ch;}
+.intro .sub{max-width:34ch;}
 
-.handoff{margin-top:30px;display:flex;gap:11px;align-items:flex-start;max-width:36ch;
+.handoff{margin-top:30px;display:flex;gap:11px;align-items:flex-start;max-width:34ch;
   color:var(--ink-soft);font-size:13.5px;line-height:1.5;}
 .handoff svg{color:var(--blue);flex:none;margin-top:2px;}
 
-/* right column: the loud primary choice, then the quiet fallback link */
-.choose{display:flex;flex-direction:column;gap:22px;align-items:flex-start;}
-
-/* primary — the default path, given all the visual weight */
-.primary-choice{width:100%;text-align:left;cursor:pointer;padding:32px 32px 30px;
-  display:flex;flex-direction:column;box-shadow:var(--shadow-card);
+/* the two options — text left, a filled CTA right, so the card's width is used */
+.choose{display:flex;flex-direction:column;gap:18px;}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:26px;width:100%;
+  text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--shadow-card);padding:26px 28px;
   transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,border-color .22s ease;}
-.primary-choice:hover,.primary-choice:focus-visible{transform:translateY(-3px);
-  box-shadow:var(--shadow-lift);border-color:var(--blue);outline:none;}
-.primary-choice .pk{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;
-  color:var(--blue-deep);margin:0 0 14px;display:inline-flex;align-items:center;gap:7px;}
-.primary-choice h2{font-family:var(--serif);font-weight:600;font-size:27px;line-height:1.12;
-  letter-spacing:-0.01em;margin:0 0 10px;color:var(--ink);}
-.primary-choice p{margin:0 0 22px;font-size:14.5px;line-height:1.55;color:var(--ink-soft);max-width:40ch;}
-.primary-choice .go{align-self:center;justify-content:center;display:inline-flex;align-items:center;gap:10px;border-radius:9999px;
-  background:var(--blue);color:#fff;font-family:inherit;font-weight:600;font-size:16px;
-  padding:15px 30px;box-shadow:0 8px 20px -10px rgba(47,111,224,0.6);transition:background .2s,transform .12s;}
-.primary-choice:hover .go{background:var(--blue-deep);}
-.primary-choice:hover .go svg{transform:translateX(3px);}
-.primary-choice .go svg{transition:transform .24s;}
-.primary-choice:active{transform:translateY(-1px);transition-duration:.09s;}
+.opt:hover,.opt:focus-visible{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--blue);outline:none;}
+.opt:active{transform:translateY(-1px);transition-duration:.09s;}
+.opt .txt{min-width:0;}
+.opt .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--blue-deep);margin:0 0 9px;}
+.opt .tag svg{color:var(--blue);}
+.opt .small{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 9px;}
+.opt h2{font-family:var(--serif);font-weight:600;font-size:23px;line-height:1.14;letter-spacing:-0.01em;color:var(--ink);margin:0 0 8px;}
+.opt h3{font-family:var(--serif);font-weight:600;font-size:20px;line-height:1.14;color:var(--ink);margin:0 0 8px;}
+.opt p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink-soft);max-width:32ch;}
+/* both buttons are real, filled pills — ranked by fill, not by dull-vs-bold */
+.opt .cta{flex:none;display:inline-flex;align-items:center;gap:9px;border-radius:9999px;
+  font-family:inherit;font-weight:600;font-size:15px;padding:14px 24px;white-space:nowrap;
+  transition:background .2s,color .2s;}
+.opt .cta svg{transition:transform .24s;}
+.opt:hover .cta svg{transform:translateX(3px);}
+.cta-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -10px rgba(47,111,224,0.6);}
+.opt:hover .cta-primary{background:var(--blue-deep);}
+.cta-secondary{background:var(--blue-tint);color:var(--blue-deep);}
+.opt:hover .cta-secondary{background:var(--blue-tint-2);}
 
-/* fallback — a clear but SECONDARY option: outlined (not filled), sans heading,
-   text-arrow (not a pill). Recognisable as a choice, never a match for the default. */
-.secondary-choice{width:100%;text-align:left;cursor:pointer;background:transparent;
-  border:1px solid var(--line-2);padding:22px 26px;display:flex;flex-direction:column;
-  transition:border-color .22s,background .22s,box-shadow .22s,transform .28s cubic-bezier(.16,1,.3,1);}
-.secondary-choice:hover,.secondary-choice:focus-visible{border-color:var(--blue);background:var(--card);
-  box-shadow:var(--shadow-card);transform:translateY(-2px);outline:none;}
-.secondary-choice .sk{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--ink-faint);margin:0 0 8px;}
-.secondary-choice h3{font-family:var(--sans);font-weight:700;font-size:17px;line-height:1.2;
-  color:var(--ink);margin:0 0 6px;}
-.secondary-choice p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink-soft);max-width:44ch;}
-.secondary-choice .sgo{margin-top:14px;display:inline-flex;align-items:center;gap:8px;font-size:14px;
-  font-weight:600;color:var(--blue);transition:color .22s;}
-.secondary-choice:hover .sgo{color:var(--blue-deep);}
-.secondary-choice .sgo svg{transition:transform .24s;}
-.secondary-choice:hover .sgo svg{transform:translateX(3px);}
-
-@media (min-width:940px){ .primary-choice{padding:36px 36px 32px;} }
-@media (max-width:600px){ .primary-choice{padding:26px 22px 24px;} .primary-choice h2{font-size:23px;} }
+@media (min-width:940px){ .opt{padding:28px 30px;} }
+@media (max-width:640px){
+  .opt{flex-direction:column;align-items:flex-start;gap:18px;padding:22px 20px;}
+  .opt h2{font-size:21px;}
+  .opt .cta{width:100%;justify-content:center;min-height:48px;}
+  .opt p{max-width:100%;}
+}
 </style>
 </head>
 <body>
@@ -83,32 +78,34 @@
     </p>
 
     <h1 class="h-display anim d2">How do you want <em>to start?</em></h1>
-    <p class="sub anim d3">You'll get sharper by writing it yourself — so that's where we'll begin. I'll check it against what good outreach actually does once you've got a version down.</p>
+    <p class="sub anim d3">Two ways in — pick whichever gets you moving.</p>
 
     <div class="handoff anim d3">
       <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>No pass or fail. Nothing sends until you say so — this is just the first version.</span>
+      <span>No pass or fail — this is just a first version, and nothing sends until you say so.</span>
     </div>
   </section>
 
   <section class="choose">
-    <button class="primary-choice card anim k2" type="button" id="writeOwn">
-      <span class="pk">Recommended
-        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.5l2.2 4.6 5 .7-3.6 3.5.9 5L10 14l-4.5 2.3.9-5L2.8 7.8l5-.7L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    <button class="opt anim k2" type="button" id="writeOwn">
+      <span class="txt">
+        <span class="tag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.5l2.2 4.6 5 .7-3.6 3.5.9 5L10 14l-4.5 2.3.9-5L2.8 7.8l5-.7L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Recommended</span>
+        <h2>Write your first version</h2>
+        <p>Put your own words down — even rough. Then I'll show you what to tighten.</p>
       </span>
-      <h2>Write your first version</h2>
-      <p>Put down your own words — even a rough one. You've got your situation and notes right there to work from. Then I'll show you what to tighten.</p>
-      <span class="go">Write it myself
+      <span class="cta cta-primary">Write it myself
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
     </button>
 
-    <button class="secondary-choice anim k3" type="button" id="nodDraft">
-      <span class="sk">If you're not sure where to start</span>
-      <h3>Let NOD draft one you can react to</h3>
-      <p>NOD writes a first version — and you spot what's weak in it before any advice. Still your call, start to finish.</p>
-      <span class="sgo">Show me a draft to react to
-        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <button class="opt anim k3" type="button" id="nodDraft">
+      <span class="txt">
+        <span class="small">Not sure where to start?</span>
+        <h3>Let NOD draft one you react to</h3>
+        <p>NOD writes a version — you spot what's weak in it first.</p>
+      </span>
+      <span class="cta cta-secondary">Show me a draft
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
     </button>
   </section>
@@ -118,7 +115,6 @@
 <script src="shared/flow.js"></script>
 <script>
 (function(){
-  // reflect the chosen situation in the eyebrow
   if(window.NOD){
     var chip=document.getElementById('chipLabel');
     if(chip) chip.textContent = NOD.currentSituationLabel();
@@ -127,9 +123,7 @@
     if(window.NOD) NOD.store.save({ path: path });
     window.location.href = href;
   }
-  // DEFAULT — write your own -> the composer
   document.getElementById('writeOwn').addEventListener('click', function(){ pick('own','compose.html'); });
-  // FALLBACK — NOD drafts it -> the guided draft with the spot-the-flaw beat
   document.getElementById('nodDraft').addEventListener('click', function(){ pick('nod','draft.html'); });
 })();
 </script>
