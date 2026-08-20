@@ -171,18 +171,24 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 - **Hover / Focus:** translateY(-3px), border → Signal Blue, CTA text → blue-deep, arrow slides right. Cards are native `<button>`s (keyboard-safe). A `.is-loading` pulse acknowledges the tap.
 
 ### Field (intake primitive)
-- A single-line field with a **1.5px bottom border only** (no box); focus/hover shifts the border to Signal Blue. Paired with a circular arrow button that fills blue on hover and stays **disabled until there's text** (error prevention). Used for the "something else" escape (Screen 1) and the Personalize questions (Screen 2).
+- A single-line field with a **1.5px bottom border only** (no box); focus/hover shifts the border to Signal Blue. Paired with a circular arrow button that fills blue on hover and stays **disabled until there's text** (error prevention). Used for the "something else" escape (Home ①) and the Personalize questions (②). *(Screens are named in `journey.md`.)*
 
 ### Pill Button
 - Signal-Blue pill (9999px), white label + sliding arrow, soft blue shadow; hover → blue-deep. A `.ghost` variant is transparent/ink-soft for secondary actions.
 
-### Decision Chips (Screen 3)
-- Square 1px-bordered chips; selected state = blue border + blue tint + blue-deep text (`aria-pressed`). Used for the two hand-off decisions (tone, the ask).
+### Path-choice (Choose how to start ③) — *new*
+- The fork after intake. **Deliberately unequal weight, never a 50/50 pair of buttons** (a tired user always taps "do it for me" — see `journey.md` §3 and Decision 7). Anatomy: a **loud primary action** — the write-your-own default, styled as the Pill Button with one line of coach framing beneath — and a **quiet secondary text link** ("Not sure where to start? Let NOD draft one you can react to."), set in Hanken ink-soft, never a matching button. The visual dominance *is* the default.
 
-### Feedback fix (Screen 4)
-- The fix-target in the draft gets a **neutral dotted marker** (never red/green); once edited it resolves to a blue "cleared" state. The fix is presented as *Your line → why it's worth changing → a tighter version*, framed as an edit the user accepts ("Use this edit") or declines ("Keep mine") — **advisory, never a gate**.
+### Tap-the-weak-line (fallback path ④b) — *new*
+- The spot-the-flaw beat on the NOD-drafted fallback. NOD's draft is rendered with **individually selectable sentences**; the user taps the one a busy reader would trip on (plus an honest "I'm not sure" out). The tapped line takes the **neutral dotted marker** — the *same* marker as a feedback fix, because this is a point of attention, **not** a "wrong answer" (**never red/green — pass/fail colour is banned**). Only after the tap does NOD react (right/why/what-was-missed). Tap targets ≥44px; keyboard-selectable. Reuses the neutral-marker + card tokens — no new visual language.
 
-### Saved-message list (Screen 5)
+### Decision Chips (fallback draft path ④b)
+- Square 1px-bordered chips; selected state = blue border + blue tint + blue-deep text (`aria-pressed`). Used for the two hand-off decisions (tone, the ask) when NOD drafts on the fallback path.
+
+### Feedback fix (Feedback ⑤)
+- The fix-target in the draft gets a **neutral dotted marker** (never red/green); once edited it resolves to a blue "cleared" state. The fix is presented as *Your line → why it's worth changing → a tighter version*, framed as an edit the user accepts ("Use this edit") or declines ("Keep mine") — **advisory, never a gate**. Reads the user's **own** words (whether they wrote the draft ④a or judged a NOD draft ④b), not a planted line.
+
+### Saved-message list (Saved message ⑥)
 - Plain rows (blue tick, situation title, date, one-line peek, hover "Reuse →"). The freshest row carries a small "just saved" chip. Called **"Your saved messages"** (never "bench").
 
 ### Brand Mark
@@ -223,16 +229,20 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 
 ## Status & Roadmap (project note)
 
-**All six v1 screens were built and committed** (in `design/mockups/`, on `main`; brand = NOD) — but they capture the **pre-2026-08-21 single-path flow** and need reworking to the two-path loop (see the "⚠️ Flow change" banner at the top):
-1. `recognition-editorial-blue-v3.html` — Recognition home (LOCKED baseline) · *needs: a "choose how to start" step after the situation is picked*
-2. `personalize.html` — Personalize + silent auto-mask (detect-and-mask + calm inline reassurance, never a gate) · *reusable; feeds both paths*
-3. `draft.html` — Guided draft / fading scaffold · *now the **escape-hatch** path only; add a "spot what's weak first" beat before feedback*
-4. `feedback.html` — Feedback, not a score · *must render **real** categorical fixes on the user's own text, not a planted line*
-5. `artifact.html` — Saved message + "Your saved messages" history · *reusable*
-6. `return.html` — Return nudge → unaided re-attempt · *reusable; `compose.html` (the write-your-own composer) is the base for the new **default** path*
+**The flow now lives in `journey.md`** (screens, the two paths, where they split and rejoin, the states on each). This file is the **visual system + component library**; it no longer narrates the flow. The visual system is unchanged and fully reusable for the new screens.
 
-Plus the marketing **landing** (`landing-editorial-blue-v2.html`, LOCKED baseline).
+**All six v1 mockups were built and committed** (in `design/mockups/`) but capture the **pre-2026-08-21 single-path flow**; they need reworking to the two-path loop in `journey.md`. Mapping to the new screen set:
+1. `recognition-editorial-blue-v3.html` — **Home ①** (LOCKED baseline) · *reusable as-is; the path choice is a **new** screen ③ that comes **after Personalize**, not on Home.*
+2. `personalize.html` — **Personalize ②** + silent auto-mask · *reusable; feeds both paths.*
+3. *(new)* **Choose how to start ③** — the fork; loud write-your-own default + quiet "let NOD draft one" fallback. See the **Path-choice** component above.
+4. `compose.html` — **Write your own ④a** (the new **default** path) · *the write-your-own composer is the base; anchor it with the situation + specifics so it's never a blank page.*
+5. `draft.html` — **NOD drafts + spot-the-flaw ④b** (the **fallback** path) · *add the **tap-the-weak-line** beat before feedback (see component above). Spot-the-flaw form is resolved = tap the line, not type-a-critique.*
+6. `feedback.html` — **Feedback ⑤** · *must render **real** categorical fixes on the user's **own** text (arbitrary user-written on ④a), not a planted line.*
+7. `artifact.html` — **Saved message ⑥** · *reusable.*
+8. `return.html` (+ `compose.html`) — **Later ⑦** · *reusable; the unaided re-attempt, with the path choice reappearing and help thinner.*
 
-**Design decisions resolved this phase (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; rubric-as-feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist. ~~Aha-staging = do **not** force a rough-attempt capture~~ **← reversed 2026-08-21:** with the write-your-own-draft default (Decisions 7, 11), capturing the user's *own* rough attempt is now the default (the "where do I start" case falls to the NOD-drafts + spot-the-flaw escape hatch); only the *visual* rough→shaped staging remains design-owned.
+Plus the marketing **landing** (`landing-editorial-blue-v3.html` is the current build; `-v2` is the LOCKED baseline).
 
-**Still to do:** (a) a real-device **mobile** verification pass (tooling can't render narrow); (b) then ERD / technical architecture / build. Do not start the ERD/build before this design is signed off.
+**Design decisions resolved (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist; **spot-the-flaw = tap the weak line** (2026-08-21). Capturing the user's *own* first version is now the default (Decisions 7, 11); the "where do I start" case falls to the NOD-drafts + spot-the-flaw fallback; the *visual* rough→shaped ("Aha") staging remains design-owned and is specified in `journey.md`.
+
+**Still to do (in order):** (a) sign off this design layer (`journey.md` + this file); (b) rework the mockups above to the two-path flow; (c) a real-device **mobile** verification pass (tooling can't render narrow); (d) then ERD / technical architecture / build (incl. the real evaluator endpoint — the prototype's check is faked). Do not start the ERD/build before the design is signed off.
