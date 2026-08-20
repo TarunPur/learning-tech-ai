@@ -105,7 +105,7 @@
     },
     custom: {
       id: 'custom',
-      chip: 'Your situation',
+      chip: 'Your task',
       pHeading: "First, who it's for — <em>and what you need.</em>",
       pSub: "Three quick lines about your situation. I'll shape a first draft, then we refine it together.",
       whoPh: "e.g. the person you're writing to, and how you know them",
@@ -171,7 +171,7 @@
     var id = Store.get('scenario', 'quiet');
     if (id === 'custom') {
       var t = Store.get('customText', '');
-      return t ? ('Your situation · ' + t) : SCENARIOS.custom.chip;
+      return t ? ('Your task · ' + t) : SCENARIOS.custom.chip;
     }
     return scenario(id).chip;
   }
