@@ -36,7 +36,7 @@ button{font-family:inherit;color:inherit;}
 
 /* --- editorial stage (two-column, centered) --- */
 .stage{max-width:1240px;margin:0 auto;min-height:100vh;display:grid;
-  grid-template-columns:1fr;gap:44px;padding:40px 34px;align-content:center;}
+  grid-template-columns:1fr;gap:44px;padding:clamp(48px,7vh,88px) 34px;align-content:start;}
 
 /* --- brand mark --- */
 .mark{display:flex;align-items:center;gap:14px;margin-bottom:40px;}

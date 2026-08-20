@@ -3,12 +3,48 @@
 > **Purpose:** read this whole file at the start of a new session to resume exactly where the last one
 > left off. **Maintenance rule (CLAUDE.md): update this file at the END of every session.**
 >
-> **Last updated:** 2026-08-20 — end of the "lock baseline → NOD rebrand → Screen 2 build" session.
+> **Last updated:** 2026-08-20 — end of the "landing-page rework from Landing page.docx" session (next agent resumes ~4h later).
 
 ---
 
 I'm continuing my "Learning Tech & AI" v1 product at `~/Desktop/Learning Tech AI`
 (private GitHub `TarunPur/learning-tech-ai`, branch `main`).
+
+## ⚠️ FIRST — landing went through THREE rounds; NOW COMMITTED (this block below is partly stale — trust git log)
+All six v1 screens + `DESIGN.md` were committed at `ceb1256`. Since then the landing (`design/mockups/landing-editorial-blue-v2.html`)
+had THREE more rounds, **now committed** (branch `main`, NOT pushed): (1) first `Landing page.docx` brief — blue Sign-in pill,
+the interactive ChatGPT panel, the "uniquely powerful" flow + sources marquee; (2) second `Learning Tech AI (1).docx` brief —
+new hero copy + animated NOD motif (grid rails + shaping bars), **removed** the use-cases band + both objection sections + the
+hero demo card, bolded the ChatGPT sub + highlighted the standard chip, **converted the demo to AUTO-PLAY** (3-step progress bar,
+loops, reduced-motion-safe — the draggable version described below is SUPERSEDED), new task-based demo copy, removed the
+uniquely-powerful numbering + brighter cards + bold source line, new "25% of primary respondents" voices copy, reversed both
+marquees to right-to-left, rebuilt the footer (multi-column, no Products, big NOD wordmark); (3) an `/impeccable` audit +
+consistency pass — **normalized all landing section paddings to one 100px rhythm** (were 120/148/132, uneven), **top-aligned all
+app-screen stages** (`system.css` + `recognition-v3` now `align-content:start`, mark at a consistent 56px across every screen —
+was drifting 135–196px), and ungapped the demo takeaway line. **CACHE NOTE:** `system.css` is browser-cached — hard-refresh
+(Cmd+Shift+R) or restart the `:8734` server to see the top-alignment. **NOT pushed.** The detailed bullets below are from round 1
+and are partly superseded — check `git log` for the true state. **Run `git status` first.**
+1. **Nav Sign-in** → now a solid **blue pill** (`.nav .btn.nav-cta`), sized subordinate to the hero CTA.
+2. **"Then why not just use ChatGPT?"** section (`.section.tint`) — copy simplified; the old email/checks `.ba-demo` visual
+   **removed** (its dead CSS/JS cleaned); replaced by an interactive **Before / In-between / After** panel (`.transform-demo`):
+   ONE draggable handle over 3 zones, opacity **crossfade** (no clip-path → no clipping/distortion), 3 stacked scenes in a
+   `display:grid` cell (no layout shift), `role="slider"` + arrow-key + label-click, reduced-motion instant-switch. VERIFIED:
+   BEFORE + AFTER via label-click work (aria/counter/fill/opacity all correct).
+3. **Authority section** (`.section.auth`) — heading → **"What makes NOD uniquely powerful"**; the 4 `.ev-card`s replaced by a
+   3-step **`.power-flow`** (01/02/03 with arrow joins); below it a right-to-left **sources marquee** (`.logos.marquee`,
+   `mqLeft` keyframe) of **monochrome wordmarks** (Gong/Boomerang/Backlinko/Woodpecker/Lavender + Josh Braun as an italic
+   name-chip) under an honest "The research the standard is built on" label. Point-3 copy reworded to drop banned word "learn".
+
+**Constraints honored:** NOD colors + typography only (the docx's gold/dark/grain suggestions were explicitly NOT applied);
+no fabricated people/photos. **Owner chose "real logos, I source"** — realized as monochrome wordmarks because official brand
+SVGs can't be reliably/legally embedded; flag logo/endorsement RIGHTS before any public launch. Nothing pushed.
+
+**REMAINING before commit (finish these, then ask owner for explicit commit OK — never commit without it):**
+- Finish visual QA: the **IN-BETWEEN** scene, the settled **power-flow** panels, the **logo marquee scrolling**, and a real
+  **pointer-drag** of the handle (only BEFORE/AFTER label-clicks were eyeballed).
+- Triage the **impeccable Stop-hook** findings on the landing (marquee/buzzword ignores already cover `-v2`; add narrow ignores
+  only for confirmed false positives). CSSOM mobile check (tool can't render <~1456px — flag, don't fake).
+- Then get **explicit OK** and commit (the diff is large — it replaces the old demo).
 
 ## Read order at session start
 `README.md` → `PRODUCT.md` → `v1ProductDetailing.md` → `v1PRD.md` → `DESIGN.md`.
