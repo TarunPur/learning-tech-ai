@@ -18,6 +18,8 @@
 .back:hover svg{transform:translateX(-2px);}
 .intro .sub{max-width:35ch;}
 
+/* advisory/coaching text stays visible but is never part of a copy selection */
+.strength,.fix,.ready{-webkit-user-select:none;user-select:none;}
 /* a strength, named at their words — feedback, not a grade */
 .strength{margin-top:30px;display:flex;gap:11px;align-items:flex-start;max-width:37ch;
   font-size:13.5px;line-height:1.5;color:var(--ink-soft);}

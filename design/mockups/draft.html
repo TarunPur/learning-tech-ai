@@ -45,6 +45,9 @@
 /* a "move" the scaffold made — highlighted, with a why-note beneath */
 .move{background:var(--blue-tint);box-shadow:0 0 0 1px var(--blue-tint-2);
   padding:1px 3px;border-radius:2px;}
+/* coaching notes stay visible but must NEVER land in the clipboard when the
+   user selects + copies the message to paste into their email */
+.why,.handoff,.draft .masked{-webkit-user-select:none;user-select:none;}
 .why{display:flex;gap:8px;align-items:flex-start;margin:0 0 18px;padding-left:2px;
   font-size:12.5px;line-height:1.45;color:var(--ink-soft);}
 .why svg{color:var(--blue);flex:none;margin-top:1px;}
@@ -215,6 +218,18 @@
     go.classList.add('is-going');
     setTimeout(function(){ window.location.href='feedback.html'; }, 300);
   });
+
+  // copy guard: any copy from the draft yields ONLY the message (never the "Why…" notes)
+  var bodyCopy = document.querySelector('.draft .body-copy');
+  if(bodyCopy){
+    bodyCopy.addEventListener('copy', function(e){
+      var sel = window.getSelection && window.getSelection();
+      if(!sel || sel.isCollapsed) return;
+      var msg = [opener, middle, askLine].map(function(p){ return p ? p.textContent.trim() : ''; })
+                  .filter(Boolean).join('\n\n');
+      if(e.clipboardData){ e.clipboardData.setData('text/plain', msg); e.preventDefault(); }
+    });
+  }
 })();
 </script>
 </body>
