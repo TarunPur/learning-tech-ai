@@ -1,14 +1,15 @@
 # NEXT SESSION — resume here
 
-> Read this whole file first. **Last updated:** 2026-08-21 — core-solution fork RESOLVED; product/design docs updated.
-> **✅ The open A-vs-B fork is now decided (A — a "get better" coach). The next job is the OWNER's `design.md` / `journey.md` pass to absorb the new two-path loop — NOT QA, an audit, or code.** See "RESOLVED" below.
+> Read this whole file first. **Last updated:** 2026-08-21 (late) — **design layer CLOSED**: `journey.md` written, `design.md` reworked to the two-path loop, flow-change banner retired.
+> **✅ The A-vs-B fork was decided (A — a "get better" coach) AND the design.md/journey.md pass is now DONE.** The next job is the **mockup rework** in `design/mockups/` to the two-path flow — then ERD → implementation plan → build. Still NO code was written this pass (design layer only). See "Design layer — DONE" below.
 
-Project: **"Learning Tech & AI" v1**, brand **NOD**, at `~/Desktop/Learning Tech AI` (private GitHub `TarunPur/learning-tech-ai`). **Nothing is pushed** — all work is local.
+Project: **"Learning Tech & AI" v1**, brand **NOD**, at `~/Desktop/Learning Tech AI` (private GitHub `TarunPur/learning-tech-ai`). **The branch is now pushed** (backup — see Branch state).
 
 ## Branch state (read first)
 - **`main`** = pre-feedback baseline, commit `af99828`, **left untouched on purpose** for side-by-side comparison.
-- **`feedback-pass-20aug`** (current) = all new work, **24 commits** ahead of `af99828`, **local only, nothing pushed**. Working tree clean except the untracked source briefs (`Landing page*.docx/.pages`, `Learning Tech AI (1).docx`) — leave them untracked.
-- Compare the two branches to see before/after. Never commit the raw survey `.xlsx` (PII, gitignored).
+- **`feedback-pass-20aug`** (current) = all new work, now **pushed to `origin` as a backup** (2026-08-21). ~31 commits ahead of `af99828`. Working tree clean except the untracked source briefs (`Landing page*.docx/.pages`, `Learning Tech AI (1).docx`) — leave them untracked.
+- Compare the two branches to see before/after. Never commit the raw survey `.xlsx` (PII, gitignored — verified untracked before the push).
+- **Still pending owner OK (separate from the backup push):** canonical-landing (v3 vs v2) decision, real-device mobile pass, and any release/PR. The push was backup only — it locked in nothing.
 
 ## Hosted designs (LOCAL ONLY — ephemeral; you must restart the server)
 There is **no deployed URL** — the "hosted" designs are a local static server that does **not** persist across sessions.
@@ -32,11 +33,26 @@ The guided loop made the user a **passive spectator** (NOD wrote, checked, and f
 1. **Rubric discrimination test NOT run** (does it reliably tell good outreach from bad? — PRD §16/§24). Stress-test right after the demo. A weak rubric silently invalidates the experiment.
 2. **The real check needs a real backend** (an evaluator endpoint: length-math in code + one anchored Claude call). The `design/mockups/` prototype currently **fakes** the check (plants a known flaw in NOD's own draft and "finds" it) — this collapses on the write-your-own path. Real evaluator to be built with the app.
 
-## Docs updated this session (all consistent with the above)
-`v1ProductDetailing.md` (Decisions 7 & 8 amended, 11 added; core-loop steps), `v1PRD.md` (§12/§13/§15/§16/§24/§25), `PRODUCT.md`, `README.md`, `design.md` (flow-change banner + Status/Roadmap). **Not touched:** `design/mockups/` code (still old flow) and `journey.md` (owner will create).
+## ✅ Design layer — DONE (2026-08-21, late)
+The `design.md` / `journey.md` pass is complete. Order followed (peer-agreed): leave the visual system alone → write `journey.md` first → rework only the flow-dependent parts of `design.md` → retire the banner last.
+
+- **`journey.md` (NEW)** = the canonical flow spec (the *what happens*). Owns the two-path loop screen-by-screen: Home ① → Personalize ② → **Choose how to start ③** → [Write your own ④a *default*] / [NOD drafts + **spot-the-flaw** ④b *fallback*] → **Feedback on your own words ⑤** → Saved ⑥ → Later ⑦. Traces every Decision 6–11 to a screen; flags what's deferred-to-build.
+- **`design.md` (REWORKED)** = now purely the *visual system + component library* (the *how it looks*). Visual system untouched. Re-anchored screen-numbered components to named anchors; added two components — **Path-choice** (unequal-weight fork, never 50/50) and **Tap-the-weak-line** (spot-the-flaw, reuses the neutral marker); Status/Roadmap maps the mockups to the new screens; the alarmist flow-change banner is retired to a calm one-line pointer to `journey.md`.
+
+**Resolved design calls (owner delegated):**
+- **Spot-the-flaw = tap the weak line** (tap the sentence a busy reader trips on, or "I'm not sure"). Chosen over type-a-critique (reintroduces a blank page) and pick-from-a-menu (guessy).
+- **Choose-how-to-start** = loud write-your-own default + quiet "let NOD draft one" link — never two equal buttons.
+- **The fork sits after Personalize** (both paths need the intake), correcting the old "after the situation is picked" wording.
+
+Earlier this session (before the design layer): `v1ProductDetailing.md` (Decisions 7 & 8 amended, 11 added), `v1PRD.md` (§12/§13/§15/§16/§24/§25), `PRODUCT.md`, `README.md`.
 
 ## The next thing to pick up
-**Owner's `design.md` / `journey.md` pass** to absorb the two-path loop (choose-how-to-start → write-your-own default / NOD-draft+spot-the-flaw escape hatch → real feedback on their own text). The visual system in `design.md` is unchanged and reusable; only the flow/screens change. *Then* ERD + implementation plan + build (incl. the real evaluator endpoint). **No code or implementation plan yet — the design layer closes first.**
+**Rework the six mockups in `design/mockups/` to the two-path flow in `journey.md`** — this is now code/prototype work (the design layer is closed):
+- Add the **Choose how to start ③** screen after `personalize.html`.
+- Promote `compose.html` to the **write-your-own ④a default** path; anchor it with the situation + specifics so it's never a blank page.
+- Add the **tap-the-weak-line** beat to `draft.html` as the **fallback ④b** (before feedback).
+- Make `feedback.html` render **real** categorical fixes on the user's **own** text (arbitrary user-written on ④a), not a planted line.
+*Then* ERD + implementation plan + build — **including the real evaluator endpoint** (length-math in code + one anchored Claude call; the prototype currently fakes the check). Do not start ERD/build before the mockups + design are signed off.
 
 ## How to work with the owner (important)
 - **Plain, simple, non-jargon language.** No "rounds/frontier/rubric/B1" unless you explain them.
@@ -65,9 +81,9 @@ All browser-verified. Read order for product context: `README.md` → `PRODUCT.m
 
 **Key commits (newest first):** `6175752` draft CTA · `fc5ad9a` copy guard · `1cde60a`/`dadcbb8`/`fa43978` eyebrow · `2932d6e` soft funnel · `21017cf`/`5a3e107` FAQ accordion · `87beb39`/`2709f71` research cards+marquee · `1a18571` hero scene + ChatGPT journey + sources marquee · `1e1ae32` chunk-10 verify · `654cca0`…`abb093f` app chunks 4–9 · `7e901b1`…`22c86c5` landing chunks 1–3b.
 
-## Open items (secondary — after the design.md/journey.md pass)
-1. ~~Resolve A vs B~~ ✅ **Done 2026-08-21** (see RESOLVED above).
-2. Rework `design/mockups/` to the two-path loop (choose-how-to-start; `compose.html` → default path; spot-the-flaw beat on `draft.html`; real feedback in `feedback.html`).
+## Open items
+1. ~~Resolve A vs B~~ ✅ **Done 2026-08-21**. ~~`design.md`/`journey.md` pass~~ ✅ **Done 2026-08-21** (see "Design layer — DONE").
+2. **(NEXT)** Rework `design/mockups/` to the two-path loop per `journey.md` (choose-how-to-start ③; `compose.html` → default ④a; tap-the-weak-line beat on `draft.html` ④b; real feedback in `feedback.html` ⑤).
 3. Build the real evaluator endpoint (length-math in code + one anchored Claude call) — needs an `ANTHROPIC_API_KEY`; then run the deferred rubric discrimination test.
 4. Return screen still uses the old boxed chip (eyebrow pattern not applied there).
-5. Decide canonical landing (v3 vs v2); real-device mobile pass; push decision — all still pending owner OK. **Nothing pushed yet; local commits only.**
+5. Decide canonical landing (v3 vs v2); real-device mobile pass; any release/PR — all still pending owner OK. **Backup push done; no release/PR made.**
