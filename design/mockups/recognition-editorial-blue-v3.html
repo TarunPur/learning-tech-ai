@@ -213,14 +213,16 @@ button{font-family:inherit;color:inherit;}
   cancel.addEventListener('click',collapse);
   syncArrow();
 
-  // show-what's-happening: a card commits to a situation, so acknowledge the tap
+  // show-what's-happening: a card commits to a situation, then routes to Personalize
   Array.prototype.forEach.call(document.querySelectorAll('.card'),function(c){
     c.addEventListener('click',function(){
       if(document.querySelector('.card.is-loading')) return;
       c.classList.add('is-loading');
-      // (mockup) real build routes to the Personalize screen here
+      setTimeout(function(){ window.location.href='personalize.html'; }, 280);
     });
   });
+  // the scoped "something else" arrow also enters the flow at Personalize
+  arrow.addEventListener('click',function(){ if(!arrow.disabled) window.location.href='personalize.html'; });
 })();
 </script>
 </body>
