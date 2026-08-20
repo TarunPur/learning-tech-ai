@@ -84,6 +84,10 @@
     }
   };
 
+  /* Inline suggestions under the "one thing you're asking for" field, for users
+     who don't yet know what a good, low-friction ask looks like. Editable once picked. */
+  var ASK_SUGGESTIONS = ['A 15-minute call', 'Two times to choose from', 'A quick yes/no reply'];
+
   function scenario(id) { return SCENARIOS[id] || SCENARIOS.quiet; }
 
   /* Current situation label for the context chip: a custom free-text situation
@@ -100,6 +104,7 @@
   global.NOD = {
     store: Store,
     SCENARIOS: SCENARIOS,
+    ASK_SUGGESTIONS: ASK_SUGGESTIONS,
     scenario: scenario,
     currentSituationLabel: currentSituationLabel
   };
