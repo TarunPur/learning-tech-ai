@@ -17,10 +17,13 @@
 .back svg{transition:transform .2s;}
 .back:hover svg{transform:translateX(-2px);}
 
-.chosen{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
-  padding:7px 14px 7px 12px;background:var(--blue-tint);border:1px solid var(--blue-tint-2);}
-.chosen .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none;}
-.chosen span{font-size:13px;font-weight:600;color:var(--blue-deep);letter-spacing:0.01em;}
+/* selected-situation eyebrow above the headline (no boxed chip, no back link) */
+.eyebrow-situation{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 16px;
+  font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
+.eyebrow-situation #chipLabel{color:var(--ink-soft);}
+.eyebrow-situation .eb-sep{color:var(--line-2);}
+.eb-change{color:var(--blue);text-decoration:none;letter-spacing:.08em;transition:color .18s;}
+.eb-change:hover,.eb-change:focus-visible{color:var(--blue-deep);outline:none;text-decoration:underline;text-underline-offset:3px;}
 
 .intro .sub{max-width:34ch;}
 .priv{margin-top:30px;max-width:38ch;line-height:1.45;align-items:flex-start;}
@@ -72,12 +75,11 @@
       <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
     </div>
 
-    <a class="back anim d2" href="recognition-editorial-blue-v3.html">
-      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Pick a different situation
-    </a>
-
-    <div class="chosen anim d2"><span class="dot"></span><span id="chipLabel">Follow-up · A prospect went quiet</span></div>
+    <p class="eyebrow-situation anim d2">
+      <span id="chipLabel">Follow-up · A prospect went quiet</span>
+      <span class="eb-sep" aria-hidden="true">·</span>
+      <a class="eb-change" href="recognition-editorial-blue-v3.html">Change</a>
+    </p>
 
     <h1 class="h-display anim d2" id="pHeading">First, who went quiet — <em>and what you need.</em></h1>
     <p class="sub anim d3" id="pSub">Three quick lines. I'll use them to shape a follow-up that sounds like you — then we refine it together.</p>
