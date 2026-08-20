@@ -1,4 +1,4 @@
-<!-- STATUS: visual system current as of 2026-08-20; the FLOW it documents is superseded as of 2026-08-21 (two-path loop — see the "⚠️ Flow change" banner below and "Status & Roadmap"). Brand = NOD. Canonical implementation in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. -->
+<!-- STATUS: current as of 2026-08-21. Brand = NOD. This file is the VISUAL SYSTEM + component library (how NOD looks). The FLOW (what happens, screen by screen, the two-path loop) lives in journey.md. Canonical implementation in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. -->
 ---
 name: NOD
 description: Help a non-technical professional finish one real outreach message, with help that fades — and know it's good before they send.
@@ -79,13 +79,7 @@ components:
 
 # Design System: NOD
 
-> ## ⚠️ Flow change — read before designing (2026-08-21)
-> The **visual system** in this file (colors, type, cards, motion, the "Calm Correspondent" North Star) is unchanged and still authoritative. **The user flow it assumes is not.** The core-solution fork was resolved (see `v1ProductDetailing.md` Decisions 7, 8, 11 and `NEXT-SESSION.md`):
-> - **Spine is now a "get better" coach, not a "get it done" assistant.** The user does the work; the help fades.
-> - **The draft step is now two paths, user's choice, with *write your own draft* as the DEFAULT.** The escape hatch is *NOD drafts it → the user spots what's weak first*. The old **single "AI-led fading-scaffold draft"** (Screen 3, `draft.html`) is now just the escape-hatch path, **not** the default.
-> - **The rubric now reads the user's OWN draft** (user-written or NOD-drafted), not only a NOD-authored one. Feedback (Screen 4) still = 1–2 concrete fixes at their actual words, never a score.
-> - **All 6 mockups in `design/mockups/` predate this** and show the old single-path flow with a *faked* rubric check. They need reworking to: (a) a **choose-how-to-start** step, (b) a **write-your-own composer** as the primary path (`compose.html` is a usable base), (c) a **spot-the-flaw** beat before feedback on the NOD-draft path, (d) **real** categorical feedback on the entered text.
-> - The design tokens/components below are all **reusable as-is** for these new screens.
+> **Flow lives in `journey.md`.** This file is the visual system — colours, type, cards, motion, components, and the "Calm Correspondent" North Star. The user flow (the two-path loop: choose how to start → write your own / NOD-drafts-and-you-spot-the-flaw → feedback on your own words) is specified in `journey.md`, grounded in `v1ProductDetailing.md` Decisions 6–11. Every token and component below is reusable as-is across those screens.
 
 ## Overview
 
@@ -145,7 +139,7 @@ A warm-neutral canvas carried almost entirely by paper and ink, with a single bl
 
 A two-column editorial composition centered in a max-width **1240px** stage, vertically centered in the viewport. On desktop (≥940px) it splits **0.86fr / 1.14fr** with a **64px** gap: left is the statement column (mark, headline, sub, plus a reassurance/context line), right is the working surface (recognition grid, intake card, draft, feedback, saved messages, or a single situation card). Below 940px the stage collapses to a single column.
 
-Screen 1's recognition grid is an **aligned 2×2** of situation cards (26px gap). *(This replaced the earlier staggered/zig-zag numbered layout.)*
+The recognition grid on **Home ①** is an **aligned 2×2** of situation cards (26px gap). *(This replaced the earlier staggered/zig-zag numbered layout.)*
 
 ## Elevation & Depth
 
@@ -204,7 +198,7 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 
 ## Responsive & Accessibility
 
-- **Desktop-primary**, but every screen has mobile media queries (≤600/640px): the stage collapses to one column, Screen 1's 2×2 grid stacks to a single column, paddings tighten, the statement scales down, and interactive controls (field arrows, chips) get **≥44px tap targets**. *(Mobile CSS is CSSOM-verified; a real-device pass is still owed — the tooling can't render below ~1456px.)*
+- **Desktop-primary**, but every screen has mobile media queries (≤600/640px): the stage collapses to one column, Home ①'s 2×2 grid stacks to a single column, paddings tighten, the statement scales down, and interactive controls (field arrows, chips) get **≥44px tap targets**. *(Mobile CSS is CSSOM-verified; a real-device pass is still owed — the tooling can't render below ~1456px.)*
 - **WCAG AA:** body/secondary text and the AA-darkened `--ink-faint` clear 4.5:1 on paper; focus-visible rings (2.5px blue) on all interactives; reduced-motion honored; English-only copy in v1.
 
 ## Do's and Don'ts
