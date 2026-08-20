@@ -40,6 +40,15 @@
         ],
         "createdAt": "2026-08-19T19:20:59.230Z",
         "reason": "user confirmed on landing-editorial-blue.html: the research-voices scrolling band (ref adplist.org), carried into v2; honest social proof of the PROBLEM, mitigated with overflow-x auto + prefers-reduced-motion static fallback + edge fades"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "design/mockups/landing-editorial-blue-v3.html"
+        ],
+        "createdAt": "2026-08-20T13:44:03.725Z",
+        "reason": "user confirmed: owner explicitly requested right-to-left scrolling research sources; mitigated with pause-on-hover, edge fades, and a static prefers-reduced-motion fallback"
       }
     ]
   }
