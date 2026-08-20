@@ -1,9 +1,9 @@
 # NEXT SESSION — resume here
 
-> Read this whole file first. **Last updated:** 2026-08-21 (late) — **design layer CLOSED**: `journey.md` written, `design.md` reworked to the two-path loop, flow-change banner retired.
-> **✅ The A-vs-B fork was decided (A — a "get better" coach) AND the design.md/journey.md pass is now DONE.** The next job is the **mockup rework** in `design/mockups/` to the two-path flow — then ERD → implementation plan → build. Still NO code was written this pass (design layer only). See "Design layer — DONE" below.
+> Read this whole file first. **Last updated:** 2026-08-21 (very late) — **design layer + mockup rework + a polish pass are all DONE and pushed.** The two-path loop is fully built and browser-verified in `design/mockups/`.
+> **✅ Fork decided (A — "get better" coach) · ✅ `journey.md`/`design.md` done · ✅ mockups reworked to the two-path loop · ✅ owner polish pass done.** The next job is the **owner's own test pass**, then real-device mobile, then **ERD → implementation plan → build** (incl. the real evaluator endpoint). See the three "DONE" sections + "Polish pass" below.
 
-Project: **"Learning Tech & AI" v1**, brand **NOD**, at `~/Desktop/Learning Tech AI` (private GitHub `TarunPur/learning-tech-ai`). **The branch is now pushed** (backup — see Branch state).
+Project: **"Learning Tech & AI" v1**, brand **NOD**, at `~/Desktop/Learning Tech AI` (private GitHub `TarunPur/learning-tech-ai`). **The branch is pushed and in sync with `origin`.** Current tagline: **"Your coach against the AI slop — so the skill sticks."**
 
 ## Branch state (read first)
 - **`main`** = pre-feedback baseline, commit `af99828`, **left untouched on purpose** for side-by-side comparison.
@@ -48,13 +48,20 @@ Earlier this session (before the design layer): `v1ProductDetailing.md` (Decisio
 
 ## ✅ Mockup rework — DONE (2026-08-21, late) — browser-verified, both paths
 The six `design/mockups/` now match the two-path loop in `journey.md`. Serve: `cd design/mockups && python3 -m http.server 8734`; entry `http://localhost:8734/landing-editorial-blue-v3.html` (append `?v=x` cache-buster when re-testing edited screens).
-- **NEW `choose.html` ③** — the fork after Personalize; loud "Write your first version" pill + quiet "let NOD draft one" link (never 50/50). Writes `path` ('own'|'nod').
+- **NEW `choose.html` ③** — the fork after Personalize; writes `path` ('own'|'nod'). *(Redesigned in the polish pass — see below: now two comparable option rows, not a pill + quiet link.)*
 - **`compose.html` ④a** — repurposed from return-only to the **day-one default**; anchored by the user's own notes (never blank); routes through feedback; serves the return path too via `returnMode`.
 - **`draft.html` ④b** — the **spot-the-flaw** beat: NOD drafts → user taps the weak line FIRST → NOD reacts → check. Dropped the old tone/phrasing chips + upfront why-notes.
 - **`feedback.html` ⑤** — reads the user's **OWN** text on both paths via `flow.js` `evaluateText()` (Option-A heuristic stand-in: soft-opener / no-ask / too-long). No more planted flag. Clean-pass + guidance-only states handled. Carries an honest "prototype check" note.
 - **`flow.js`** — added `path`, `workingDraftText()`, `evaluateText()`; coach-reframed scenario copy.
 - **`artifact.html` ⑥** — quiet "You wrote this one" / "Started from a NOD draft" tag (Decision-11 trend). **`return.html` ⑦** — re-attempt now flows through feedback; eyebrow replaces the boxed chip. **Home/landing** — copy softened to "you write, I check".
 - Verified in Chrome (desktop ≥1456px): both full paths, use-edit/keep-mine, clean-pass, no-ask guidance, path stamping. **Mobile still CSSOM-only** (tool can't render narrow) — real-device pass still owed.
+
+## ✅ Polish pass — owner feedback (2026-08-21, very late) — all browser-verified + pushed
+After the rework, the owner reviewed screens and requested these; all done:
+- **Tagline changed** to **"Your coach against the AI slop — so the skill sticks."** Rolled across all 8 app screens' brand mark + `design.md` (frontmatter + Brand section). Old "Know it's good before you send…" retired to a product descriptor. Landing nav is logo-only (unaffected).
+- **Landing "You improve" demo step** — added a labelled **"The skill you keep"** callout that names the transferable lesson ("End with one clear, specific ask") so the learning is explicit, not implied. Shows on the final demo step + the reduced-motion static state. (Design-hook flagged a side-tab accent border → fixed to a subtle full hairline; nothing suppressed.)
+- **Landing journey-foot copy** — "NOD **checks**" → "NOD **optimizes** your draft…" (owner's word choice; I flagged that "optimizes" slightly implies NOD does the work — owner kept it).
+- **`choose.html` ③ REDESIGNED** (this supersedes the "pill + quiet link" build): the left column is slimmed to just the question + reassurance (killed the left-column-vs-card redundancy); the right column is now **two comparable option rows** — text-left + a **filled CTA right** (uses the card width, no left-stranding). Both are real filled pills (solid blue "Write it myself" / blue-tint "Show me a draft") — Buy-Now/Add-to-Cart style — with the **default still clearly leading** (Recommended tag, solid blue, listed first). ⚠️ *Watch:* a more prominent fallback nudges toward the get-it-done drift (Decision 11) — the **independence-trend measurement** is the guardrail; if it sags, this screen's balance is the first knob to turn.
 
 ## The next thing to pick up
 1. **Owner test pass** on the reworked flow (both paths) → collect fixes.
@@ -91,8 +98,9 @@ All browser-verified. Read order for product context: `README.md` → `PRODUCT.m
 **Key commits (newest first):** `6175752` draft CTA · `fc5ad9a` copy guard · `1cde60a`/`dadcbb8`/`fa43978` eyebrow · `2932d6e` soft funnel · `21017cf`/`5a3e107` FAQ accordion · `87beb39`/`2709f71` research cards+marquee · `1a18571` hero scene + ChatGPT journey + sources marquee · `1e1ae32` chunk-10 verify · `654cca0`…`abb093f` app chunks 4–9 · `7e901b1`…`22c86c5` landing chunks 1–3b.
 
 ## Open items
-1. ~~Resolve A vs B~~ ✅ **Done 2026-08-21**. ~~`design.md`/`journey.md` pass~~ ✅ **Done 2026-08-21** (see "Design layer — DONE").
-2. **(NEXT)** Rework `design/mockups/` to the two-path loop per `journey.md` (choose-how-to-start ③; `compose.html` → default ④a; tap-the-weak-line beat on `draft.html` ④b; real feedback in `feedback.html` ⑤).
-3. Build the real evaluator endpoint (length-math in code + one anchored Claude call) — needs an `ANTHROPIC_API_KEY`; then run the deferred rubric discrimination test.
-4. Return screen still uses the old boxed chip (eyebrow pattern not applied there).
-5. Decide canonical landing (v3 vs v2); real-device mobile pass; any release/PR — all still pending owner OK. **Backup push done; no release/PR made.**
+1. ~~Resolve A vs B~~ ✅ **Done**. ~~`design.md`/`journey.md` pass~~ ✅ **Done**. ~~Rework `design/mockups/` to the two-path loop~~ ✅ **Done + polished** (2026-08-21). ~~Return boxed chip → eyebrow~~ ✅ **Done**.
+2. **(NEXT)** Owner test pass on the reworked flow (both paths), then real-device mobile pass.
+3. Build the real evaluator endpoint (length-math in code + one anchored Claude call) — needs an `ANTHROPIC_API_KEY`; replaces `flow.js` `evaluateText()`; then run the deferred rubric discrimination test.
+4. **Skill-line personalization** (build): the "skill you keep" callout must name the user's OWN learned skill, not the hardcoded demo line — see `journey.md` §6.
+5. Decide canonical landing (v3 vs v2); any release/PR — still pending owner OK. **Backup push done + in sync; no release/PR made.**
+6. Cross-screen copy: the "you write / I check / get sharper" idea now appears on Home + inside the cards — watch for over-repetition when the real app is built (owner flagged repetition sensitivity).
