@@ -17,10 +17,13 @@
 .back svg{transition:transform .2s;}
 .back:hover svg{transform:translateX(-2px);}
 
-.chosen{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
-  padding:7px 14px 7px 12px;background:var(--blue-tint);border:1px solid var(--blue-tint-2);}
-.chosen .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none;}
-.chosen span{font-size:13px;font-weight:600;color:var(--blue-deep);letter-spacing:0.01em;}
+/* selected-task eyebrow above the headline (no boxed chip, no back link) */
+.eyebrow-situation{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 16px;
+  font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
+.eyebrow-situation #chipLabel{color:var(--ink);}
+.eyebrow-situation .eb-sep{color:var(--line-2);}
+.eb-change{color:var(--blue);text-decoration:none;letter-spacing:.08em;transition:color .18s;}
+.eb-change:hover,.eb-change:focus-visible{color:var(--blue-deep);outline:none;text-decoration:underline;text-underline-offset:3px;}
 .intro .sub{max-width:35ch;}
 
 /* the "I do → we do" note */
@@ -90,12 +93,11 @@
       <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
     </div>
 
-    <a class="back anim d2" href="personalize.html">
-      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Change the details
-    </a>
-
-    <div class="chosen anim d2"><span class="dot"></span><span id="chipLabel">Follow-up · A prospect went quiet</span></div>
+    <p class="eyebrow-situation anim d2">
+      <span id="chipLabel">Follow-up · A prospect went quiet</span>
+      <span class="eb-sep" aria-hidden="true">·</span>
+      <a class="eb-change" href="personalize.html">Change details</a>
+    </p>
 
     <h1 class="h-display anim d2" id="dHeading">Here's a first shape — <em>your call on the moves.</em></h1>
     <p class="sub anim d3">I drafted it from your three lines and marked why each move is here. Set the two that matter most and I'll reshape around them.</p>
