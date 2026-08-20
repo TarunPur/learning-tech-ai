@@ -379,7 +379,15 @@ h1,h2,h3,p{margin:0;}
 .demo-note.warn svg{color:var(--ink-faint);}
 .demo-note.good svg{color:var(--blue);}
 .demo-note b{color:var(--ink-2);font-weight:600;}
-.demo-card.swapping .demo-ctx,.demo-card.swapping .demo-mail,.demo-card.swapping .demo-note{opacity:0;}
+.demo-card.swapping .demo-ctx,.demo-card.swapping .demo-mail,.demo-card.swapping .demo-note,.demo-card.swapping .demo-lesson{opacity:0;}
+/* the takeaway made explicit — the transferable skill, named, on the "You improve" step */
+.demo-lesson{display:none;margin:16px 0 0;padding:13px 15px;background:var(--blue-tint);border-left:3px solid var(--blue);transition:opacity .3s ease;}
+.demo-lesson.show{display:block;animation:lessonIn .4s cubic-bezier(.16,1,.3,1);}
+.demo-lesson .ll{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);margin:0 0 6px;}
+.demo-lesson .ll svg{color:var(--blue);}
+.demo-lesson .lt{display:block;font-size:14.5px;line-height:1.5;color:var(--ink-2);font-weight:500;}
+.demo-lesson .lt b{color:var(--blue-deep);font-weight:700;}
+@keyframes lessonIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 /* stage-3 caption — a static clarifier that this is a later, similar task (not a rewrite of the first) */
 .demo-cap{margin:14px 0 0;font-family:"Spectral",serif;font-style:italic;font-size:13px;color:var(--ink-faint);opacity:0;transition:opacity .3s ease;}
 .demo-cap.show{opacity:1;}
@@ -583,6 +591,10 @@ h1,h2,h3,p{margin:0;}
           <div class="demo-note warn" id="demoNote">
             <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 6v5M10 14h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/></svg>
             <span>A vague ask gives them nothing simple to say yes to.</span>
+          </div>
+          <div class="demo-lesson" id="demoLesson">
+            <span class="ll"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.5l2.2 4.6 5 .7-3.6 3.5.9 5L10 14l-4.5 2.3.9-5L2.8 7.8l5-.7L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>The skill you keep</span>
+            <span class="lt">End with <b>one clear, specific ask</b> — give them a single, easy thing to say yes to.</span>
           </div>
           <p class="demo-cap" id="demoCap"></p>
         </div>
@@ -883,10 +895,13 @@ h1,h2,h3,p{margin:0;}
       });
     }
     function setCap(text){ if(text){ cap.textContent = text; cap.classList.add('show'); } else { cap.classList.remove('show'); cap.textContent = ''; } }
+    var lesson = demo.querySelector('#demoLesson');
+    function setLesson(show){ if(lesson) lesson.classList.toggle('show', !!show); }
     function stage0(){
       ctx.textContent = 'Your draft · a prospect who went quiet';
       mail.innerHTML = 'Hi Tarun — just checking in. <span class="demo-ask weak">Let me know your thoughts.</span>';
       setNote('warn', 'A vague ask gives them nothing simple to say yes to.');
+      setLesson(false);
       setCap('');
       setSteps(0);
     }
@@ -896,6 +911,7 @@ h1,h2,h3,p{margin:0;}
       var a = mail.querySelector('.demo-ask');
       if(a){ a.classList.remove('weak'); a.classList.add('fixed'); setTimeout(function(){ if(mail.querySelector('.demo-ask')===a) a.textContent = 'Would Thursday at 4 work for a quick call?'; }, reduce?0:650); }
       setNote('good', 'The standard wants <b>one clear, easy ask</b> — so NOD points at that line, and why.');
+      setLesson(false);
       setCap('');
       setSteps(1);
     }
@@ -905,6 +921,7 @@ h1,h2,h3,p{margin:0;}
         ctx.textContent = 'You improve · the same message, sharpened';
         mail.innerHTML = 'Hi Tarun — following up after the demo. <span class="demo-ask fixed">Would Thursday at 4 work for a quick call?</span>';
         setNote('good', 'Now you know the fix — <b>next time you write the clear ask yourself.</b>');
+        setLesson(true);
         setCap('That is the part a chat box skips: the skill sticks.');
       }
       if(reduce){ apply(); }
@@ -915,7 +932,15 @@ h1,h2,h3,p{margin:0;}
     function advance(){ i = (i+1) % 3; fns[i](); schedule(); }
     function schedule(){ if(paused) return; timer = setTimeout(advance, i===2 ? STAGE+PAUSE : STAGE); }
     // reduced motion: a stable, understandable final state (the fixed ask) — no cycling
-    function startStatic(){ stage0(); stage1(); steps.forEach(function(st,n){ st.classList.remove('is-active'); st.classList.toggle('is-done', n<2); var f=st.querySelector('.td-sfill'); f.style.transition='none'; f.style.width = n<2 ? '100%' : '0%'; }); }
+    function startStatic(){
+      // reduced motion: land on the full payoff (the improved message + the named skill), no cycling
+      ctx.textContent = 'You improve · the same message, sharpened';
+      mail.innerHTML = 'Hi Tarun — following up after the demo. <span class="demo-ask fixed">Would Thursday at 4 work for a quick call?</span>';
+      setNote('good', 'Now you know the fix — <b>next time you write the clear ask yourself.</b>');
+      setLesson(true);
+      setCap('That is the part a chat box skips: the skill sticks.');
+      steps.forEach(function(st,n){ st.classList.remove('is-active'); st.classList.add('is-done'); var f=st.querySelector('.td-sfill'); f.style.transition='none'; f.style.width='100%'; });
+    }
     function start(){ if(started) return; started = true; if(reduce){ startStatic(); return; } i = -1; advance(); }
     // pause while the visitor is reading/hovering/focused inside the demo (P0 #14)
     function pause(){ if(paused || reduce) return; paused = true; clearTimeout(timer); }
