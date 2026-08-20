@@ -236,12 +236,6 @@ h1,h2,h3,p{margin:0;}
 .v-h em{font-style:italic;color:var(--blue-deep);}
 .v-sub{margin:20px auto 0;max-width:58ch;font-size:clamp(15px,1.5vw,17px);line-height:1.6;color:var(--ink-soft);}
 
-.marquee{margin-top:clamp(40px,5vw,60px);position:relative;overflow-x:auto;scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
-          mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);}
-.marquee::-webkit-scrollbar{display:none;}
-.mq-set{display:contents;}
-.mq-track{display:flex;width:max-content;padding:12px 0;}
 /* static responsive insight grid (not a testimonial wall) */
 .voices-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:clamp(30px,4vw,44px);}
 @media(min-width:640px){ .voices-grid{grid-template-columns:1fr 1fr;} }
@@ -250,12 +244,6 @@ h1,h2,h3,p{margin:0;}
 .vcard blockquote{margin:12px 0 0;font-size:15px;line-height:1.6;color:var(--ink-2);}
 .vcard figcaption{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint);}
 .v-note{margin:clamp(30px,4vw,42px) auto 0;text-align:center;max-width:62ch;font-size:12.5px;line-height:1.55;color:var(--ink-faint);}
-@media (prefers-reduced-motion:no-preference){
-  .mq-ready{overflow-x:hidden;}
-  .mq-ready .mq-track{animation:mqLeft 64s linear infinite;}
-  .mq-ready:hover .mq-track,.mq-ready:focus-within .mq-track{animation-play-state:paused;}
-  @keyframes mqRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-}
 
 /* motion — one authored grammar: sections rise once on entry */
 @media (prefers-reduced-motion:no-preference){
@@ -354,10 +342,6 @@ h1,h2,h3,p{margin:0;}
 .lg{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(19px,2.2vw,25px);letter-spacing:-0.01em;color:var(--ink-2);opacity:.78;white-space:nowrap;}
 .lg-name{font-style:italic;font-weight:500;}
 .src-strip .srcnote{margin-top:18px;font-size:12.5px;font-weight:500;color:var(--ink-faint);}
-@media (prefers-reduced-motion:no-preference){
-  .mq-ready.logos .mq-track{animation-name:mqLeft;animation-duration:42s;}
-  @keyframes mqLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-}
 
 /* reduced-motion: no crossfade / no snap easing — instant, legible states */
 @media (prefers-reduced-motion:reduce){
@@ -375,7 +359,7 @@ h1,h2,h3,p{margin:0;}
   STORY: Visitor understands this is neither another AI tool nor a course; believes it holds their draft to a real, consistent, evidence-grounded standard while they keep the wheel; signs in to finish one real message.
   FIRST VIEWPORT: centered serif statement "Finish one real message — and know it's good.", a plain sub, one blue "Start with your message →" primary action + free/no-setup microcopy, a quiet evidence line; warm paper, generous air; brand mark + Sign in in a sticky bar; an annotated real-draft card demonstrates the mechanism as you reach the fold.
   FORM: objection-led scroll (index 6 of the ordered structural list; concept-seed key 77eabc93, --scope surface --mode persuade).
-  NOTE (voices band): the "refuses testimonial-wall" stance stands — this page never fakes praise. The pre-beat "From our research" marquee is social proof of the PROBLEM in real research voices (honestly labeled, no star ratings, no invented people), consistent with the truth-telling thesis. Swap to genuine post-launch reviews at the marked point when real users exist.
+  NOTE (voices band): the "refuses testimonial-wall" stance stands — this page never fakes praise. The "From our research" band is a STATIC insight grid (honestly labeled, no star ratings, no invented people), consistent with the truth-telling thesis. Swap to genuine post-launch reviews when real users exist.
   FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
 -->
 
@@ -635,18 +619,6 @@ h1,h2,h3,p{margin:0;}
     var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ start(); io.unobserve(e.target); } }); }, {threshold:0.35});
     io.observe(demo);
   })();
-  // voices marquee: clone the authored set once for a seamless loop (static, scrollable if reduced-motion)
-  if(!reduce){
-    document.querySelectorAll('.marquee').forEach(function(mq){
-      var track = mq.querySelector('.mq-track');
-      var set = track && track.querySelector('.mq-set');
-      if(!set) return;
-      var dupe = set.cloneNode(true);
-      dupe.setAttribute('aria-hidden','true');
-      track.appendChild(dupe);
-      mq.classList.add('mq-ready');
-    });
-  }
   // sign-in targets are inert in this mockup
   document.querySelectorAll('[data-signin]').forEach(function(a){
     a.addEventListener('click', function(e){ e.preventDefault(); });
