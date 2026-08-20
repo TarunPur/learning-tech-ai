@@ -46,13 +46,20 @@ The `design.md` / `journey.md` pass is complete. Order followed (peer-agreed): l
 
 Earlier this session (before the design layer): `v1ProductDetailing.md` (Decisions 7 & 8 amended, 11 added), `v1PRD.md` (§12/§13/§15/§16/§24/§25), `PRODUCT.md`, `README.md`.
 
+## ✅ Mockup rework — DONE (2026-08-21, late) — browser-verified, both paths
+The six `design/mockups/` now match the two-path loop in `journey.md`. Serve: `cd design/mockups && python3 -m http.server 8734`; entry `http://localhost:8734/landing-editorial-blue-v3.html` (append `?v=x` cache-buster when re-testing edited screens).
+- **NEW `choose.html` ③** — the fork after Personalize; loud "Write your first version" pill + quiet "let NOD draft one" link (never 50/50). Writes `path` ('own'|'nod').
+- **`compose.html` ④a** — repurposed from return-only to the **day-one default**; anchored by the user's own notes (never blank); routes through feedback; serves the return path too via `returnMode`.
+- **`draft.html` ④b** — the **spot-the-flaw** beat: NOD drafts → user taps the weak line FIRST → NOD reacts → check. Dropped the old tone/phrasing chips + upfront why-notes.
+- **`feedback.html` ⑤** — reads the user's **OWN** text on both paths via `flow.js` `evaluateText()` (Option-A heuristic stand-in: soft-opener / no-ask / too-long). No more planted flag. Clean-pass + guidance-only states handled. Carries an honest "prototype check" note.
+- **`flow.js`** — added `path`, `workingDraftText()`, `evaluateText()`; coach-reframed scenario copy.
+- **`artifact.html` ⑥** — quiet "You wrote this one" / "Started from a NOD draft" tag (Decision-11 trend). **`return.html` ⑦** — re-attempt now flows through feedback; eyebrow replaces the boxed chip. **Home/landing** — copy softened to "you write, I check".
+- Verified in Chrome (desktop ≥1456px): both full paths, use-edit/keep-mine, clean-pass, no-ask guidance, path stamping. **Mobile still CSSOM-only** (tool can't render narrow) — real-device pass still owed.
+
 ## The next thing to pick up
-**Rework the six mockups in `design/mockups/` to the two-path flow in `journey.md`** — this is now code/prototype work (the design layer is closed):
-- Add the **Choose how to start ③** screen after `personalize.html`.
-- Promote `compose.html` to the **write-your-own ④a default** path; anchor it with the situation + specifics so it's never a blank page.
-- Add the **tap-the-weak-line** beat to `draft.html` as the **fallback ④b** (before feedback).
-- Make `feedback.html` render **real** categorical fixes on the user's **own** text (arbitrary user-written on ④a), not a planted line.
-*Then* ERD + implementation plan + build — **including the real evaluator endpoint** (length-math in code + one anchored Claude call; the prototype currently fakes the check). Do not start ERD/build before the mockups + design are signed off.
+1. **Owner test pass** on the reworked flow (both paths) → collect fixes.
+2. **Real-device mobile** verification (tool can't render narrow).
+3. Then **ERD + implementation plan + build** — **including the real evaluator endpoint** (length-math in code + one anchored Claude call to replace the `evaluateText()` heuristic), then run the deferred rubric discrimination test. Do not start ERD/build before the reworked mockups are signed off.
 
 ## How to work with the owner (important)
 - **Plain, simple, non-jargon language.** No "rounds/frontier/rubric/B1" unless you explain them.
