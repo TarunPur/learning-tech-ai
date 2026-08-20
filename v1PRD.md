@@ -249,14 +249,15 @@ Targets are marked *[TBD — set with owner]*: we defined the *shape* of success
 | Every AI-learning product | This product |
 |---|---|
 | Starts with content / curriculum | Starts with your real task |
-| Teaches concepts | Does the task *with* you |
+| Teaches concepts | *You* do the task; the help fades |
+| Writes it *for* you (ChatGPT) | *You* write it; it makes you sharper |
 | Measures completion / confidence | Measures an independent re-attempt |
 | Generic exercises | Your own messy situation |
 | More to learn | One thing, done, repeatable |
 
 ### The architecture in one product-sentence
 
-Concrete-example front door → conversational personalize (with auto-mask) → AI-led fading-scaffold draft → rubric feedback loop → saved artifact → later nudge + instrumentation. *(Technical architecture deferred to design + engineering.)*
+Concrete-example front door → conversational personalize (with auto-mask) → **choose how to start (write your own draft = default, or let NOD draft it and spot the flaw first)** → rubric feedback loop on *their own* draft → saved artifact → later nudge + instrumentation. *(Technical architecture deferred to design + engineering.)* *(Updated 2026-08-21 — see `v1ProductDetailing.md` Decisions 7 & 11: the default is now the user writing their own draft, not an AI-led first attempt.)*
 
 ### Non-negotiables
 
@@ -290,8 +291,8 @@ They already do — 64% daily — and still stay unconfident (36%). 🟢 The mis
 | 1 | Recognition home | 3–4 concrete Marketing/Sales outreach situations + a scoped "something else" escape (a *"got a different outreach message?"* intake, not an open box) | HIGH | LOW 🔵 | Tarun |
 | 2 | Personalize intake | Few-word conversational fill-in of the picked situation | HIGH | LOW 🔵 | Tarun |
 | 3 | Auto-mask | Silent PII → placeholder + reassurance, before persist/model-send | HIGH | MED 🔵 | Tarun |
-| 4 | Guided fading-scaffold draft | AI drafts with visible reasoning, hands the user 1–2 key decisions | HIGH | MED 🔵 | Tarun |
-| 5 | Rubric feedback (not a score) | Concrete fixes vs. expert backbone + 1–2 personalized criteria | HIGH | MED 🔵 | Tarun |
+| 4 | Choose-how-to-start → draft | User picks a path: **write their own draft (default)**, or **NOD drafts it → user spots the flaw first (escape hatch)**. Both carry the situation + intake. *(amended — Decisions 7, 11)* | HIGH | MED 🔵 | Tarun |
+| 5 | Rubric feedback (not a score) | The **real** rubric reads *their own* draft (user-written or NOD-drafted) — concrete fixes vs. expert backbone + 1–2 personalized criteria, pointing at their actual words | HIGH | MED 🔵 | Tarun |
 | 6 | Artifact + portfolio | Save the reusable message; running history as "proof" | MED | LOW 🔵 | Tarun |
 | 7 | Outcome-tied nudge | One nudge pinned to their real next occurrence | MED | LOW 🔵 | Tarun |
 | 8 | Unaided-attempt capture | Instrument help requests / AI turns / time | HIGH | MED 🔵 | Tarun |
@@ -333,9 +334,12 @@ The instrumentation **is** the experiment (§8). Product-level events below; exa
 
 ## 15. Key flows
 
-### Primary flow
+### Primary flow *(updated 2026-08-21 — Decisions 7 & 11)*
 
-`Recognition home → pick a situation → personalize (auto-mask fires) → AI-led fading-scaffold draft → concrete feedback → revise → save artifact`
+`Recognition home → pick a situation → personalize (auto-mask fires) → choose how to start → draft → concrete feedback on their own draft → revise → save artifact`
+
+- **Choose how to start** — **default: write your own draft**; **escape hatch: NOD drafts it → the user spots what's weak first**, then sees the rubric suggestions.
+- Both paths land on the **same** rubric feedback (reading the user's actual text). "I do → we do → you do" is retained as the **graduation arc**, not the day-one default.
 
 ### Return / measurement flow
 
@@ -352,6 +356,8 @@ The instrumentation **is** the experiment (§8). Product-level events below; exa
 ## 16. Key logic
 
 ### The judgment model (product-level, not code)
+
+> **Amendment 2026-08-21 (Decisions 7 & 11).** Now that *writing your own draft* is the default entry, the rubric must genuinely evaluate **arbitrary user-written text**, not only a message NOD authored. This does **not** change the five criteria or the hybrid split below — it raises the bar on getting them right, because there's no NOD-authored draft to lean on. (The prototype's shortcut — planting a known bad line and "finding" it — only worked because NOD wrote the draft; it is **not** the real mechanism.) The hybrid below is exactly what makes a real check on the user's own words trustworthy. *Consciously deferred:* the discrimination test that this rubric reliably separates good from bad real messages is still pending (§24) — the owner chose to ship the demo first and stress-test after.
 
 The judgment the user can't supply for themselves (they use AI daily yet 36% can't tell if the output is good 🟢) comes from a **fixed expert rubric backbone** — the same five criteria every time — plus **1–2 criteria personalized** from the user's stated goal. The user never sees the rubric, a checklist, or a score: they see one or two concrete, draft-specific fixes at a time, framed as an edit *they* make. *(Decision 8.)*
 
@@ -431,7 +437,7 @@ Compare the guided attempt vs. the later unaided attempt on: help requests, AI t
 |---|---|---|
 | 1 | Never show a numeric score to the user | Keep it internal for measurement only |
 | 2 | Mask identifiers before any persist or model call | If uncertain, err toward masking |
-| 3 | First attempt is AI-led; later attempt is user-led | Scaffolding fades on purpose |
+| 3 | First attempt has help available (default: user drafts, feedback on request; escape hatch: NOD drafts + spot-the-flaw); later attempt is unaided | Scaffolding fades on purpose *(amended 2026-08-21 — was "first attempt is AI-led")* |
 | 4 | v1 never blocks on the return attempt | If the user never returns, the first win still counts |
 | 5 | Sell utility; never frame as a lesson | No "course"/"lesson" language anywhere |
 | 6 | Feedback must reference the actual draft | Generic tips = the theory they already reject |
@@ -567,7 +573,7 @@ Two `/grill-me` sessions produced this direction (problem/solution convergence, 
 
 ### Staging the Aha Moment (rough-first-attempt vs. shaped-final contrast)
 
-Optional design idea to make "I made this" undeniable — logged as open questions, not a decision:
+Optional design idea to make "I made this" undeniable — logged as open questions, not a decision. *(Partly answered 2026-08-21: with the **write-your-own-draft default** (Decisions 7, 11), the user's own rough attempt **is** captured by default — the "does this audience produce one given they stall on where to start (36%)?" concern is handled by the **NOD-drafts + spot-the-flaw escape hatch** for exactly those users. What remains open is the *visual* staging of the rough→shaped contrast — design-owned.)*
 
 | Question | Owner | Deadline / trigger |
 |---|---|---|
@@ -578,7 +584,7 @@ Optional design idea to make "I made this" undeniable — logged as open questio
 
 ## 25. Decision log
 
-The 10 decisions locked in `v1ProductDetailing.md` (full *why* + rejected alternative there):
+The decisions locked in `v1ProductDetailing.md` (full *why* + rejected alternative there). *Decisions 7 & 8 amended and Decision 11 added 2026-08-21 — core-solution fork resolved.*
 
 | # | Decision | Confidence basis |
 |---|---|---|
@@ -588,10 +594,11 @@ The 10 decisions locked in `v1ProductDetailing.md` (full *why* + rejected altern
 | 4 | Success = first win now; later attempt instrumented, not gated | 🔵 |
 | 5 | The one artifact = a recurring outreach message | 🔵 |
 | 6 | Front door = concrete-example entry | 🟢 (36% where-to-start) |
-| 7 | Fading scaffolding ("I do → we do → you do") | 🔵 |
-| 8 | Judgment = fixed rubric backbone, shown as feedback not a score | 🔵 |
+| 7 | **Two entry paths, user's choice; default = write your own draft** (fade retained as the graduation arc) *— amended 2026-08-21* | 🔵 |
+| 8 | Judgment = fixed rubric backbone, shown as feedback not a score *(now evaluates the user's own draft — clarified 2026-08-21)* | 🔵 |
 | 9 | Data safety = silent auto-mask + reassurance | 🔵 |
 | 10 | Re-engagement = one outcome-tied nudge (no streaks) | 🟢 audience / 🔵 design |
+| 11 | **Spine = a "get better" coach, not a "get it done" assistant** *(added 2026-08-21 — resolves the core-solution fork)* | 🟡 shape / 🔵 mechanism |
 
 ---
 

@@ -12,10 +12,11 @@ An AI-learning product for **non-technical professionals in India** who already 
 
 - ✅ **Research complete** — secondary + primary (160-response survey; strict target cut n=44). Synthesized into `research/`.
 - ✅ **Product direction locked** — `ProblemSolutionBase.md`.
-- ✅ **Product detailing locked** — `v1ProductDetailing.md`: **10 decisions, each with its *why* and the rejected alternative.** These are settled; build on them, don't relitigate them.
+- ✅ **Product detailing locked** — `v1ProductDetailing.md`: **11 decisions, each with its *why* and the rejected alternative** *(Decisions 7 & 8 amended, Decision 11 added 2026-08-21)*. These are settled; build on them, don't relitigate them.
 - ✅ **PRD substantially complete** — `v1PRD.md`. Aha Moment done; **§16 rubric now grounded** in named large-N sources (Gong 304K, Boomerang 40M, Backlinko 12M, Woodpecker 20M, Lavender, Josh Braun 4-T) **and hardened** via `/grill-me` (hybrid evaluation, core/advisory win + loop cap, quality-not-outcome, English-only). §12 trust reasoning + §13 off-scope guardrail added. Only intentional deferrals remain (see §24).
 - 🎨 **Design in progress** — `PRODUCT.md` (impeccable product context) + `DESIGN.md` (design system, canonical format) created. **Screen 1 (recognition home)** has a committed *direction* — **editorial, warm-neutral + a single blue accent (no green), serif statement + staggered recognition cards** — built at `design/mockups/recognition-editorial-blue.html`. Visual system named **"The Calm Correspondent."** Desktop-primary for now. **⚠️ Screen 1 is WIP / not signed off** (open questions in `DESIGN.md` → "Status & Roadmap"). Built with the `impeccable` skill; mockups render standalone (serve `design/mockups/` over http and open the file).
-- ⏭️ **Next (in order):** lock Screen 1 → design screens **2–6** (Personalize + auto-mask → guided fading-scaffold draft → feedback-not-score → artifact/portfolio → return nudge) and resolve the three §24 design decisions → ERD + implementation plan → build.
+- 🔀 **Core-solution fork RESOLVED (2026-08-21).** The guided loop made the user a passive spectator (no real learning). Owner locked: **spine = a "get better" coach** (Decision 11) and a **two-path loop with *write your own draft* as the default** (Decision 7 amended), both feeding a **real rubric that reads the user's own text** (Decision 8 clarified). See `NEXT-SESSION.md` and `v1ProductDetailing.md`.
+- ⏭️ **Next (in order):** owner's **design.md / journey.md** pass to absorb the two-path loop → resolve remaining §24 design decisions → ERD + implementation plan → build. *(The `design/mockups/` prototype still shows the old single AI-led flow + a faked rubric check; it needs reworking to the two paths + a real evaluator when built.)*
 
 > **Note (macOS):** on this case-insensitive filesystem `design.md` and `DESIGN.md` are the **same file** — the canonical impeccable `DESIGN.md`.
 
@@ -32,10 +33,11 @@ An AI-learning product for **non-technical professionals in India** who already 
 4. Success = first real win now; later unaided attempt **instrumented, not gated**
 5. The one v1 artifact = a recurring **persuasive outreach message**
 6. Front door = **concrete-example entry** (no blank box)
-7. **Fading scaffolding** ("I do → we do → you do")
-8. Judgment = fixed expert **rubric** shown as concrete feedback, **never a score**
+7. **Two entry paths, user's choice; default = write your own draft** — help fades to unaided *(amended 2026-08-21; was "AI-led first attempt")*
+8. Judgment = fixed expert **rubric** shown as concrete feedback, **never a score** *(now evaluates the user's own draft)*
 9. Data safety = **silent auto-mask** + reassurance (no up-front gate)
 10. Re-engagement = **one outcome-tied nudge** (no streaks)
+11. **Spine = a "get better" coach, not a "get it done" assistant** *(added 2026-08-21 — resolves the core-solution fork)*
 
 If you believe one of these is wrong, read its *why* and rejected-alternative in `v1ProductDetailing.md` first — then raise it explicitly. They were reached through two `/grill-me` sessions and confirmed by the owner.
 

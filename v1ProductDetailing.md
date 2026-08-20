@@ -1,8 +1,8 @@
 ---
 title: v1 Product Detailing — Learning Tech & AI ("Outreach" first loop)
-status: locked-product-detailing
+status: locked-product-detailing (Decisions 7 & 8 amended + Decision 11 added 2026-08-21)
 scope: PRODUCT DETAILING ONLY — no ERD, no technical architecture, no implementation plan (those come after design)
-last_updated: 2026-08-18
+last_updated: 2026-08-21
 project_directory: /Users/tarunpuri/Desktop/Learning Tech AI
 builds_on: ProblemSolutionBase.md (product direction), NonTechnical_User_Causal_Insights.md, CompetitiveLandscape.md
 reached_via: /grill-me session (grilling skill), 4 rounds, 10 decisions, all confirmed by owner
@@ -17,6 +17,8 @@ next_artifacts: PRD (immediate next) -> design.md (owner will share) -> ERD + im
 This is the **locked product detailing** for v1 — the *what* and the *why*, not the *how-to-build*. It sits one level below `ProblemSolutionBase.md` (which locked the product direction) and one level above the artifacts still to come. **It deliberately contains no ERD, no technical architecture, and no implementation milestones** — those are sequenced *after* the design is finalised. The immediate next artifact is the **PRD**, which the owner and Claude will write together using this file as the source of truth.
 
 If you are here to change direction: read the "Decision log" — every choice has a documented reason and a rejected alternative, so you can see what breaks if you flip it.
+
+> **⚠️ Amendment — 2026-08-21 (core-solution fork resolved).** A working session found that the original guided loop made the user a **passive spectator** (NOD wrote, checked, and fixed — so nothing transferred, breaking the "you get *better*" promise). The owner resolved the long-open fork: **spine = a "get better" coach (new Decision 11)**, and the core loop now offers **two entry paths with *writing your own draft* as the default** (amended Decision 7), both ending at a **real rubric that reads the user's own text** (clarified Decision 8). The original "AI-led first attempt" is now the escape hatch, not the default. These three changes ripple into the core-loop steps below, `v1PRD.md` (§12/§13/§15/§16/§25), `PRODUCT.md`, and `design.md`.
 
 **Work sequence:** Product detailing (this file) → **PRD (next)** → `design.md` (owner will share) → ERD + implementation plan → build.
 
@@ -67,12 +69,15 @@ Non-technical professionals in India already use AI every day, but a third stay 
 *Why:* a blank "tell me what you're stuck on" box hands the #1 blocker (36% "where do I start") back to the person who has it. Instead: open on 3–4 tappable real Marketing/Sales situations; they pick the closest, *then* it personalizes conversationally. The single most important "friendly-for-overwhelmed" decision.
 *Rejected:* open conversational intake from screen one; rigid one-question-at-a-time wizard (feels like the course-flow we avoid).
 
-**7. Fading scaffolding — "I do → we do → you do".**
-*Why:* the only shape that serves both masters — never leaves them staring at something hard (decision 2), yet transfers the wheel so the later unaided attempt (decision 4) can succeed. First attempt AI-led with visible reasoning, handing the user 1–2 key decisions (the ask, the tone); by the later attempt the user drives and AI only catches mistakes. The "why" is shown *in the doing*, never as a lesson.
-*Rejected:* AI-does-all-user-watches (weak transfer); user-does-all-from-start (feels like work).
+**7. Two entry paths, the user's choice; DEFAULT = write your own draft. Help fades to unaided.** *(Amended 2026-08-21 — supersedes the original "AI-led first attempt"; see Decision 11.)*
+*Why:* the original "first attempt is AI-led" made the user a **spectator** — NOD wrote the draft, checked it, and named the fix, so nothing transferred (the failure that reopened the whole solution). The amendment keeps the fade but flips the day-one default so the user actually does the work. After the situation + intake, the user picks how to start:
+  - **Default — write your own draft**, then get rubric feedback on it. Real generation → real learning.
+  - **Escape hatch — NOD drafts it, and the user spots what's weak *first***, then sees the rubric suggestions. This still serves the 36% "where do I start" (Decision 6 holds) without making the user a spectator.
+Both paths end at the **same** rubric feedback. "I do → we do → you do" survives as the **graduation arc** — spot-the-flaw today, unaided self-draft over time — not as the day-one default. A little effort is required by design (Decision 11).
+*Rejected:* **AI-led-first-as-default** (the spectator problem — the user watches and learns nothing); **always-on inline fixing à la Grammarly** (breeds dependence, atrophies the user's own skill, kills "makes you better"); **a neutral 50/50 fork with no default** (a tired user always picks "do it for me", so the product silently drifts into a get-it-done assistant).
 
 **8. Judgment = fixed expert rubric backbone + 1–2 goal-personalized criteria, surfaced as concrete feedback, never a score.**
-*Why:* the user *cannot* judge their own draft — that's the whole problem — so judgment must be trustworthy (not hallucinated criteria) and must not feel like grading. Fixed expert backbone (clear single ask, personalization, tone, length, no fluff) is consistent; light personalization keeps it relevant. Surface as "your ask is buried in the last line — a busy prospect won't reach it," not "4/10." The numeric score stays **internal**, for the decision-4 measurement only.
+*Why:* the user *cannot* judge their own draft — that's the whole problem — so judgment must be trustworthy (not hallucinated criteria) and must not feel like grading. Fixed expert backbone (clear single ask, personalization, tone, length, no fluff) is consistent; light personalization keeps it relevant. Surface as "your ask is buried in the last line — a busy prospect won't reach it," not "4/10." The numeric score stays **internal**, for the decision-4 measurement only. *(Clarified 2026-08-21:* now that writing your own draft is the default (Decision 7), the rubric must genuinely evaluate **arbitrary user-written text**, not only a message NOD authored — the prototype's trick of planting a known flaw and "finding" it is not the real mechanism. Evaluation is hybrid: length/structure/readability computed in code; the reading-comprehension criteria via an anchored model call that must quote the exact line it reacts to. See `v1PRD.md` §16.*)*
 *Rejected:* pure per-task generated rubric (inconsistent, invents criteria); showing a score to the user (feels like a grade).
 
 **9. Data safety = silent auto-mask + reassurance (no up-front gate).**
@@ -83,18 +88,23 @@ Non-technical professionals in India already use AI every day, but a third stay 
 *Why:* decision 4 rides on a later attempt happening, but streaks/daily mechanics are off the table (off-brand; 55% aren't learners). So: one nudge tied to their real next task — "Got another prospect to follow up with? Do this one yourself — I'll jump in if you're stuck." The hook is *utility on a real task*; the capability measurement rides along invisibly. Sell the utility, measure the capability.
 *Rejected:* streak/habit mechanic; no nudge at all; generic scheduled check-in (ignorable).
 
+**11. Product spine = a "get better" coach, not a "get it done" assistant.** *(Resolved 2026-08-21 — the long-open core-solution fork.)*
+*Why:* the whole edge over free ChatGPT is that the user gets **better**, not just handed a message — so a little effort is non-negotiable, help must **fade**, and winning = the user needs NOD **less** over time. The survey backs the *shape* of this: the #2 blocker is "don't get enough practice" (52/160); 120/160 want "learn by solving real-life challenges"; 58 want "a guide who helps when I'm stuck"; and willingness-to-pay is a soft "maybe, if it genuinely helps me" — a prove-it market that won't pay for another generator it can get free. The hard part we accept: **adoption** (why a busy person chooses effort) — answered by never selling "practice" and making the effort produce *today's* real message (Decision 7's default self-draft). A second, secondary read rides along: a **choice/independence trend** (does the user reach for the write-your-own path more over time?), read as a trend, never as a grade.
+*Rejected:* **B — a frictionless "get it done" assistant** (always-on, wins on daily use): it has no honest edge over ChatGPT, no pricing power, and shrinks "you get better" to marketing.
+*Honest caveat, consciously carried:* the rubric's **discrimination test** (does it reliably tell good outreach from bad?) is still **un-run** — the owner chose to ship the demo first and stress-test the rubric right after (2026-08-21). A weak rubric would silently invalidate the experiment (see "Known tensions").
+
 ## The v1 experience (core loop, screen by screen)
 
 1. **Home / recognition entry** — 3–4 concrete outreach situations as tappable cards + a "something else" escape. No blank box. *(decision 6)*
 2. **Personalize** — short conversational fill-in of the picked situation (who, the ask, the context). Auto-mask fires here. *(decisions 6, 9)*
-3. **Guided draft (fading scaffold)** — AI proposes the message in visible moves, narrating *why*, and hands the user the ask + tone decisions. *(decision 7)*
-4. **Feedback, not grading** — concrete, actionable fixes against the rubric; user revises; loop until it clears the backbone. *(decision 8)*
+3. **Choose how to start → draft** *(decision 7)* — the user picks a path: **write their own draft** (default), or **let NOD draft it and spot what's weak first** (escape hatch for "where do I start"). Both carry the picked situation + intake into the draft.
+4. **Feedback, not grading** — the real rubric reads *their* draft (user-written or NOD-drafted) and surfaces 1–2 concrete, actionable fixes pointing at their actual words; user revises; loops until it clears the backbone (max 3). *(decision 8)*
 5. **Artifact + portfolio** — the finished message saved as a reusable artifact; a running history is the "proof" they can carry into their org (the growth model in `ProblemSolutionBase.md`). *(decision 5)*
 6. **Later, real occurrence** — outcome-tied nudge → unaided re-attempt on a similar task; help-used / AI-turns / time are captured. *(decisions 10, 4)*
 
 ## How we'll know the experiment worked
 
-Not completion counts or self-reported confidence. The read is the **behavioral delta between the guided attempt and the later unaided attempt** on a similar task: fewer help invocations, fewer AI turns, faster time, and a clean rubric pass *without* scaffolding. Confidence is logged only as a secondary diagnostic. *(decisions 1, 4)*
+Not completion counts or self-reported confidence. The read is the **behavioral delta between the guided attempt and the later unaided attempt** on a similar task: fewer help invocations, fewer AI turns, faster time, and a clean rubric pass *without* scaffolding. A **secondary** read is the **choice/independence trend** — whether the user reaches for the write-your-own path (vs. "NOD draft it") more over time (Decision 11), read as a trend, never a grade. Confidence is logged only as a secondary diagnostic. *(decisions 1, 4, 11)*
 
 ## Deferred (explicitly out of this product-detailing lock)
 

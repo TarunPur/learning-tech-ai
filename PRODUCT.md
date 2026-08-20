@@ -24,7 +24,7 @@ Get a Marketing/Sales user to **one real outreach-message win** on their *own* t
 
 ## Positioning
 
-The inversion a neighboring product cannot truthfully copy: every AI-learning product starts with **content, curriculum, or a tool** and measures completion/confidence; this one starts with **the user's own real task**, does it *with* them, and measures an independent re-attempt. Concretely, the trustable edge over raw ChatGPT is three things a chat tool doesn't give: (1) a **fixed, evidence-based standard** applied the same way every time (not the model's flattering mood), grounded in large-N sources; (2) it **catches the specific failure patterns raw AI produces** (long, "hope this finds you well," multiple-ask emails); (3) the user **learns *why*** because feedback points at *their* actual draft. Honest caveat: the model underneath may be the same kind of LLM — the edge is the guardrails around it, not a smarter engine.
+**Spine: a "get better" coach, not a "get it done" assistant** *(Decision 11, 2026-08-21)* — the user does the work and the help fades, because the entire edge over free ChatGPT is that they get *better*, not just handed a message. The inversion a neighboring product cannot truthfully copy: every AI-learning product starts with **content, curriculum, or a tool** and measures completion/confidence; this one starts with **the user's own real task**, does it *with* them, and measures an independent re-attempt. Concretely, the trustable edge over raw ChatGPT is three things a chat tool doesn't give: (1) a **fixed, evidence-based standard** applied the same way every time (not the model's flattering mood), grounded in large-N sources; (2) it **catches the specific failure patterns raw AI produces** (long, "hope this finds you well," multiple-ask emails); (3) the user **learns *why*** because feedback points at *their* actual draft. Honest caveat: the model underneath may be the same kind of LLM — the edge is the guardrails around it, not a smarter engine.
 
 ## Operating Context
 
@@ -32,8 +32,8 @@ The v1 core loop, screen by screen (from `v1PRD.md` §15 and `v1ProductDetailing
 
 1. **Recognition home** — 3–4 concrete Marketing/Sales outreach situations as tappable cards + a scoped "something else" escape. **No blank box.**
 2. **Personalize** — short conversational fill-in of the picked situation (who, the ask, the context). Silent auto-mask fires here.
-3. **Guided draft (fading scaffold)** — AI proposes the message in visible moves, narrating *why*, and hands the user 1–2 key decisions (the ask, the tone). "I do → we do."
-4. **Feedback, not grading** — concrete, actionable fixes against an expert rubric; the user revises; loops until it clears the core criteria (max 3 loops). Never a score or checklist.
+3. **Choose how to start → draft** *(amended 2026-08-21 — Decisions 7 & 11)* — the user picks a path: **write their own draft (the default)**, or **let NOD draft it and spot what's weak first** (the escape hatch for "where do I start"). The old "AI-led first attempt" is now the escape hatch, not the default — the spine is a *"get better" coach*, so the user does the work and the help fades.
+4. **Feedback, not grading** — the **real** rubric reads *their own* draft (user-written or NOD-drafted) and surfaces concrete, actionable fixes pointing at their actual words; the user revises; loops until it clears the core criteria (max 3 loops). Never a score or checklist.
 5. **Artifact + portfolio** — the finished message saved as a reusable artifact; a running history is the "proof" they carry into their org.
 6. **Later, real occurrence** — one outcome-tied nudge → unaided re-attempt on a similar task; help-used / AI-turns / time captured.
 
@@ -47,7 +47,7 @@ The four curated recognition-home situations (each maps to an added rubric crite
 
 **Explicitly undecided / open (design-owned, to resolve in this design work):**
 - **Auto-mask mechanism:** detect-and-mask vs. guide-abstract.
-- **Aha-staging:** whether to show a "rough attempt → shaped final" contrast, whether it requires capturing the user's own rough attempt first (they stall on where to start, 36%), whether it backfires by making the AI feel like it did the work, and where in the flow it surfaces without adding friction.
+- **Aha-staging:** *(partly resolved 2026-08-21)* the **write-your-own-draft default** (Decisions 7, 11) now captures the user's own rough attempt by default; the "where do I start" (36%) case is handled by the **NOD-drafts + spot-the-flaw** escape hatch. What's still design-owned: the *visual* staging of the rough→shaped contrast, whether it backfires by making the AI feel like it did the work, and where it surfaces without adding friction.
 - **How the rubric surfaces as feedback in the UI** (1–2 fixes at a time, pointing at the actual draft, never a score/checklist).
 
 **Deferred, do not design now:** numeric success targets (§9, set after design, within-subject); ERD / technical architecture / build milestones; the other 3 task types; non-Marketing/Sales roles; paid tier; **product naming/branding** (use a placeholder).
