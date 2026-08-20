@@ -120,7 +120,7 @@
 
     <div class="actions">
       <button class="btn" id="go" type="button" disabled aria-disabled="true">
-        Shape the draft
+        Continue
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <span class="hint" id="hint">Add who it's to and your ask to continue.</span>
@@ -189,10 +189,9 @@
     if(go.disabled) return;
     if(window.NOD) NOD.store.save({ who:who.value.trim(), ask:ask.value.trim(), ctx:ctx.value.trim() });
     go.classList.add('is-going');
-    var first = (detectName(who.value) || who.value.trim().split(/[\s,]+/)[0] || '');
-    hint.textContent = first ? ('Shaping your message for ' + first + '…') : 'Shaping your message…';
+    hint.textContent = 'Got it — now choose how you want to start…';
     hint.style.display = '';
-    setTimeout(function(){ window.location.href='draft.html'; }, 380);
+    setTimeout(function(){ window.location.href='choose.html'; }, 380);
   });
   sync(); updateMask(); syncSuggest();
 })();
