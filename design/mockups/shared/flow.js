@@ -36,6 +36,14 @@
       askPh: "e.g. a 20-minute call next week",
       ctxPh: "e.g. we spoke at the expo and she asked me to follow up after launch",
       dHeading: "Here's a first shape — <em>your call on the moves.</em>",
+      draft: {
+        warm: "we spoke back in June, and you'd asked me to follow up once we launched",
+        direct: "following up from June, where you'd asked to see this once it launched",
+        reason: "the thing you wanted to see is live now",
+        tight: "The thing you asked to see is live now.",
+        ask: "Would {ask} be a useful way to see if it fits what your team's working on?",
+        to: "a lead you'd been talking to"
+      },
       artTitle: "A prospect went quiet"
     },
     cold: {
@@ -47,6 +55,14 @@
       askPh: "e.g. a quick 15-minute intro call",
       ctxPh: "e.g. they just opened a Pune office and I can help with X",
       dHeading: "Here's a first shape — <em>your call on the moves.</em>",
+      draft: {
+        warm: "I came across what your team's building and wanted to reach out properly",
+        direct: "I'm reaching out because what your team's building lines up with what I work on",
+        reason: "there's a specific reason I think this is worth a look",
+        tight: "There's a specific reason I think this is worth two minutes of your time.",
+        ask: "Would {ask} be a good way to see if it's relevant?",
+        to: "someone you haven't met yet"
+      },
       artTitle: "Cold intro to a new prospect"
     },
     meeting: {
@@ -58,6 +74,14 @@
       askPh: "e.g. 30 minutes to walk through it",
       ctxPh: "e.g. she asked to see pricing once we shipped the new plan",
       dHeading: "Here's a first shape — <em>your call on the moves.</em>",
+      draft: {
+        warm: "thanks again for taking a look at what we shared",
+        direct: "following up on what we shared, to find a time",
+        reason: "the clearest next step is a quick look together",
+        tight: "The clearest next step is a short look together.",
+        ask: "Would {ask} work for you?",
+        to: "someone weighing a demo"
+      },
       artTitle: "Book a meeting or demo"
     },
     event: {
@@ -69,6 +93,14 @@
       askPh: "e.g. a coffee next week to keep talking",
       ctxPh: "e.g. we talked about onboarding and they wanted our notes",
       dHeading: "Here's a first shape — <em>your call on the moves.</em>",
+      draft: {
+        warm: "it was good to meet you and talk through what you're working on",
+        direct: "good to meet you — following up while it's still fresh",
+        reason: "I said I'd send something over, so here it is",
+        tight: "I said I'd follow up while it was fresh, so here I am.",
+        ask: "Would {ask} be a good way to keep it going?",
+        to: "someone you just met"
+      },
       artTitle: "Follow up after an event"
     },
     custom: {
@@ -80,6 +112,15 @@
       askPh: "e.g. the one thing you want them to do",
       ctxPh: "e.g. what makes now the right moment to send it",
       dHeading: "Here's a first shape — <em>a sample to start from.</em>",
+      draft: {
+        sample: true,
+        warm: "I wanted to reach out about this properly",
+        direct: "I'm reaching out about this directly",
+        reason: "here's the real reason I'm getting in touch now",
+        tight: "Here's the real reason I'm reaching out now.",
+        ask: "Would {ask} be a useful next step?",
+        to: "the person you're writing to"
+      },
       artTitle: "Your message"
     }
   };
@@ -88,7 +129,41 @@
      who don't yet know what a good, low-friction ask looks like. Editable once picked. */
   var ASK_SUGGESTIONS = ['A 15-minute call', 'Two times to choose from', 'A quick yes/no reply'];
 
+  /* The one soft opener every guided draft still carries — the "just checking in"
+     pattern named across the research as the #1 thing that gets outreach skimmed.
+     Feedback flags exactly this substring, so Draft and Feedback stay the same message. */
+  var SOFT_FLAG = 'I just wanted to quickly check in and share that';
+  var FLAG_WHY = 'Soft openers like "just checking in" bury your reason and read as a template. Your real reason is stronger — lead with it.';
+
   function scenario(id) { return SCENARIOS[id] || SCENARIOS.quiet; }
+
+  // first name from the "who" line, for greetings and reassurance; falls back to "there"
+  function firstName(who) {
+    var m = (who || '').match(/\b([A-Z][a-z]{1,})\b/);
+    return m ? m[1] : 'there';
+  }
+
+  /* Compose the guided draft's three paragraphs from stored intake + scenario copy.
+     P2 is the soft, flaggable line; feedback rewrites P2 to `tight`. */
+  function composeDraft() {
+    var id = Store.get('scenario', 'quiet');
+    var sc = scenario(id);
+    var d = sc.draft;
+    var who = Store.get('who', '');
+    var ask = Store.get('ask', '') || sc.askPh.replace(/^e\.g\.\s*/, '');
+    var tone = Store.get('tone', 'warm');
+    var name = firstName(who);
+    var opener = 'Hi ' + name + ' — ' + (tone === 'direct' ? d.direct : d.warm) + '.';
+    var soft = SOFT_FLAG + ' ' + d.reason + '.';
+    var askLine = d.ask.replace('{ask}', ask);
+    return {
+      scenario: id, sample: !!d.sample, name: name,
+      recipient: who || d.to, tone: tone,
+      p1: opener, p2: soft, p3: askLine,
+      flag: SOFT_FLAG, tight: d.tight, why: FLAG_WHY,
+      artTitle: sc.artTitle
+    };
+  }
 
   /* Current situation label for the context chip: a custom free-text situation
      shows the user's own words; a curated one shows its chip label. */
@@ -105,7 +180,11 @@
     store: Store,
     SCENARIOS: SCENARIOS,
     ASK_SUGGESTIONS: ASK_SUGGESTIONS,
+    SOFT_FLAG: SOFT_FLAG,
+    FLAG_WHY: FLAG_WHY,
     scenario: scenario,
+    firstName: firstName,
+    composeDraft: composeDraft,
     currentSituationLabel: currentSituationLabel
   };
 })(window);
