@@ -2,7 +2,7 @@
 ---
 name: NOD
 description: Help a non-technical professional finish one real outreach message, with help that fades — and know it's good before they send.
-tagline: Know it's good before you send — and get sharper each time.
+tagline: Your coach against the AI slop — so the skill sticks.
 colors:
   warm-paper: "#F6F5F1"
   card-white: "#FFFFFF"
@@ -100,7 +100,7 @@ Deliberately rejected worlds: a heritage "brass/instrument" look (too formal/old
 ## Brand
 
 - **Name: NOD** — the honest "yes, that's good — send it." Warm, human, banned-word-safe. The blue message+**check** logo literally *is* the nod. (Retired the earlier placeholder "Outreach Bench": in Indian professional culture "on the bench / benched" reads as *idle / unstaffed* — wrong signal for this audience. Do not reintroduce "bench" anywhere.)
-- **Tagline: "Know it's good before you send — and get sharper each time."** (An earlier draft ended "…and then learn" — dropped because **"learn" is a banned UI word** and the positioning is *sell utility, not learning*.)
+- **Tagline: "Your coach against the AI slop — so the skill sticks."** (Owner's call, 2026-08-21 — now the on-screen brand line across all app screens' mark. It leans into the resolved Decision 11 "get-better coach" spine and the anti-generic-AI positioning; "skill sticks" echoes the landing's demo copy for a consistent brand voice. *Superseded:* "Know it's good before you send — and get sharper each time" (still fine as a product/one-liner descriptor; the earlier "…and then learn" was dropped because **"learn" is a banned UI word**.))
 - **Logo:** signal-blue rounded-square tile (52px, 15px radius) with a white "message + check" glyph and a soft blue glow.
 
 ## Colors
