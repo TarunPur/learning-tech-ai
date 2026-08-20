@@ -1,4 +1,4 @@
-<!-- STATUS: current as of 2026-08-20. Documents the LOCKED v1 design (all 6 screens built). Brand = NOD. The canonical implementation lives in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. See "Status & Roadmap" at the end. -->
+<!-- STATUS: visual system current as of 2026-08-20; the FLOW it documents is superseded as of 2026-08-21 (two-path loop — see the "⚠️ Flow change" banner below and "Status & Roadmap"). Brand = NOD. Canonical implementation in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. -->
 ---
 name: NOD
 description: Help a non-technical professional finish one real outreach message, with help that fades — and know it's good before they send.
@@ -78,6 +78,14 @@ components:
 ---
 
 # Design System: NOD
+
+> ## ⚠️ Flow change — read before designing (2026-08-21)
+> The **visual system** in this file (colors, type, cards, motion, the "Calm Correspondent" North Star) is unchanged and still authoritative. **The user flow it assumes is not.** The core-solution fork was resolved (see `v1ProductDetailing.md` Decisions 7, 8, 11 and `NEXT-SESSION.md`):
+> - **Spine is now a "get better" coach, not a "get it done" assistant.** The user does the work; the help fades.
+> - **The draft step is now two paths, user's choice, with *write your own draft* as the DEFAULT.** The escape hatch is *NOD drafts it → the user spots what's weak first*. The old **single "AI-led fading-scaffold draft"** (Screen 3, `draft.html`) is now just the escape-hatch path, **not** the default.
+> - **The rubric now reads the user's OWN draft** (user-written or NOD-drafted), not only a NOD-authored one. Feedback (Screen 4) still = 1–2 concrete fixes at their actual words, never a score.
+> - **All 6 mockups in `design/mockups/` predate this** and show the old single-path flow with a *faked* rubric check. They need reworking to: (a) a **choose-how-to-start** step, (b) a **write-your-own composer** as the primary path (`compose.html` is a usable base), (c) a **spot-the-flaw** beat before feedback on the NOD-draft path, (d) **real** categorical feedback on the entered text.
+> - The design tokens/components below are all **reusable as-is** for these new screens.
 
 ## Overview
 
@@ -215,16 +223,16 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 
 ## Status & Roadmap (project note)
 
-**All six v1 screens are built and committed** (in `design/mockups/`, on `main`; brand = NOD):
-1. `recognition-editorial-blue-v3.html` — Recognition home (LOCKED baseline)
-2. `personalize.html` — Personalize + silent auto-mask (detect-and-mask + calm inline reassurance, never a gate)
-3. `draft.html` — Guided draft / fading scaffold (moves + why-notes, two hand-off decisions, reshapes live)
-4. `feedback.html` — Feedback, not a score (one anchored fix at a time, blue = meets-the-standard, advisory)
-5. `artifact.html` — Saved message + "Your saved messages" history
-6. `return.html` — Return nudge → unaided re-attempt (scaffolding only on request)
+**All six v1 screens were built and committed** (in `design/mockups/`, on `main`; brand = NOD) — but they capture the **pre-2026-08-21 single-path flow** and need reworking to the two-path loop (see the "⚠️ Flow change" banner at the top):
+1. `recognition-editorial-blue-v3.html` — Recognition home (LOCKED baseline) · *needs: a "choose how to start" step after the situation is picked*
+2. `personalize.html` — Personalize + silent auto-mask (detect-and-mask + calm inline reassurance, never a gate) · *reusable; feeds both paths*
+3. `draft.html` — Guided draft / fading scaffold · *now the **escape-hatch** path only; add a "spot what's weak first" beat before feedback*
+4. `feedback.html` — Feedback, not a score · *must render **real** categorical fixes on the user's own text, not a planted line*
+5. `artifact.html` — Saved message + "Your saved messages" history · *reusable*
+6. `return.html` — Return nudge → unaided re-attempt · *reusable; `compose.html` (the write-your-own composer) is the base for the new **default** path*
 
 Plus the marketing **landing** (`landing-editorial-blue-v2.html`, LOCKED baseline).
 
-**Design decisions resolved this phase (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; Aha-staging = show reasoning inline for ownership, do **not** force a rough-attempt capture; rubric-as-feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist.
+**Design decisions resolved this phase (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; rubric-as-feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist. ~~Aha-staging = do **not** force a rough-attempt capture~~ **← reversed 2026-08-21:** with the write-your-own-draft default (Decisions 7, 11), capturing the user's *own* rough attempt is now the default (the "where do I start" case falls to the NOD-drafts + spot-the-flaw escape hatch); only the *visual* rough→shaped staging remains design-owned.
 
 **Still to do:** (a) a real-device **mobile** verification pass (tooling can't render narrow); (b) then ERD / technical architecture / build. Do not start the ERD/build before this design is signed off.
