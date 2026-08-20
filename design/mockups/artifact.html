@@ -60,6 +60,9 @@
 .rec.fresh .rt::after{content:"just saved";margin-left:9px;font-family:var(--sans);font-size:11px;
   font-weight:600;color:var(--blue-deep);background:var(--blue-tint);padding:2px 7px;
   vertical-align:middle;letter-spacing:0.01em;}
+/* how it was made — a quiet trend cue (Decision 11), never a badge of merit */
+.rec .rpath{display:inline-block;margin-top:4px;font-size:11px;font-weight:600;letter-spacing:.02em;
+  color:var(--ink-faint);}
 .empty-rec{padding:15px 2px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-faint);}
 
 /* prototype-only control — the real "later nudge" arrives naturally, it is not a user action */
@@ -170,13 +173,15 @@
     } else {
       hist.forEach(function(h,i){
         var b=document.createElement('button'); b.type='button'; b.className='rec'+(i===0?' fresh':'');
+        var pathLabel = h.path==='nod' ? 'Started from a NOD draft' : (h.path==='own' ? 'You wrote this one' : '');
         b.innerHTML = '<span class="tick" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
           + '<span class="rc"><span class="rtop"><span class="rt">'+esc(h.title)+'</span><span class="rd">'+esc(h.when||'')+'</span></span>'
-          + '<span class="rp">'+esc((h.peek||'').slice(0,72))+'…</span></span>'
+          + '<span class="rp">'+esc((h.peek||'').slice(0,72))+'…</span>'
+          + (pathLabel ? '<span class="rpath">'+pathLabel+'</span>' : '') + '</span>'
           + '<span class="reuse">Reuse →</span>';
         b.addEventListener('click',function(){
           // reuse preloads that situation into a fresh message flow
-          if(window.NOD) NOD.store.save({ scenario:h.scenario||'quiet', who:'', ask:'', ctx:'', tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'' });
+          if(window.NOD) NOD.store.save({ scenario:h.scenario||'quiet', who:'', ask:'', ctx:'', tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'', path:'own', ownText:'', flawPick:null, returnMode:false });
           window.location.href='personalize.html';
         });
         recList.appendChild(b);

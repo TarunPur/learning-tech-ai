@@ -10,10 +10,10 @@
 <link rel="stylesheet" href="shared/system.css" />
 <style>
 /* screen-specific: return nudge */
-.chosen{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
-  padding:7px 14px 7px 12px;background:var(--blue-tint);border:1px solid var(--blue-tint-2);}
-.chosen .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none;}
-.chosen span{font-size:13px;font-weight:600;color:var(--blue-deep);letter-spacing:0.01em;}
+.eyebrow-situation{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 16px;
+  font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
+.eyebrow-situation #lastSituation{color:var(--ink);}
+.eyebrow-situation .eb-sep{color:var(--line-2);}
 .intro .sub{max-width:36ch;}
 
 /* the "no scaffolding this time" reassurance */
@@ -70,7 +70,11 @@
       <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
     </div>
 
-    <div class="chosen anim d2"><span class="dot"></span><span>Following on from your last one</span></div>
+    <p class="eyebrow-situation anim d2">
+      <span>Following your last</span>
+      <span class="eb-sep" aria-hidden="true">·</span>
+      <span id="lastSituation">A prospect went quiet</span>
+    </p>
 
     <h1 class="h-display anim d2">Another one — <em>and this time it's all you.</em></h1>
     <p class="sub anim d3" id="rSub">A little on from the message you finished, here's a fresh situation just like it. This one's a chance to do it on your own.</p>
@@ -115,13 +119,17 @@
     NOD.store.save({ returnScenario: rs });
     var sc = NOD.scenario(rs);
     var t=document.getElementById('rTitle'); if(t) t.textContent = (sc.artTitle || 'A similar situation') + ' — again';
+    var ls=document.getElementById('lastSituation'); if(ls) ls.textContent = sc.artTitle || 'A similar situation';
   }
-  // "Draft this one yourself" -> the unaided composer (no guided scaffolding)
-  document.getElementById('situationCard').addEventListener('click', function(){ window.location.href='compose.html'; });
-  // help on request -> guided flow with this situation prefilled, request recorded
+  // "Draft this one yourself" -> the unaided composer, then the real check (feedback)
+  document.getElementById('situationCard').addEventListener('click', function(){
+    if(window.NOD) NOD.store.save({ returnMode:true, path:'own', ownText:'', snap:null, final:null, finalText:'', flawPick:null });
+    window.location.href='compose.html';
+  });
+  // help on request -> re-collect the situation, then choose how to start (help is back, but thinner)
   document.getElementById('helpline').addEventListener('click', function(e){
     e.preventDefault();
-    if(window.NOD) NOD.store.save({ scenario: rs, who:'', ask:'', ctx:'', tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'', helpRequested:true });
+    if(window.NOD) NOD.store.save({ scenario: rs, who:'', ask:'', ctx:'', tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'', ownText:'', flawPick:null, returnMode:false, helpRequested:true });
     window.location.href='personalize.html';
   });
 })();

@@ -148,8 +148,8 @@ button{font-family:inherit;color:inherit;}
       <span class="logo" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
     </div>
-    <h1 class="anim d2">Let's finish one real message you need to send — <em>together.</em></h1>
-    <p class="sub anim d2">Tell me who you're stuck on, and we'll shape it side by side — until it's a message you'd be glad to send.</p>
+    <h1 class="anim d2">Let's finish one real message you need to send — <em>and get sharper doing it.</em></h1>
+    <p class="sub anim d2">Pick the situation you're stuck on. You'll write it in your words; I'll check it against what good outreach actually does — until it's one you'd be glad to send.</p>
 
     <div class="escape anim d3">
       <button class="escape-link" type="button" id="escToggle" aria-expanded="false" aria-controls="escField">
@@ -248,7 +248,9 @@ button{font-family:inherit;color:inherit;}
 
   // starting a new message resets any in-progress intake, but keeps saved history
   function beginMessage(patch){
-    var base={ who:'', ask:'', ctx:'', tone:'warm', draftText:'', customText:'' };
+    var base={ who:'', ask:'', ctx:'', tone:'warm', draftText:'', customText:'',
+               path:'own', ownText:'', flawPick:null, snap:null, final:null, finalText:'',
+               returnMode:false };
     for(var k in patch){ base[k]=patch[k]; }
     if(window.NOD) NOD.store.save(base);
   }
