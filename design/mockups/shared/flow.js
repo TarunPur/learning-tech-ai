@@ -137,6 +137,30 @@
 
   function scenario(id) { return SCENARIOS[id] || SCENARIOS.quiet; }
 
+  /* Soft funnel (PRD §13): a lightweight intent check on the free-text task.
+     Prototype stand-in for a server-side classifier — extend by adding keywords.
+     Returns { kind:'outreach'|'offscope', scenario:<nearest curated id> }. */
+  var OFFSCOPE = ['proposal','report','deck','presentation','slide','spreadsheet','excel','sheet',
+    'blog','article','post','linkedin post','resume','cv','essay','contract','invoice','document',
+    'doc ','strategy','business plan','memo','newsletter','whitepaper','case study','script','code'];
+  var OUTREACH = ['email','message','follow up','follow-up','followup','chaser','reach out','reaching out',
+    'intro','introduc','connect','reply','respond','nudge','ping','pitch','invite','reconnect',
+    'thank you','thank-you','outreach','cold','prospect','client','lead','meeting','demo','call','dm'];
+
+  function classifyTask(text) {
+    var t = (text || '').toLowerCase();
+    // nearest curated situation
+    var sc = 'quiet';
+    if (/\b(meeting|demo|call|book|schedule|walk ?through)\b/.test(t)) sc = 'meeting';
+    else if (/\b(event|expo|conference|meetup|met (you|them|at)|thank|after the)\b/.test(t)) sc = 'event';
+    else if (/\b(cold|new|intro|introduc|reach(ing)? out|first message|someone new)\b/.test(t)) sc = 'cold';
+    // off-scope wins only if no outreach signal is also present
+    var hasOff = OFFSCOPE.some(function (k) { return t.indexOf(k) !== -1; });
+    var hasOut = OUTREACH.some(function (k) { return t.indexOf(k) !== -1; });
+    var kind = (hasOff && !hasOut) ? 'offscope' : 'outreach'; // unsure -> outreach
+    return { kind: kind, scenario: sc };
+  }
+
   // first name from the "who" line, for greetings and reassurance; falls back to "there"
   function firstName(who) {
     var m = (who || '').match(/\b([A-Z][a-z]{1,})\b/);
@@ -168,12 +192,11 @@
   /* Current situation label for the context chip: a custom free-text situation
      shows the user's own words; a curated one shows its chip label. */
   function currentSituationLabel() {
-    var id = Store.get('scenario', 'quiet');
-    if (id === 'custom') {
-      var t = Store.get('customText', '');
-      return t ? ('Your task · ' + t) : SCENARIOS.custom.chip;
-    }
-    return scenario(id).chip;
+    // if the user typed their own task, keep their words in the eyebrow even when
+    // we've mapped them to the nearest curated situation under the hood
+    var t = Store.get('customText', '');
+    if (t) return 'Your task · ' + t;
+    return scenario(Store.get('scenario', 'quiet')).chip;
   }
 
   global.NOD = {
@@ -183,6 +206,7 @@
     SOFT_FLAG: SOFT_FLAG,
     FLAG_WHY: FLAG_WHY,
     scenario: scenario,
+    classifyTask: classifyTask,
     firstName: firstName,
     composeDraft: composeDraft,
     currentSituationLabel: currentSituationLabel

@@ -70,6 +70,22 @@ button{font-family:inherit;color:inherit;}
 .escape .cancel{margin:18px 2px 0;border:0;background:transparent;padding:0;font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:color .2s;}
 .escape .cancel:hover,.escape .cancel:focus-visible{color:var(--blue);outline:none;}
 
+/* soft-funnel warm boundary */
+.boundary{display:none;max-width:440px;}
+.boundary.show{display:block;animation:reveal .34s cubic-bezier(.16,1,.3,1);}
+.boundary .bnd-title{font-family:"Spectral",Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);margin:0 0 8px;}
+.boundary .bnd-body{font-size:14.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 18px;}
+.boundary .bnd-body b{color:var(--ink-2);font-weight:600;}
+.bnd-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;}
+.btn-remember{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--card);
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink-2);padding:9px 15px;cursor:pointer;transition:border-color .2s,color .2s,background .2s;}
+.btn-remember:hover,.btn-remember:focus-visible{border-color:var(--blue);color:var(--blue-deep);outline:none;}
+.btn-remember.done{border-color:var(--blue);color:var(--blue-deep);background:var(--blue-tint);cursor:default;}
+.btn-remember svg{color:var(--blue);}
+.bnd-anyway{font-size:13.5px;font-weight:500;color:var(--ink-soft);text-decoration:none;transition:color .2s;}
+.bnd-anyway:hover,.bnd-anyway:focus-visible{color:var(--blue);outline:none;}
+.boundary .cancel{margin-top:18px;}
+
 .priv{margin-top:34px;display:flex;align-items:center;gap:9px;color:var(--ink-soft);font-size:12.5px;}
 .priv svg{color:var(--blue);flex:none;}
 
@@ -149,6 +165,20 @@ button{font-family:inherit;color:inherit;}
         <p class="cap">Any outreach message works — a chaser, a thank-you, a fresh intro.</p>
         <button class="cancel" type="button" id="escCancel">← Back to the situations</button>
       </div>
+
+      <!-- soft-funnel warm boundary: shown when the typed task isn't outreach (PRD §13) -->
+      <div class="boundary" id="escBoundary" hidden>
+        <p class="bnd-title" id="bndTitle">That's not something I do yet.</p>
+        <p class="bnd-body">Right now I'm great at <b>outreach messages you send</b> — a follow-up, a cold intro, a meeting request. Pick a situation above, or:</p>
+        <div class="bnd-actions">
+          <button class="btn-remember" type="button" id="bndRemember">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 4.5h10v12l-5-3-5 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            <span id="bndRememberText">Remember I asked for this</span>
+          </button>
+          <a class="bnd-anyway" href="personalize.html" id="bndAnyway">Shape it as a message anyway →</a>
+        </div>
+        <button class="cancel" type="button" id="bndBack">← Back to the situations</button>
+      </div>
     </div>
 
   </section>
@@ -193,6 +223,7 @@ button{font-family:inherit;color:inherit;}
     arrow.setAttribute('aria-disabled',empty?'true':'false');
   }
   function open(){
+    if(typeof hideBoundary==='function') hideBoundary();
     f.classList.add('open');
     t.setAttribute('aria-expanded','true');
     t.style.display='none';
@@ -201,6 +232,7 @@ button{font-family:inherit;color:inherit;}
   }
   // give users control: any of these returns them to the recognition cards
   function collapse(){
+    if(typeof hideBoundary==='function') hideBoundary();
     f.classList.remove('open');
     t.setAttribute('aria-expanded','false');
     t.style.display='';
@@ -230,12 +262,47 @@ button{font-family:inherit;color:inherit;}
       setTimeout(function(){ window.location.href='personalize.html'; }, 280);
     });
   });
-  // the scoped "something else" path persists the typed situation, then enters Personalize
+  // soft funnel (PRD §13): classify the typed task before entering the flow
+  var boundary=document.getElementById('escBoundary'),
+      bndBack=document.getElementById('bndBack'),
+      bndRemember=document.getElementById('bndRemember'),
+      bndRememberText=document.getElementById('bndRememberText'),
+      bndAnyway=document.getElementById('bndAnyway');
+
+  function showBoundary(){ f.classList.remove('open'); boundary.hidden=false; boundary.classList.add('show'); }
+  function hideBoundary(){ boundary.classList.remove('show'); boundary.hidden=true; }
+
   arrow.addEventListener('click',function(){
     if(arrow.disabled) return;
+    var text=input.value.trim();
+    var cls = window.NOD ? NOD.classifyTask(text) : { kind:'outreach', scenario:'quiet' };
+    if(cls.kind==='offscope'){
+      showBoundary();   // warm boundary — don't push a non-outreach task into the intake
+      return;
+    }
+    // outreach (or unsure) -> map to the nearest curated situation so the questions fit
+    beginMessage({ scenario:cls.scenario, customText:text });
+    window.location.href='personalize.html';
+  });
+
+  // "remember I asked for this" — capture a roadmap signal (v-next), confirm quietly
+  bndRemember.addEventListener('click',function(){
+    if(bndRemember.classList.contains('done')) return;
+    if(window.NOD){
+      var asks=NOD.store.get('roadmapAsks', []); if(!Array.isArray(asks)) asks=[];
+      asks.push({ text: input.value.trim(), when: Date.now() });
+      NOD.store.save({ roadmapAsks: asks });
+    }
+    bndRemember.classList.add('done');
+    bndRememberText.textContent='Noted — thanks, I’ll remember';
+  });
+  // option-2 override: let them proceed into the generic intake anyway
+  bndAnyway.addEventListener('click',function(e){
+    e.preventDefault();
     beginMessage({ scenario:'custom', customText:input.value.trim() });
     window.location.href='personalize.html';
   });
+  bndBack.addEventListener('click',function(){ hideBoundary(); collapse(); });
 })();
 </script>
 </body>
