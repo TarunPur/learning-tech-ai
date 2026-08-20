@@ -239,9 +239,12 @@ h1,h2,h3,p{margin:0;}
 /* static responsive insight grid (not a testimonial wall) */
 .voices-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:clamp(30px,4vw,44px);}
 @media(min-width:640px){ .voices-grid{grid-template-columns:1fr 1fr;} }
-.vcard{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:24px 26px 22px;display:flex;flex-direction:column;}
-.vcard .qm{font-family:"Spectral",serif;font-size:30px;line-height:.4;color:var(--blue);opacity:.5;}
-.vcard blockquote{margin:12px 0 0;font-size:15px;line-height:1.6;color:var(--ink-2);}
+.voices-grouplabel{text-align:center;margin:clamp(28px,4vw,40px) auto 0;font-family:"Spectral",serif;font-size:clamp(17px,1.8vw,20px);font-style:italic;color:var(--ink-2);}
+.vcard{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:22px 26px 22px;display:flex;flex-direction:column;}
+/* explicit research label — these are findings, not testimonials (no photos, names, or star ratings) */
+.vtag{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);}
+.vtag svg{color:var(--blue);flex:none;}
+.vcard blockquote{margin:14px 0 0;font-size:15px;line-height:1.6;color:var(--ink-2);}
 .vcard figcaption{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint);}
 .v-note{margin:clamp(30px,4vw,42px) auto 0;text-align:center;max-width:62ch;font-size:12.5px;line-height:1.55;color:var(--ink-faint);}
 
@@ -343,12 +346,13 @@ h1,h2,h3,p{margin:0;}
 
 /* ===== authority — sources strip (static, readable) ===== */
 .src-strip{margin-top:clamp(30px,4vw,44px);}
-.src-strip-label{text-align:center;font-size:14px;line-height:1.5;color:var(--ink-soft);max-width:60ch;margin:0 auto 20px;}
+.src-strip-label{text-align:center;font-size:14px;line-height:1.5;color:var(--ink-soft);max-width:60ch;margin:0 auto 22px;}
 .src-strip-label b{color:var(--ink-2);font-weight:600;}
-.src-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px clamp(26px,4vw,48px);}
-.lg{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(19px,2.2vw,25px);letter-spacing:-0.01em;color:var(--ink-2);opacity:.78;white-space:nowrap;}
+.src-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px clamp(24px,3.4vw,44px);padding:22px clamp(20px,3vw,36px);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);}
+.lg{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(19px,2.2vw,25px);letter-spacing:-0.01em;color:var(--ink-2);opacity:.82;white-space:nowrap;}
 .lg-name{font-style:italic;font-weight:500;}
-.src-strip .srcnote{margin-top:18px;font-size:12.5px;font-weight:500;color:var(--ink-faint);}
+.src-strip .srcnote{margin-top:18px;font-size:13px;font-weight:500;color:var(--ink-faint);}
+.src-strip .srcnote .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink);}
 
 /* reduced-motion: no crossfade / no snap easing — instant, legible states */
 @media (prefers-reduced-motion:reduce){
@@ -483,7 +487,7 @@ h1,h2,h3,p{margin:0;}
           <span class="lg">Lavender</span>
           <span class="lg lg-name">Josh Braun</span>
         </div>
-        <p class="srcnote">Published outreach analyses across <b>70M+</b> real emails.</p>
+        <p class="srcnote">Published outreach analyses across <span class="n">70M+</span> real emails.</p>
       </div>
     </div>
   </section>
@@ -499,14 +503,16 @@ h1,h2,h3,p{margin:0;}
       <p class="v-sub rise d2">Before building anything, we asked professionals in marketing, sales and ops where outreach breaks down. In our target group, <strong>36% said they don't know where to start</strong> and <strong>25% said they don't get enough practice</strong> — the exact friction NOD is built to remove.</p>
     </div>
 
-    <div class="voices-grid wrap" aria-label="What professionals told us in our research">
-      <figure class="vcard"><span class="qm" aria-hidden="true">&ldquo;</span><blockquote>I don't know where to start — or what &ldquo;good&rdquo; even looks like for a cold email.</blockquote><figcaption>Founder, small business</figcaption></figure>
-      <figure class="vcard"><span class="qm" aria-hidden="true">&ldquo;</span><blockquote>ChatGPT gives me something instantly — but instant isn't the same as good, and nothing tells me the difference.</blockquote><figcaption>Account manager</figcaption></figure>
-      <figure class="vcard"><span class="qm" aria-hidden="true">&ldquo;</span><blockquote>When the draft is off, I can't tell why — so I can't fix it. I just send it and hope.</blockquote><figcaption>Operations lead</figcaption></figure>
-      <figure class="vcard"><span class="qm" aria-hidden="true">&ldquo;</span><blockquote>Every tool writes it for me. None of them make me any better at writing it myself.</blockquote><figcaption>Partnerships lead</figcaption></figure>
+    <p class="voices-grouplabel rise d2">What professionals described before NOD existed</p>
+
+    <div class="voices-grid wrap" aria-label="Insights from our pre-launch research">
+      <figure class="vcard"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><blockquote>I don't know where to start, or what &ldquo;good&rdquo; even looks like for a cold email.</blockquote><figcaption>Founder, small business</figcaption></figure>
+      <figure class="vcard"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><blockquote>ChatGPT gives me something instantly, but instant isn't the same as good, and nothing tells me the difference.</blockquote><figcaption>Account manager</figcaption></figure>
+      <figure class="vcard"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><blockquote>When the draft is off, I can't tell why, so I can't fix it. I just send it and hope.</blockquote><figcaption>Operations lead</figcaption></figure>
+      <figure class="vcard"><span class="vtag"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Insight from research</span><blockquote>Every tool writes it for me. None of them make me any better at writing it myself.</blockquote><figcaption>Partnerships lead</figcaption></figure>
     </div>
 
-    <p class="v-note wrap">What professionals told us in our research — paraphrased for length, not customer reviews.</p>
+    <p class="v-note wrap">Paraphrased from our pre-launch research for length — these are research findings, not customer reviews.</p>
   </section>
 
   <!-- CLOSING -->
