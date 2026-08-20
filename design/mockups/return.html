@@ -48,6 +48,11 @@
 .helpline:hover,.helpline:focus-visible{color:var(--blue);outline:none;}
 .helpline svg{transition:transform .2s;}
 .helpline:hover svg{transform:translateX(2px);}
+/* low-pressure exits — a nudge you can decline, never a streak to protect */
+.dismiss-row{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;padding-top:16px;border-top:1px solid var(--line);width:100%;}
+.dismiss{border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:500;
+  color:var(--ink-faint);cursor:pointer;padding:4px 2px;text-decoration:none;transition:color .2s;}
+.dismiss:hover,.dismiss:focus-visible{color:var(--blue);outline:none;}
 @media (max-width:600px){
   .situation{padding:24px 20px 22px;}
   .situation h2{font-size:23px;}
@@ -68,34 +73,58 @@
     <div class="chosen anim d2"><span class="dot"></span><span>Following on from your last one</span></div>
 
     <h1 class="h-display anim d2">Another one — <em>and this time it's all you.</em></h1>
-    <p class="sub anim d3">Two weeks ago you shaped a follow-up to a prospect who'd gone quiet, and it was ready to send. Here's a fresh one, just like it.</p>
+    <p class="sub anim d3" id="rSub">A little on from the message you finished, here's a fresh situation just like it. This one's a chance to do it on your own.</p>
 
     <div class="solo anim d3">
       <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span><b>No steps this round</b> — just you and the message. Write it your way; I'll only step in if you ask.</span>
+      <span><b>There's no pass or fail here.</b> Start with your own words; help is available any time you want it.</span>
     </div>
   </section>
 
   <div class="rightcol">
-    <button class="situation card anim k2" type="button">
+    <button class="situation card anim k2" type="button" id="situationCard">
       <span class="k">A situation like the one you handled</span>
-      <h2>A prospect went quiet — again</h2>
-      <p>Priya hasn't replied since the demo you ran last week.</p>
-      <span class="cta">Write it your way
+      <h2 id="rTitle">A prospect went quiet — again</h2>
+      <p id="rDesc">A fresh one, much like your last — this time, write it in your own words.</p>
+      <span class="cta">Draft this one yourself
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
     </button>
 
-    <a class="helpline anim k3" href="draft.html">
+    <a class="helpline anim k3" href="personalize.html" id="helpline">
       Rather have me walk through it, like before?
       <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
+
+    <div class="dismiss-row anim k3">
+      <a class="dismiss" href="recognition-editorial-blue-v3.html">Start a different message</a>
+      <a class="dismiss" href="artifact.html">Remind me later</a>
+      <a class="dismiss" href="artifact.html">Not relevant right now</a>
+    </div>
   </div>
 
 </div>
+<script src="shared/flow.js"></script>
 <script>
-  // the fresh situation enters the flow at Personalize (an unaided re-attempt)
-  document.querySelector('.situation').addEventListener('click', function(){ window.location.href='personalize.html'; });
+(function(){
+  // the return nudge reflects the situation of the last message the user finished
+  var rs = 'quiet';
+  if(window.NOD){
+    var s = NOD.store.load();
+    rs = (Array.isArray(s.history) && s.history[0] && s.history[0].scenario) || s.scenario || 'quiet';
+    NOD.store.save({ returnScenario: rs });
+    var sc = NOD.scenario(rs);
+    var t=document.getElementById('rTitle'); if(t) t.textContent = (sc.artTitle || 'A similar situation') + ' — again';
+  }
+  // "Draft this one yourself" -> the unaided composer (no guided scaffolding)
+  document.getElementById('situationCard').addEventListener('click', function(){ window.location.href='compose.html'; });
+  // help on request -> guided flow with this situation prefilled, request recorded
+  document.getElementById('helpline').addEventListener('click', function(e){
+    e.preventDefault();
+    if(window.NOD) NOD.store.save({ scenario: rs, who:'', ask:'', ctx:'', tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'', helpRequested:true });
+    window.location.href='personalize.html';
+  });
+})();
 </script>
 </body>
 </html>

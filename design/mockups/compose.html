@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 6 — Write it yourself (NOD)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,600&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/system.css" />
+<style>
+/* screen-specific: the unaided composer — no guided annotations, help only on request */
+.back{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;
+  font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-soft);cursor:pointer;
+  padding:0;margin-bottom:26px;transition:color .2s;text-decoration:none;}
+.back:hover,.back:focus-visible{color:var(--blue);outline:none;}
+.back svg{transition:transform .2s;}
+.back:hover svg{transform:translateX(-2px);}
+
+.chosen{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
+  padding:7px 14px 7px 12px;background:var(--blue-tint);border:1px solid var(--blue-tint-2);}
+.chosen .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none;}
+.chosen span{font-size:13px;font-weight:600;color:var(--blue-deep);letter-spacing:0.01em;}
+.intro .sub{max-width:36ch;}
+
+/* low-stakes reassurance */
+.solo{margin-top:30px;display:flex;gap:11px;align-items:flex-start;max-width:38ch;
+  font-size:13.5px;line-height:1.5;color:var(--ink-soft);}
+.solo svg{color:var(--blue);flex:none;margin-top:2px;}
+.solo b{color:var(--ink-2);font-weight:600;}
+
+/* composer card */
+.composer{padding:26px 28px 24px;display:flex;flex-direction:column;}
+.composer .clabel{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 12px;}
+.composer textarea{width:100%;min-height:230px;resize:vertical;border:1px solid var(--line);
+  background:#FBFBF9;font-family:inherit;font-size:16px;line-height:1.7;color:var(--ink);
+  padding:18px 20px;transition:border-color .2s;}
+.composer textarea::placeholder{color:var(--ink-faint);}
+.composer textarea:focus{outline:none;border-color:var(--blue);background:var(--card);}
+.composer-actions{display:flex;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap;}
+.composer-hint{font-size:12.5px;color:var(--ink-faint);margin:14px 2px 0;}
+.help-note{margin:12px 2px 0;font-size:12.5px;line-height:1.5;color:var(--ink-faint);}
+@media (min-width:940px){ .composer{padding:32px 34px 28px;} }
+@media (max-width:600px){ .composer{padding:22px 20px 20px;} .composer textarea{min-height:180px;} }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <section class="intro">
+    <div class="mark anim d1">
+      <span class="logo" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="wm">NOD<small>Know it's good before you send — and get sharper each time</small></span>
+    </div>
+
+    <a class="back anim d2" href="return.html">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </a>
+
+    <div class="chosen anim d2"><span class="dot"></span><span id="chipLabel">A prospect went quiet — again</span></div>
+
+    <h1 class="h-display anim d2">This one's <em>all yours.</em></h1>
+    <p class="sub anim d3" id="cSub">Write it in your own words — no prompts, no steps this round. You've done this before; help is here only if you ask for it.</p>
+
+    <div class="solo anim d3">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>There's no pass or fail here.</b> Start with your own words; if you get stuck, help is one tap away.</span>
+    </div>
+  </section>
+
+  <section class="composer card anim k2" aria-label="Write your message">
+    <p class="clabel">Your message</p>
+    <textarea id="composeText" placeholder="Start with “Hi …” and say why you're reaching out, then make one clear ask."></textarea>
+    <div class="composer-actions">
+      <button class="btn" id="done" type="button" disabled aria-disabled="true">
+        Save this message
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn ghost" id="help" type="button">Ask NOD for help</button>
+    </div>
+    <p class="composer-hint" id="composeHint">Write a line to save it.</p>
+    <p class="help-note">Asking for help walks you through it like before — and we note that you asked, so you can see your own progress over time.</p>
+  </section>
+
+</div>
+
+<script src="shared/flow.js"></script>
+<script>
+(function(){
+  var ta=document.getElementById('composeText'),
+      done=document.getElementById('done'),
+      help=document.getElementById('help'),
+      hint=document.getElementById('composeHint');
+
+  // reflect the return situation (from the last saved message's scenario)
+  if(window.NOD){
+    var s = NOD.store.load();
+    var rs = s.returnScenario || 'quiet';
+    var sc = NOD.scenario(rs);
+    var chip=document.getElementById('chipLabel');
+    if(chip) chip.textContent = (sc.artTitle || 'A similar situation') + ' — again';
+  }
+
+  function sync(){
+    var ready = ta.value.trim() !== '';
+    done.disabled = !ready;
+    done.setAttribute('aria-disabled', ready ? 'false' : 'true');
+    hint.style.display = ready ? 'none' : '';
+  }
+  ta.addEventListener('input', sync);
+
+  // unaided save: store the user's own words as a finished message + history entry
+  done.addEventListener('click', function(){
+    if(done.disabled) return;
+    if(window.NOD){
+      var s = NOD.store.load();
+      var rs = s.returnScenario || 'quiet';
+      var sc = NOD.scenario(rs);
+      var text = ta.value.trim();
+      var first = text.split('\n')[0];
+      var entry = { title: sc.artTitle || 'Your message', scenario: rs, recipient: '',
+                    peek: first, text: text, when: 'just now', unaided: true };
+      var hist = Array.isArray(s.history) ? s.history.slice() : [];
+      hist.unshift(entry);
+      NOD.store.save({ final: null, finalText: text, history: hist,
+        snap: { artTitle: sc.artTitle, recipient: '', p1:first, p2:'', p3:'' } });
+    }
+    window.location.href='artifact.html';
+  });
+
+  // help on request: route into the guided flow with this situation prefilled, and record the ask
+  help.addEventListener('click', function(){
+    if(window.NOD){
+      var s = NOD.store.load();
+      NOD.store.save({ scenario: s.returnScenario || 'quiet', who:'', ask:'', ctx:'',
+        tone:'warm', phrasing:'clear', customText:'', snap:null, final:null, finalText:'', helpRequested:true });
+    }
+    window.location.href='personalize.html';
+  });
+
+  sync();
+})();
+</script>
+</body>
+</html>

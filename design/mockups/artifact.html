@@ -143,18 +143,23 @@
 (function(){
   function esc(s){ return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
   var s = window.NOD ? NOD.store.load() : {};
-  var final = s.final || null;
   var finalText = s.finalText || '';
   var snap = s.snap || {};
-  var recipient = snap.recipient || 'Nidhi';
-  var name = window.NOD ? NOD.firstName(recipient) : 'Nidhi';
   var scLabel = window.NOD ? NOD.scenario(s.scenario||'quiet').chip.split(' · ')[0] : 'Follow-up';
 
-  // the finished message (reflects the user's use-edit / keep-mine choice)
+  // render the finished message from its text (works for the guided path and the
+  // unaided composer alike; reflects use-edit / keep-mine choices)
   var msg = document.getElementById('msg');
-  if(final && msg){ msg.innerHTML = '<p>'+esc(final.p1)+'</p><p>'+esc(final.p2)+'</p><p>'+esc(final.p3)+'</p>'; }
+  if(finalText && msg){
+    var paras = finalText.split(/\n\s*\n/).filter(function(x){ return x.trim(); });
+    if(paras.length <= 1) paras = finalText.split('\n').filter(function(x){ return x.trim(); });
+    msg.innerHTML = paras.map(function(p){ return '<p>'+esc(p.trim())+'</p>'; }).join('');
+  }
+  // recipient label: structured name if we have one, else read "Hi <Name>" from the text
+  var name = snap.recipient ? NOD.firstName(snap.recipient) : '';
+  if(!name){ var hm = finalText.match(/\bHi\s+([A-Z][a-z]+)/); name = hm ? hm[1] : ''; }
   var aTo = document.getElementById('aTo');
-  if(aTo){ aTo.textContent = scLabel + ' · to ' + name; }
+  if(aTo){ aTo.textContent = scLabel + (name ? ' · to ' + name : ' · saved'); }
 
   // running history + first-vs-returning proof
   var hist = Array.isArray(s.history) ? s.history : [];
