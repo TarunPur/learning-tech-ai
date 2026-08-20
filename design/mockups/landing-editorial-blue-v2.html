@@ -56,7 +56,19 @@ h1,h2,h3,p{margin:0;}
 .mark .wm{font-weight:800;font-size:19px;letter-spacing:-0.02em;line-height:1;}
 
 /* ---- hero ---- */
-.hero{padding:clamp(52px,8vw,104px) 0 clamp(40px,5vw,64px);text-align:center;}
+.hero{position:relative;overflow:hidden;padding:clamp(52px,7.5vw,96px) 0 clamp(46px,5.5vw,80px);text-align:center;}
+.hero .wrap{position:relative;z-index:1;}
+/* faint editorial grid rails filling the wide side margins, fading behind the centered text */
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(90deg,transparent 0,transparent 47px,var(--line) 47px,var(--line) 48px);
+  opacity:.55;
+  -webkit-mask-image:linear-gradient(90deg,#000,transparent 27%,transparent 73%,#000);
+  mask-image:linear-gradient(90deg,#000,transparent 27%,transparent 73%,#000);}
+/* abstract "a line being shaped" motif — replaces the old hero demo card, no people/photos */
+.hero-motif{margin:clamp(40px,5vw,64px) auto 0;width:min(340px,74%);display:flex;flex-direction:column;gap:12px;}
+.hm-bar{height:9px;border-radius:2px;background:var(--line);position:relative;overflow:hidden;}
+.hm-bar.b1{width:82%}.hm-bar.b3{width:56%}
+.hm-bar.fix::after{content:"";position:absolute;left:0;top:0;bottom:0;width:66%;background:var(--ink-faint);border-radius:2px;}
 .hero h1{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(38px,6vw,68px);line-height:1.03;letter-spacing:-0.02em;max-width:16ch;margin:0 auto;}
 .hero h1 em{font-style:italic;color:var(--blue-deep);}
 .hero .sub{margin:26px auto 0;max-width:52ch;font-size:clamp(17px,1.6vw,19px);color:var(--ink-soft);}
@@ -82,7 +94,7 @@ h1,h2,h3,p{margin:0;}
 .floater .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none;}
 
 /* ---- objection sections ---- */
-.section{padding:clamp(64px,9vw,120px) 0;border-top:1px solid var(--line);}
+.section{padding:clamp(58px,7vw,100px) 0;border-top:1px solid var(--line);}
 .section.tint{background:var(--paper-2);}
 .obj{display:grid;grid-template-columns:1fr;gap:clamp(30px,4vw,60px);align-items:start;}
 @media(min-width:900px){ .obj{grid-template-columns:0.92fr 1.08fr;} .obj.flip .col-q{order:2;} }
@@ -135,7 +147,7 @@ h1,h2,h3,p{margin:0;}
 .ev-card .src{margin-top:16px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;}
 .ev-card .src .who{color:var(--blue-deep);font-weight:600;}
 .ev-card .src .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink);}
-.srcnote{margin:clamp(28px,4vw,40px) auto 0;text-align:center;max-width:72ch;font-size:12.5px;line-height:1.6;color:var(--ink-faint);}
+.srcnote{margin:clamp(28px,4vw,40px) auto 0;text-align:center;max-width:72ch;font-size:13.5px;font-weight:600;line-height:1.6;color:var(--ink-2);}
 .srcnote b{color:var(--ink-2);font-weight:600;}
 
 /* the standard, shown as a live check — the proof the product runs it (measured = the count; anchored = same four, every draft) */
@@ -186,27 +198,32 @@ h1,h2,h3,p{margin:0;}
 .sit p i{font-style:normal;color:var(--ink-faint);}
 
 /* warm emotional beat — the identity payoff (capable, not taught) */
-.beat{text-align:center;padding:clamp(80px,11vw,148px) 0;}
+.beat{text-align:center;padding:clamp(58px,7vw,100px) 0;}
 .beat-mark{display:block;width:1px;height:42px;background:var(--blue);opacity:.55;margin:0 auto 32px;}
 .beat-h{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(30px,4.6vw,54px);line-height:1.07;letter-spacing:-0.018em;max-width:20ch;margin:0 auto;color:var(--ink);}
 .beat-h em{font-style:italic;color:var(--blue-deep);}
 .beat-body{margin:28px auto 0;max-width:54ch;font-size:clamp(17px,1.6vw,19px);line-height:1.62;color:var(--ink-soft);}
 
 /* closing */
-.close{text-align:center;padding:clamp(76px,10vw,132px) 0;}
+.close{text-align:center;padding:clamp(58px,7vw,100px) 0;}
 .close h2{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(32px,5vw,58px);line-height:1.06;letter-spacing:-0.018em;max-width:18ch;margin:0 auto;}
 .close h2 em{font-style:italic;color:var(--blue-deep);}
 .close .cta{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:13px;}
 .close .micro{font-size:13px;color:var(--ink-faint);}
 
 /* footer */
-.foot{border-top:1px solid var(--line);padding:44px 0 56px;}
-.foot .row{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;}
-.foot .tag{font-size:13.5px;color:var(--ink-soft);}
-.foot .links{display:flex;gap:22px;}
-.foot a{color:var(--ink-soft);font-size:13.5px;text-decoration:none;transition:color .2s;}
-.foot a:hover{color:var(--blue);}
-.foot .note{margin-top:22px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;}
+.foot{position:relative;overflow:hidden;border-top:1px solid var(--line);padding:56px 0 40px;}
+.foot-top{display:grid;grid-template-columns:1fr;gap:36px;position:relative;z-index:1;}
+@media(min-width:820px){ .foot-top{grid-template-columns:1.25fr 2fr;gap:40px;align-items:start;} }
+.foot-brand .mark{margin-bottom:16px;}
+.foot-desc{font-family:"Spectral",Georgia,serif;font-size:16px;line-height:1.4;color:var(--ink-2);max-width:30ch;}
+.foot-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 24px;}
+@media(min-width:560px){ .foot-cols{grid-template-columns:repeat(3,1fr);} }
+.foot-col h4{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-bottom:12px;}
+.foot-col a{display:block;color:var(--ink-soft);font-size:13.5px;text-decoration:none;padding:5px 0;transition:color .2s;}
+.foot-col a:hover{color:var(--blue);}
+.foot .note{position:relative;z-index:1;margin-top:34px;font-size:12.5px;color:var(--ink-faint);max-width:70ch;}
+.foot-wordmark{margin-top:14px;font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(72px,20vw,232px);line-height:.8;letter-spacing:-0.02em;color:var(--ink);opacity:.045;pointer-events:none;user-select:none;}
 
 /* ---- voices — real research, not (yet) customer reviews: scrolling social proof of the PROBLEM ---- */
 .voices{overflow:hidden;}
@@ -233,7 +250,7 @@ h1,h2,h3,p{margin:0;}
 .v-note{margin:clamp(30px,4vw,42px) auto 0;text-align:center;max-width:62ch;font-size:12.5px;line-height:1.55;color:var(--ink-faint);}
 @media (prefers-reduced-motion:no-preference){
   .mq-ready{overflow-x:hidden;}
-  .mq-ready .mq-track{animation:mqRight 64s linear infinite;}
+  .mq-ready .mq-track{animation:mqLeft 64s linear infinite;}
   .mq-ready:hover .mq-track,.mq-ready:focus-within .mq-track{animation-play-state:paused;}
   @keyframes mqRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 }
@@ -246,6 +263,9 @@ h1,h2,h3,p{margin:0;}
   .hero .h-anim{opacity:0;transform:translateY(14px);animation:heroIn .8s cubic-bezier(.16,1,.3,1) forwards;}
   .hero .a1{animation-delay:.05s}.hero .a2{animation-delay:.14s}.hero .a3{animation-delay:.23s}.hero .a4{animation-delay:.34s}.hero .a5{animation-delay:.5s}
   @keyframes heroIn{to{opacity:1;transform:none}}
+  /* hero motif: the middle bar loops from long/grey to short/blue — "a line being tightened" */
+  .hm-bar.fix::after{animation:hmShape 4.6s ease-in-out infinite;}
+  @keyframes hmShape{0%,14%{width:66%;background:var(--ink-faint)}46%,64%{width:34%;background:var(--blue)}100%{width:66%;background:var(--ink-faint)}}
   /* living demo: the product visibly reads the draft — flags weak phrases, then the notes rise in pointing at them */
   .demo-hero .weak{background-size:0% 42%;animation:sweep .5s ease forwards;}
   .demo-hero .weak.w1{animation-delay:1.05s}
@@ -257,28 +277,81 @@ h1,h2,h3,p{margin:0;}
   @keyframes sweep{to{background-size:100% 42%}}
   @keyframes annotIn{to{opacity:1;transform:none}}
 
-  /* ChatGPT section: the before→after shaping plays as one authored sequence on scroll */
-  .ba-demo .weak{background-size:0% 42%;}
-  .ba-demo .stdcheck{opacity:0;transform:translateY(10px);}
-  .ba-demo .sc-row{opacity:0;transform:translateX(-6px);}
-  .ba-demo .sc-chk{opacity:0;transform:scale(.5);}
-  .ba-demo .mail.after{opacity:0;transform:translateY(16px) scale(.985);filter:blur(4px);}
-  .ba-demo .mail.after .flag svg path{stroke-dasharray:22;stroke-dashoffset:22;}
-  .ba-demo.play .weak{animation:sweep .55s ease forwards;}
-  .ba-demo.play .weak.w1{animation-delay:.35s}
-  .ba-demo.play .weak.w2{animation-delay:.72s}
-  .ba-demo.play .stdcheck{animation:resolveIn .6s cubic-bezier(.16,1,.3,1) forwards;animation-delay:1.05s}
-  .ba-demo.play .sc-row{animation:annotIn .5s ease forwards;}
-  .ba-demo.play .sc-chk{animation:pop .45s cubic-bezier(.16,1,.3,1) forwards;}
-  .ba-demo.play .sc-row:nth-child(1){animation-delay:1.4s} .ba-demo.play .sc-row:nth-child(1) .sc-chk{animation-delay:1.62s}
-  .ba-demo.play .sc-row:nth-child(2){animation-delay:1.62s} .ba-demo.play .sc-row:nth-child(2) .sc-chk{animation-delay:1.84s}
-  .ba-demo.play .sc-row:nth-child(3){animation-delay:1.84s} .ba-demo.play .sc-row:nth-child(3) .sc-chk{animation-delay:2.06s}
-  .ba-demo.play .sc-row:nth-child(4){animation-delay:2.06s} .ba-demo.play .sc-row:nth-child(4) .sc-chk{animation-delay:2.28s}
-  .ba-demo.play .mail.after{animation:resolveIn .75s cubic-bezier(.16,1,.3,1) forwards;animation-delay:2.55s}
-  .ba-demo.play .mail.after .flag svg path{animation:draw .55s ease forwards;animation-delay:3.3s}
-  @keyframes resolveIn{to{opacity:1;transform:none;filter:blur(0)}}
-  @keyframes pop{to{opacity:1;transform:none}}
-  @keyframes draw{to{stroke-dashoffset:0}}
+}
+
+/* ===== nav Sign-in CTA — solid blue pill, sized subordinate to the hero CTA ===== */
+.nav .btn{font-size:14px;font-weight:600;padding:10px 20px;box-shadow:0 6px 16px -9px rgba(47,111,224,.55);}
+.nav .btn:hover{transform:translateY(-1px);}
+
+/* ===== ChatGPT section — Before / In-between / After transform demo ===== */
+.td-actions{display:flex;align-items:center;gap:18px 24px;flex-wrap:wrap;margin-top:24px;}
+.td-proof{display:inline-flex;align-items:center;gap:10px;max-width:54ch;font-size:13px;font-weight:600;line-height:1.45;color:var(--blue-deep);background:var(--blue-tint);border:1px solid var(--blue-tint-2);padding:11px 16px;}
+.td-proof svg{color:var(--blue);flex:none;}
+.transform-demo{margin-top:clamp(30px,4vw,46px);}
+.td-stage{position:relative;display:grid;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);}
+.td-counter{position:absolute;top:16px;right:20px;z-index:2;font-size:11px;letter-spacing:.08em;color:var(--ink-faint);font-variant-numeric:tabular-nums;}
+.td-counter .td-num{color:var(--blue-deep);font-weight:700;}
+.td-scene{grid-column:1;grid-row:1;padding:clamp(26px,3vw,38px) clamp(24px,3vw,40px);display:flex;flex-direction:column;opacity:0;transition:opacity .42s ease;}
+.td-scene.is-active{opacity:1;}
+.td-tag{font-family:"Spectral",serif;font-size:12px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);}
+.td-headline{margin:13px 0 0;font-family:"Spectral",serif;font-weight:600;font-size:clamp(21px,2.4vw,27px);line-height:1.16;letter-spacing:-0.01em;color:var(--ink);}
+.td-headline em{font-style:italic;color:var(--blue-deep);}
+.td-panel{margin-top:20px;border:1px solid var(--line);background:var(--paper-2);padding:20px 22px;}
+.td-to{font-size:12px;letter-spacing:.02em;color:var(--ink-faint);margin-bottom:14px;}
+.td-empty{display:flex;align-items:center;gap:5px;font-size:16px;line-height:1.4;}
+.td-cursor{display:inline-block;width:2px;height:19px;background:var(--blue);animation:tdBlink 1.1s step-end infinite;}
+.td-ghost{font-family:"Spectral",serif;font-style:italic;color:var(--ink-faint);}
+@keyframes tdBlink{50%{opacity:0}}
+.td-msg{font-size:15.5px;line-height:1.62;color:var(--ink-2);}
+.td-hi{background-image:linear-gradient(var(--blue-tint-2),var(--blue-tint-2));background-repeat:no-repeat;background-position:0 92%;background-size:100% 42%;border-radius:2px;}
+.td-move,.td-solo{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;line-height:1.5;color:var(--ink-soft);}
+.td-move svg,.td-solo svg{flex:none;margin-top:1px;color:var(--blue);}
+.td-move b,.td-solo b{color:var(--ink-2);font-weight:600;}
+.td-say{margin-top:18px;font-family:"Spectral",serif;font-style:italic;font-size:15px;line-height:1.5;color:var(--ink-soft);}
+/* auto-play 3-step progress bar */
+.td-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;}
+.td-step{display:flex;flex-direction:column;gap:9px;}
+.td-sbar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;}
+.td-sfill{height:100%;width:0;background:var(--blue);border-radius:2px;}
+.td-slabel{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint);transition:color .3s;}
+.td-step.is-active .td-slabel{color:var(--blue-deep);}
+.td-step.is-done .td-slabel{color:var(--ink-2);}
+@media(max-width:640px){ .td-progress{grid-template-columns:1fr;gap:12px;} }
+/* scene 3 — vague ask vs. improved ask */
+.td-was{margin-bottom:6px;}
+.td-flag{border-bottom:2px dotted var(--ink-faint);background:rgba(124,124,115,.08);padding:0 2px;color:var(--ink-soft);}
+.td-now{color:var(--ink-2);}
+
+/* ===== authority — "uniquely powerful" 3-step flow ===== */
+.power-flow{margin-top:clamp(30px,4vw,48px);display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch;}
+@media(min-width:900px){ .power-flow{grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0;} }
+.pw-step{background:var(--card);border:1px solid var(--line-2);box-shadow:var(--shadow-lift);padding:28px 26px 26px;display:flex;flex-direction:column;}
+.pw-num{font-family:"Spectral",serif;font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--blue-deep);}
+.pw-title{margin:12px 0 0;font-family:"Spectral",serif;font-weight:600;font-size:19px;line-height:1.18;letter-spacing:-0.01em;color:var(--ink);}
+.pw-body{margin:10px 0 0;font-size:13.5px;line-height:1.56;color:var(--ink-soft);}
+.pw-body strong{color:var(--ink-2);font-weight:700;}
+.pw-join{display:flex;align-items:center;justify-content:center;color:var(--line-2);padding:0 14px;}
+@media(max-width:899px){ .pw-join{transform:rotate(90deg);padding:2px 0;} }
+
+/* ===== authority — sources strip (right-to-left) ===== */
+.src-strip{margin-top:clamp(34px,4vw,48px);}
+.src-strip-label{text-align:center;font-family:"Spectral",serif;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px;}
+.logos.marquee{margin-top:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);}
+.logo-set{display:flex;align-items:center;}
+.lg{flex:none;padding:0 clamp(24px,4vw,52px);font-family:"Spectral",serif;font-weight:600;font-size:clamp(19px,2.3vw,26px);letter-spacing:-0.01em;color:var(--ink-2);opacity:.68;white-space:nowrap;transition:opacity .2s,color .2s;}
+.lg:hover{opacity:1;color:var(--ink);}
+.lg-name{font-style:italic;font-weight:500;}
+.src-strip .srcnote{margin-top:18px;}
+@media (prefers-reduced-motion:no-preference){
+  .mq-ready.logos .mq-track{animation-name:mqLeft;animation-duration:42s;}
+  @keyframes mqLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+}
+
+/* reduced-motion: no crossfade / no snap easing — instant, legible states */
+@media (prefers-reduced-motion:reduce){
+  .td-scene{transition:none;}
+  .td-fill,.td-handle{transition:none;}
+  .td-cursor{animation:none;}
 }
 </style>
 </head>
@@ -300,7 +373,7 @@ h1,h2,h3,p{margin:0;}
       <span class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <span class="wm">NOD</span>
     </a>
-    <a class="btn-ghost" href="#" data-signin>Sign in
+    <a class="btn nav-cta" href="#" data-signin>Sign in
       <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
@@ -310,108 +383,86 @@ h1,h2,h3,p{margin:0;}
 
   <!-- HERO -->
   <section class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
     <div class="wrap">
-      <h1 class="h-anim a1">Finish one real message — <br class="brk"/>and know it's <em>good.</em></h1>
-      <p class="sub h-anim a2">You already use AI every day. Here, you stop guessing whether the draft is good — and start knowing. One real message at a time, until writing a good one is simply something you do.</p>
+      <h1 class="h-anim a1">Finish one real task — <br class="brk"/>and know you can be best at it <em>without external support.</em></h1>
+      <p class="sub h-anim a2">You already use AI every day. Here, you get enough practice — without struggling over where to start. One actual task at a time, until you apply it to your own work.</p>
       <div class="cta h-anim a3">
-        <a class="btn" href="#" data-signin>Start with your message
+        <a class="btn" href="#" data-signin>Start with your real task
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         <span class="micro">Free to use · one sign-in · nothing to set up</span>
       </div>
-      <p class="cred h-anim a4">
-        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Judged against a fixed, evidence-based standard — the same one every time: one clear ask, a real reason it's about them, short enough to respect their time. Not an AI's flattering opinion.
-      </p>
-
-      <!-- hero demonstration: the product points at your actual draft -->
-      <div class="demo-hero h-anim a5">
-        <div class="note-card">
-          <span class="tag">Paste your draft — we point at your actual words</span>
-          <p class="msg">Nidhi — <span class="weak w1">just checking in</span> to see if you'd had a chance to think things over. Let me know if you'd like to hop on <span class="weak w2">a call sometime</span> to discuss further. Thanks so much!</p>
-          <div class="annot">
-            <span class="a"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M13.4 3.6l3 3M4 16.3l.6-2.9 8.8-8.8 3 3-8.8 8.8L4 16.3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong style="color:var(--ink)">Change · "just checking in" earns nothing.</strong> Open with the real problem she has — that's why she'll read on.</span></span>
-            <span class="a"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M13.4 3.6l3 3M4 16.3l.6-2.9 8.8-8.8 3 3-8.8 8.8L4 16.3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong style="color:var(--ink)">Change · "a call sometime" is vague and heavy.</strong> Ask for one small step she can say yes to in two seconds.</span></span>
-            <span class="a"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong style="color:var(--ink)">Keep · it's short.</strong> Good instinct — we'll hold it right there.</span></span>
-          </div>
-          <p class="demo-foot">And it shows you <em class="serif" style="font-style:italic">why</em>, every time — so the next draft is better before we even look.</p>
-        </div>
-        <div class="floater"><span class="dot"></span>Not a flattering "yes"</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- USE CASES — independent entry points: scenario → benefit → specific CTA -->
-  <section class="section" id="uses">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow-q">Which one are you <em>staring at</em> right now?</p>
-        <p class="sec-sub">Each one's a place to start — pick the message you've been putting off, and finish that exact one with help.</p>
-      </div>
-      <div class="uc-grid">
-        <a class="uc rise" href="#" data-signin>
-          <h3>A prospect went quiet</h3>
-          <p>Restart the conversation without sounding pushy.</p>
-          <span class="cta">Create follow-up <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </a>
-        <a class="uc rise d1" href="#" data-signin>
-          <h3>Book a meeting or demo</h3>
-          <p>Turn interest into a conversation.</p>
-          <span class="cta">Write meeting request <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </a>
-        <a class="uc rise d2" href="#" data-signin>
-          <h3>Reach out to someone new</h3>
-          <p>Write a personalized first message.</p>
-          <span class="cta">Create outreach <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </a>
-        <a class="uc rise d3" href="#" data-signin>
-          <h3>Follow up after an event</h3>
-          <p>Reconnect while the conversation is still fresh.</p>
-          <span class="cta">Write event follow-up <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </a>
+      <!-- abstract "a line being shaped" motif — on-brand, no people/photos -->
+      <div class="hero-motif h-anim a4" aria-hidden="true">
+        <span class="hm-bar b1"></span>
+        <span class="hm-bar b2 fix"></span>
+        <span class="hm-bar b3"></span>
       </div>
     </div>
   </section>
 
   <!-- OBJECTION 1 (lead) — the money section: before/after against the standard -->
   <section class="section tint">
-    <div class="wrap obj flip obj-demo">
-      <div class="col-q rise">
+    <div class="wrap">
+      <div class="sec-head rise">
         <p class="eyebrow-q">"Then why not just use <em>ChatGPT?</em>"</p>
-        <p class="ans">It tells you what you want to hear. We hold every draft to <strong>one fixed standard — the same checks, every time</strong> — and show you exactly where it misses.</p>
-        <p class="ans-quiet">Not a mood. A count you can see.</p>
+        <p class="sec-sub"><strong>A chat tool writes it <em class="serif" style="font-style:italic">for</em> you. NOD does something a chat box can't — it walks you from stuck, to a message worth sending, to writing the next one on your own.</strong></p>
       </div>
-      <div class="col-demo rise d1">
-        <div class="ba ba-demo">
-          <div>
-            <p class="lbl">Straight from a chat tool</p>
-            <div class="mail before">
-              <p class="subj">Subject: Touching base</p>
-              <p class="body">Hi Nidhi, <span class="weak w1">I hope this email finds you well</span>. My name is Sam and I'm reaching out from Acme. We offer a range of solutions that help companies like yours improve efficiency and drive growth. I'd love to schedule <span class="weak w2">a quick call at your earliest convenience</span> to explore how we might work together and discuss your needs. Please let me know a few times that suit you.</p>
-              <span class="flag"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 6v5M10 14h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/></svg><span class="u">Buried, two asks, all about "us"</span></span>
+      <div class="td-actions rise d1">
+        <a class="btn" href="#" data-signin>Start with your real task
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <span class="td-proof"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.4" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 10.2l2.3 2.3 4.6-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Held to one fixed standard, the same every time — not a flattering opinion.</span>
+      </div>
+      <div class="transform-demo rise d2" role="img" aria-label="An automatic demonstration: NOD takes a stuck task, shapes a stronger follow-up against its standard, and leaves you able to spot the same fix yourself next time.">
+        <div class="td-stage">
+          <div class="td-counter"><span class="td-num">01</span><span class="td-den"> / 03</span></div>
+
+          <div class="td-scene is-active" data-scene="0">
+            <span class="td-tag">01 · Before</span>
+            <p class="td-headline">The real task, still undone.</p>
+            <div class="td-panel td-blank">
+              <p class="td-to">Your task</p>
+              <p class="td-empty"><span class="td-cursor" aria-hidden="true"></span><span class="td-ghost">Prospect customer isn't responding to my emails.</span></p>
             </div>
+            <p class="td-say">You know you need to follow up — you just don't know what to write next.</p>
           </div>
-          <div class="stdcheck" aria-label="Checking against the fixed standard">
-            <div class="sc-head">
-              <span class="sc-title">Checking against the fixed standard</span>
-              <span class="sc-sub">The same four checks — run on every draft, not an opinion</span>
+
+          <div class="td-scene" data-scene="1">
+            <span class="td-tag">02 · Shape it with NOD</span>
+            <p class="td-headline">NOD applies the standard.</p>
+            <div class="td-panel">
+              <p class="td-msg">Hi Nidhi — following up on my last note. <span class="td-hi">Would a 15-minute call on Tuesday help?</span></p>
+              <div class="td-move"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M13.4 3.6l3 3M4 16.3l.6-2.9 8.8-8.8 3 3-8.8 8.8L4 16.3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Give them one clear, easy next step.</b> NOD shows the reasoning behind the stronger line — not just an answer.</span></div>
             </div>
-            <div class="sc-rows">
-              <div class="sc-row"><span class="sc-k">Length</span><span class="sc-v"><s>92</s> <b class="sc-count">41</b> words</span><span class="sc-chk" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.4 10.2l2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-              <div class="sc-row"><span class="sc-k">The ask</span><span class="sc-v"><s>two, buried</s> one, up front</span><span class="sc-chk" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.4 10.2l2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-              <div class="sc-row"><span class="sc-k">Why them</span><span class="sc-v">a real, specific reason</span><span class="sc-chk" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.4 10.2l2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-              <div class="sc-row"><span class="sc-k">No filler</span><span class="sc-v"><s>"hope this finds you well"</s> cut</span><span class="sc-chk" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.4 10.2l2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-            </div>
+            <p class="td-say">The exact line to strengthen, and why it works.</p>
           </div>
-          <div>
-            <p class="lbl" style="color:var(--blue-deep)">The same message, shaped</p>
-            <div class="mail after">
-              <p class="subj">Subject: your Monday lead pile-up</p>
-              <p class="body">Nidhi — you said on the webinar that lead follow-up eats your Mondays. We built a two-line fix for exactly that. <span class="u">Worth a quick look?</span> I'll send a 90-second walkthrough — no call needed.</p>
-              <span class="flag"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.4"/><path d="M6.4 10.2l2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>One ask · a real reason · 41 words</span>
+
+          <div class="td-scene" data-scene="2">
+            <span class="td-tag">03 · Write stronger next time</span>
+            <p class="td-headline">You can spot it yourself now.</p>
+            <div class="td-panel">
+              <p class="td-msg td-was"><span class="td-flag">Your ask is vague: "Let me know your thoughts."</span></p>
+              <p class="td-msg td-now">Make it easier to answer: <span class="td-hi">"Would Tuesday or Thursday work for a 15-minute call?"</span></p>
             </div>
+            <p class="td-say">Next time, you catch the same thing on your own — no help needed.</p>
           </div>
-          <p class="ex-label">An example, not a real message — but this is exactly the shaping you'll see on your own.</p>
+        </div>
+
+        <div class="td-progress" aria-hidden="true">
+          <div class="td-step is-active" data-step="0">
+            <div class="td-sbar"><div class="td-sfill"></div></div>
+            <span class="td-slabel">1. Before</span>
+          </div>
+          <div class="td-step" data-step="1">
+            <div class="td-sbar"><div class="td-sfill"></div></div>
+            <span class="td-slabel">2. Shape it with NOD</span>
+          </div>
+          <div class="td-step" data-step="2">
+            <div class="td-sbar"><div class="td-sfill"></div></div>
+            <span class="td-slabel">3. Write stronger next time</span>
+          </div>
         </div>
       </div>
     </div>
@@ -421,76 +472,42 @@ h1,h2,h3,p{margin:0;}
   <section class="section auth">
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow-q">Built on how the best outreach <em>actually works.</em></p>
-        <p class="sec-sub">Every check comes from people who do outreach for a living — large-scale studies and field-tested frameworks across more than <strong>70 million</strong> real emails, not our opinion.</p>
+        <p class="eyebrow-q">What makes NOD <em>uniquely powerful.</em></p>
+        <p class="sec-sub">Three things a chat box doesn't give you — a flow that takes a real message and holds it to how the best outreach actually works.</p>
       </div>
-      <div class="ev">
-        <div class="ev-card rise">
-          <p class="claim">Short, plain messages get read.</p>
-          <p class="body">50–125 words in language a busy reader skims in seconds. Simpler wording alone lifted responses by 36%.</p>
-          <p class="src"><span class="who">Boomerang</span> · <span class="n">40M</span> emails <span>→ the "Length" check</span></p>
-        </div>
-        <div class="ev-card rise d1">
-          <p class="claim">One clear ask beats three.</p>
-          <p class="body">A single, well-timed ask wins. Stacking asks just hands a busy prospect reasons to do nothing.</p>
-          <p class="src"><span class="who">Gong</span> · <span class="n">304K</span> emails <span>→ the "One ask" check</span></p>
-        </div>
-        <div class="ev-card rise">
-          <p class="claim">Make it genuinely about them.</p>
-          <p class="body">A real, specific reason it reaches this person — not a token first name — lifted reply rates by 32.7%.</p>
-          <p class="src"><span class="who">Backlinko</span> · <span class="n">12M</span> · <span class="who">Woodpecker</span> · <span class="n">20M</span> <span>→ the "Why them" check</span></p>
-        </div>
-        <div class="ev-card rise d1">
-          <p class="claim">Filler reads as a template.</p>
-          <p class="body">"Just checking in," "circle back," hedging and clichés dilute the ask and signal auto-generated.</p>
-          <p class="src"><span class="who">Gong</span> · <span class="who">Lavender</span> · <span class="who">Josh Braun</span> (4-T) <span>→ the "No filler" check</span></p>
-        </div>
-      </div>
-      <p class="srcnote">Grounded in published outreach analyses from <b>Gong</b>, <b>Boomerang</b>, <b>Backlinko</b>, <b>Woodpecker</b>, <b>Lavender</b> and <b>Josh Braun</b> — large-scale industry research and field-tested frameworks, not fabricated endorsements.</p>
-    </div>
-  </section>
 
-  <!-- OBJECTION 3 -->
-  <section class="section">
-    <div class="wrap obj">
-      <div class="col-q rise">
-        <p class="eyebrow-q">"Won't it just <em>write it for me?</em>"</p>
-        <p class="ans">No — you keep the wheel. You make the calls that actually matter, and it works them through <strong>with</strong> you, showing its thinking and pointing every fix at your own words. And the help fades: the more you do it, the more it just steps back and lets you drive.</p>
-        <div class="chips" style="margin-top:22px">
-          <div class="chip"><div class="k">You decide</div><div class="v">What you're really asking</div></div>
-          <div class="chip"><div class="k">You decide</div><div class="v">The tone for this person</div></div>
+      <div class="power-flow">
+        <div class="pw-step rise">
+          <h3 class="pw-title">It starts with your real message</h3>
+          <p class="pw-body">Not a generic template or an empty box. NOD helps you write the outreach message you need to send right now.</p>
+        </div>
+        <div class="pw-join" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pw-step rise d1">
+          <h3 class="pw-title">It checks it against proven expert standards</h3>
+          <p class="pw-body">Your draft is assessed using patterns drawn from <strong>millions of real outreach emails</strong> — not just a generic AI opinion.</p>
+        </div>
+        <div class="pw-join" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pw-step rise d2">
+          <h3 class="pw-title">It shows you exactly what to improve</h3>
+          <p class="pw-body">Instead of a confusing rating and a pile of generic resources, NOD points to the specific line to tighten, explains why, and helps you make the change — so you actually develop the skill.</p>
         </div>
       </div>
-      <div class="col-demo rise d1">
-        <div class="note-card">
-          <span class="tag">Help that fades</span>
-          <p class="msg" style="color:var(--ink-soft)">The first message is led by the product, thinking out loud. By the next one, you're driving and it only catches what you miss.</p>
-          <div class="fade-row">
-            <span class="step">It leads</span>
-            <span class="to"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="step dim">You share it</span>
-            <span class="to"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="step dimmer">You drive</span>
+
+      <div class="src-strip rise d1">
+        <p class="src-strip-label">The research the standard is built on</p>
+        <div class="marquee logos" aria-label="Research sources behind the standard">
+          <div class="mq-track">
+            <div class="mq-set logo-set">
+              <span class="lg">Gong</span>
+              <span class="lg">Boomerang</span>
+              <span class="lg">Backlinko</span>
+              <span class="lg">Woodpecker</span>
+              <span class="lg">Lavender</span>
+              <span class="lg lg-name">Josh Braun</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- OBJECTION 4 -->
-  <section class="section tint">
-    <div class="wrap obj flip">
-      <div class="col-q rise">
-        <p class="eyebrow-q">"Is this a <em>class?</em>"</p>
-        <p class="ans">No — nothing to sit through, nothing to keep up with. You finish the message that's stuck right now, with help. But because <strong>you</strong> made the calls, the next one comes easier — and the one after that — until writing outreach that lands is simply something you can do. It's not one saved draft. It's a way of working that <strong>scales to every message after this.</strong></p>
-      </div>
-      <div class="col-demo rise d1">
-        <p class="stack-lead">The outreach that lands next week, next month — you'll handle it yourself:</p>
-        <div class="stack">
-          <div class="kept"><div><div class="t">Re-engaging Nidhi (webinar lead)</div><div class="d">On your own now</div></div><span class="chk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10.5l3.5 3.5 7-8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          <div class="kept"><div><div class="t">Booking a demo — Tarun at Northwind</div><div class="d">On your own now</div></div><span class="chk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10.5l3.5 3.5 7-8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          <div class="kept"><div><div class="t">Follow-up with Sam after the meetup</div><div class="d">On your own now</div></div><span class="chk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10.5l3.5 3.5 7-8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-        </div>
+        <p class="srcnote">Published outreach analyses across <b>70M+</b> real emails — the research we built the standard on, not endorsements or partnerships.</p>
       </div>
     </div>
   </section>
@@ -503,7 +520,7 @@ h1,h2,h3,p{margin:0;}
     <div class="wrap voices-head">
       <span class="v-eyebrow rise">From our research</span>
       <h2 class="v-h rise d1">We didn't guess at this. <em>We asked.</em></h2>
-      <p class="v-sub rise d2">Before building anything, 160 professionals in marketing, sales and ops (44 in our strict target cut) told us where writing outreach actually breaks down. These frustrations are why this exists — and exactly what it's built to answer.</p>
+      <p class="v-sub rise d2">Before building anything, 25% of our primary respondents told us where their daily tasks break down. Their frustration is why NOD exists — and exactly what it's built to answer.</p>
     </div>
 
     <div class="marquee" aria-label="What professionals told us in our research">
@@ -549,11 +566,38 @@ h1,h2,h3,p{margin:0;}
 
 <footer class="foot">
   <div class="wrap">
-    <div class="row">
-      <span class="tag"><strong style="font-weight:700;color:var(--ink)">NOD</strong> — one real message, done with you.</span>
-      <nav class="links"><a href="#top">How it works</a><a href="#" data-signin>Sign in</a><a href="#">Privacy</a></nav>
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="mark" href="#top" aria-label="NOD home">
+          <span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="wm">NOD</span>
+        </a>
+        <p class="foot-desc">Finish one real task — and know you can do it on your own.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Our research</a>
+          <a href="#">Careers</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="foot-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">How your data is masked</a>
+        </div>
+        <div class="foot-col">
+          <h4>Connect</h4>
+          <a href="#">LinkedIn</a>
+          <a href="#">X</a>
+          <a href="#" data-signin>Sign in</a>
+        </div>
+      </nav>
     </div>
-    <p class="note">A calm way to write the outreach you're stuck on. We claim quality by a fixed expert standard — never that a message will get a reply. Examples on this page are illustrative.</p>
+    <p class="note">A calm way to finish the task you're stuck on. We claim quality by a fixed expert standard — never that a message will get a reply. Examples on this page are illustrative.</p>
+    <div class="foot-wordmark" aria-hidden="true">NOD</div>
   </div>
 </footer>
 
@@ -574,32 +618,45 @@ h1,h2,h3,p{margin:0;}
   var nav = document.getElementById('nav');
   var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
-  // ChatGPT section: play the before→after shaping once when it scrolls into view
-  var demo = document.querySelector('.ba-demo');
-  if(demo){
-    var cnt = demo.querySelector('.sc-count');
-    var playDemo = function(){
-      demo.classList.add('play');
-      if(!cnt) return;
-      if(reduce){ cnt.textContent = '41'; return; }
-      cnt.textContent = '92';
-      setTimeout(function(){
-        var from = 92, to = 41, dur = 850, t0 = performance.now();
-        (function step(now){
-          var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-          cnt.textContent = Math.round(from + (to - from) * e);
-          if(p < 1) requestAnimationFrame(step);
-        })(performance.now());
-      }, 1450);
-    };
-    if(reduce || !('IntersectionObserver' in window)){ playDemo(); }
-    else {
-      var io2 = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){ if(e.isIntersecting){ playDemo(); io2.unobserve(e.target); } });
-      }, {threshold:0.3});
-      io2.observe(demo);
+  // ChatGPT section: automatic Before → Shape it → Write stronger demonstration (no interaction)
+  (function(){
+    var demo = document.querySelector('.transform-demo');
+    if(!demo) return;
+    var scenes = Array.prototype.slice.call(demo.querySelectorAll('.td-scene'));
+    var steps = Array.prototype.slice.call(demo.querySelectorAll('.td-step'));
+    var counter = demo.querySelector('.td-num');
+    var nums = ['01','02','03'];
+    var anim = !window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var STAGE = 3600, PAUSE = 1500;   // per-stage dwell, then a gentle pause before looping
+    var idx = 0, timer = null, started = false;
+
+    function paint(i){
+      scenes.forEach(function(s,n){ s.style.opacity = n===i ? '1':'0'; s.classList.toggle('is-active', n===i); });
+      if(counter) counter.textContent = nums[i];
+      steps.forEach(function(st,n){
+        var f = st.querySelector('.td-sfill');
+        st.classList.toggle('is-active', n===i);
+        st.classList.toggle('is-done', n<i);
+        if(n < i){ f.style.transition='none'; f.style.width='100%'; }
+        else if(n === i){
+          if(anim){ f.style.transition='none'; f.style.width='0%'; void f.offsetWidth; f.style.transition='width '+STAGE+'ms linear'; f.style.width='100%'; }
+          else { f.style.transition='none'; f.style.width='100%'; }
+        } else { f.style.transition='none'; f.style.width='0%'; }
+      });
     }
-  }
+    function tick(){
+      idx = (idx+1) % scenes.length;
+      paint(idx);
+      timer = setTimeout(tick, idx === scenes.length-1 ? STAGE+PAUSE : STAGE);
+    }
+    function start(){ if(started) return; started = true; idx = 0; paint(0); timer = setTimeout(tick, STAGE); }
+
+    if(!('IntersectionObserver' in window)){ start(); return; }   // starts as soon as the section is in view
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ start(); io.unobserve(e.target); } });
+    }, {threshold:0.35});
+    io.observe(demo);
+  })();
   // voices marquee: clone the authored set once for a seamless loop (static, scrollable if reduced-motion)
   if(!reduce){
     document.querySelectorAll('.marquee').forEach(function(mq){
