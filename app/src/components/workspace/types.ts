@@ -22,6 +22,7 @@ export type DraftState = {
   savedMessageId: string | null;
   savedTextMasked: string;
   reuseSeed: string;
+  attemptType: "guided" | "unaided";
 };
 
 export const INITIAL_DRAFT: DraftState = {
@@ -42,6 +43,7 @@ export const INITIAL_DRAFT: DraftState = {
   savedMessageId: null,
   savedTextMasked: "",
   reuseSeed: "",
+  attemptType: "guided",
 };
 
 // Editing a prior frame must never leave contradictory downstream state —

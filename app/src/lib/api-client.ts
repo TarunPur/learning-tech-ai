@@ -7,12 +7,16 @@ async function json<T>(pending: Promise<Response>): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function createAttempt(scenario: ScenarioId, customTaskMasked?: string) {
+export function createAttempt(
+  scenario: ScenarioId,
+  customTaskMasked?: string,
+  attemptType?: "guided" | "unaided"
+) {
   return json<{ id: string }>(
     fetch("/api/attempts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scenario, customTaskMasked }),
+      body: JSON.stringify({ scenario, customTaskMasked, attemptType }),
     })
   );
 }
@@ -97,4 +101,28 @@ export type SavedMessage = {
 
 export function fetchMessages() {
   return json<{ messages: SavedMessage[] }>(fetch("/api/messages"));
+}
+
+export function createNudge(attemptId: string, scenario: ScenarioId) {
+  return json<{ id: string }>(
+    fetch("/api/nudges", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ attemptId, scenario }),
+    })
+  );
+}
+
+export function fetchPendingNudge() {
+  return json<{ nudge: { id: string; scenario: ScenarioId } | null }>(fetch("/api/nudges"));
+}
+
+export function patchNudge(id: string, status: "sent" | "clicked" | "dismissed") {
+  return json<{ ok: boolean }>(
+    fetch(`/api/nudges/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    })
+  );
 }

@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { ScenarioId } from "@/lib/flow";
 
-type CreateBody = { scenario: ScenarioId; customTaskMasked?: string };
+type CreateBody = {
+  scenario: ScenarioId;
+  customTaskMasked?: string;
+  attemptType?: "guided" | "unaided";
+};
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -24,6 +28,7 @@ export async function POST(request: Request) {
       user_id: user.id,
       scenario: body.scenario,
       custom_task_masked: body.customTaskMasked ?? null,
+      attempt_type: body.attemptType ?? "guided",
     })
     .select("id")
     .single();

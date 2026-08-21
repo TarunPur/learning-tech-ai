@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrandHeader } from "@/components/ui/BrandHeader";
 import { firstName, scenario, type ScenarioId } from "@/lib/flow";
 import { maskName } from "@/lib/masking";
@@ -8,8 +8,11 @@ import { rememberName } from "@/lib/name-map";
 import {
   checkDraft,
   createAttempt,
+  createNudge,
+  fetchPendingNudge,
   generateNodDraft,
   patchAttempt,
+  patchNudge,
   rewriteDraftRequest,
   saveMessage,
 } from "@/lib/api-client";
@@ -20,6 +23,7 @@ import { DraftFrame } from "./frames/DraftFrame";
 import { NodDraftFrame } from "./frames/NodDraftFrame";
 import { FeedbackFrame } from "./frames/FeedbackFrame";
 import { SavedFrame } from "./frames/SavedFrame";
+import { NudgeBanner } from "./frames/NudgeBanner";
 import { Recap } from "./Recap";
 import { FRAME_ORDER, INITIAL_DRAFT, resetFor, type DraftState, type FrameKey } from "./types";
 
@@ -27,6 +31,13 @@ export function Workspace() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [draft, setDraft] = useState<DraftState>(INITIAL_DRAFT);
   const [loading, setLoading] = useState(false);
+  const [pendingNudge, setPendingNudge] = useState<{ id: string; scenario: ScenarioId } | null>(null);
+
+  useEffect(() => {
+    fetchPendingNudge()
+      .then(({ nudge }) => setPendingNudge(nudge))
+      .catch(() => setPendingNudge(null));
+  }, []);
 
   const activeKey = FRAME_ORDER[activeIndex] ?? "situation";
   const prevKey: FrameKey | null = activeIndex > 0 ? FRAME_ORDER[activeIndex - 1] ?? null : null;
@@ -231,6 +242,9 @@ export function Workspace() {
       });
 
       if (name !== "there") rememberName(id, name);
+      // The outcome-tied nudge (Decision 10) — one per completed attempt,
+      // surfaced in-app on the next visit.
+      await createNudge(draft.attemptId, effectiveScenario);
       setDraft((prev) => ({ ...prev, savedMessageId: id, savedTextMasked: finalMasked }));
       goTo("saved");
     } finally {
@@ -248,6 +262,32 @@ export function Workspace() {
     setActiveIndex(0);
   }
 
+  async function handleAcceptNudge() {
+    if (!pendingNudge) return;
+    setLoading(true);
+    try {
+      await patchNudge(pendingNudge.id, "clicked");
+      const { id } = await createAttempt(pendingNudge.scenario, undefined, "unaided");
+      setDraft({ ...INITIAL_DRAFT, scenario: pendingNudge.scenario, attemptId: id, attemptType: "unaided" });
+      setPendingNudge(null);
+      // Skip situation-picking — the nudge already carries the situation.
+      setActiveIndex(FRAME_ORDER.indexOf("details"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDismissNudge() {
+    if (!pendingNudge) return;
+    setLoading(true);
+    try {
+      await patchNudge(pendingNudge.id, "dismissed");
+      setPendingNudge(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="nod-stage">
       <BrandHeader />
@@ -256,7 +296,17 @@ export function Workspace() {
           <Recap frameKey={prevKey} draft={draft} onEdit={() => editFrame(activeIndex - 1)} />
         </div>
         <div className="nod-col-active">
-          {activeKey === "situation" && <SituationFrame onPick={handlePickSituation} />}
+          {activeKey === "situation" &&
+            (pendingNudge ? (
+              <NudgeBanner
+                scenarioId={pendingNudge.scenario}
+                loading={loading}
+                onAccept={handleAcceptNudge}
+                onDismiss={handleDismissNudge}
+              />
+            ) : (
+              <SituationFrame onPick={handlePickSituation} />
+            ))}
           {activeKey === "details" && (
             <DetailsFrame
               initialWho={draft.who}

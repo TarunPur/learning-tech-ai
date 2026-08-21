@@ -26,7 +26,12 @@ type DraftFrameProps = {
 // ④a — write your own (the default path). journey.md §3 ④a.
 export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
   const [text, setText] = useState(draft.ownText || draft.reuseSeed);
+  const [stuckRevealed, setStuckRevealed] = useState(false);
   const reediting = draft.checkCount > 0;
+  const unaided = draft.attemptType === "unaided" && !reediting;
+  // Help fades on repeat visits (Decision 11 / journey.md §7): an unaided
+  // attempt gets lighter scaffolding by default, with a quiet way back in.
+  const light = reediting || unaided;
 
   const isCustom = draft.scenario === "custom";
   const sc = draft.scenario && draft.scenario !== "custom" ? scenario(draft.scenario) : null;
@@ -43,7 +48,10 @@ export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
   );
   const lede = reediting
     ? "Tighten it in your own words, then check it against the standard again."
-    : "Rough is fine — your situation's right here. When you're ready, I'll check it.";
+    : unaided
+      ? "Your details are right here — take it from the top, in your own words."
+      : "Rough is fine — your situation's right here. When you're ready, I'll check it.";
+  const recipe = 'Start with "Hi …", say why you\'re really reaching out, then make one clear ask.';
 
   return (
     <div>
@@ -74,11 +82,7 @@ export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
       <div style={{ background: "var(--card)", border: "1px solid var(--line)", padding: "20px 22px" }}>
         <textarea
           rows={5}
-          placeholder={
-            reediting
-              ? "Write your message…"
-              : 'Start with "Hi …", say why you\'re really reaching out, then make one clear ask.'
-          }
+          placeholder={light && !stuckRevealed ? "Write your message…" : recipe}
           value={text}
           onChange={(e) => setText(e.target.value)}
           style={{
@@ -99,6 +103,19 @@ export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
           {loading ? "Checking…" : "Check it against the standard"} {!loading && arrow}
         </Button>
       </div>
+
+      {unaided && !stuckRevealed && (
+        <div style={{ marginTop: 16 }}>
+          <button
+            className="nod-linkbtn"
+            type="button"
+            onClick={() => setStuckRevealed(true)}
+            style={{ border: 0, background: "transparent", fontSize: 13, fontWeight: 600, color: "var(--ink-soft)", cursor: "pointer", padding: "6px 2px" }}
+          >
+            Stuck? Show me the starting moves
+          </button>
+        </div>
+      )}
     </div>
   );
 }
