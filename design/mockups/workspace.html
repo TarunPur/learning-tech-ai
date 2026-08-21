@@ -214,6 +214,25 @@ button,input,textarea{font-family:inherit;color:inherit;}
   function edit(i){ go(i); }
   function renderAll(){ renderPrev(); renderActive(); }
 
+  /* Editing a prior frame must never leave contradictory downstream state
+     (locked interaction model). When a committed value actually changes, wipe
+     everything derived from it before saving the new value. Same-value re-commits
+     preserve downstream work. history (past saved artifacts) is never wiped. */
+  function resetFor(frameKey){
+    var draft={ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:''};
+    if(frameKey==='situation'){ draft.who=''; draft.ask=''; draft.ctx=''; draft.path='own'; return draft; }
+    if(frameKey==='details') return draft;       // keep scenario + path; reset the draft + its result
+    if(frameKey==='choose') return draft;         // a different path means a different working draft
+    if(frameKey==='draft') return {finalText:'',feedbackDone:false,fbOutcome:''}; // draft changed -> result stale
+    return {};
+  }
+  function commitFrame(frameKey, values){
+    var s=store.load(), changed=false, k;
+    for(k in values){ if(Object.prototype.hasOwnProperty.call(values,k)){ var a=s[k]==null?'':s[k], b=values[k]==null?'':values[k]; if(String(a)!==String(b)) changed=true; } }
+    if(changed) store.save(resetFor(frameKey));
+    store.save(values);
+  }
+
   /* Prototype check outcome → honest label. The prototype only ran the heuristic,
      so it never claims the full expert standard; the blue signal is preserved for
      the real evaluator (v1PRD §16, deferred to build). */
@@ -243,7 +262,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
   function r_situation(){
     var opts=SITU.map(function(x){ return '<button class="primary-path" type="button" data-id="'+x.id+'" style="margin-bottom:12px"><span class="pp-row"><span class="pp-title">'+esc(x.title)+'</span><span class="pp-arrow"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><p class="pp-sub">'+esc(x.desc)+'</p></button>'; }).join('');
     colActive.innerHTML='<h2 class="f-title">What are you <em>working on?</em></h2><p class="f-lede">Pick the situation closest to yours. You’ll make it specific next.</p>'+opts;
-    [].slice.call(colActive.querySelectorAll('.primary-path')).forEach(function(b){ b.addEventListener('click',function(){ store.save({scenario:b.dataset.id}); advance(); }); });
+    [].slice.call(colActive.querySelectorAll('.primary-path')).forEach(function(b){ b.addEventListener('click',function(){ commitFrame('situation',{scenario:b.dataset.id}); advance(); }); });
   }
 
   function r_details(){
@@ -273,7 +292,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
       var n=dn(who.value); if(n){ mn.textContent=n; note.classList.add('show'); } else note.classList.remove('show');
     }
     who.addEventListener('input',sync); ask.addEventListener('input',sync);
-    go2.addEventListener('click',function(){ if(go2.disabled)return; store.save({who:who.value.trim(),ask:ask.value.trim(),ctx:ctx.value.trim()}); advance(); });
+    go2.addEventListener('click',function(){ if(go2.disabled)return; commitFrame('details',{who:who.value.trim(),ask:ask.value.trim(),ctx:ctx.value.trim()}); advance(); });
     // restore reveal state on edit-return
     if(s.who) sync();
   }
@@ -282,8 +301,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
     colActive.innerHTML='<h2 class="f-title">How do you want <em>to start?</em></h2><p class="f-lede">Start with your own words. If you’re stuck, NOD can give you something to react to.</p>'
       +'<button class="primary-path" type="button" id="pickOwn"><p class="pp-k">Start here</p><span class="pp-row"><span class="pp-title">Write my first version</span><span class="pp-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><p class="pp-sub">Put down a rough version. NOD will show you what to tighten.</p></button>'
       +'<div class="secondary-path"><p class="sp-q">Not sure where to start?</p><p class="sp-copy">NOD writes a first version. You’ll tap the one line you would change before NOD weighs in.</p><button class="sp-link" type="button" id="pickNod">Start with a NOD draft <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
-    document.getElementById('pickOwn').addEventListener('click',function(){ store.save({path:'own',ownText:'',flawPick:null}); advance(); });
-    document.getElementById('pickNod').addEventListener('click',function(){ store.save({path:'nod',ownText:'',flawPick:null}); advance(); });
+    document.getElementById('pickOwn').addEventListener('click',function(){ commitFrame('choose',{path:'own'}); advance(); });
+    document.getElementById('pickNod').addEventListener('click',function(){ commitFrame('choose',{path:'nod'}); advance(); });
   }
 
   function r_draft(){
@@ -301,7 +320,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
       var ta=document.getElementById('composeText'),cb=document.getElementById('checkOwn'),oh=document.getElementById('ownHint');
       if(s.ownText)ta.value=s.ownText;
       function sy(){ var ok=ta.value.trim()!==''; cb.disabled=!ok; oh.style.display=ok?'none':''; } ta.addEventListener('input',sy); sy();
-      cb.addEventListener('click',function(){ if(cb.disabled)return; store.save({path:'own',ownText:ta.value.trim(),feedbackDone:false}); advance(); });
+      cb.addEventListener('click',function(){ if(cb.disabled)return; commitFrame('draft',{ownText:ta.value.trim()}); advance(); });
     } else {
       var c=NOD.composeDraft(); var paras=[c.p1,c.p2,c.p3];
       var fix=NOD.evaluateText(paras.join('\n\n')); var weak=1;
