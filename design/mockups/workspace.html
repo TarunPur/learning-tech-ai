@@ -284,7 +284,9 @@ button,input,textarea{font-family:inherit;color:inherit;}
   function r_draft(){
     var s=store.load();
     if(s.path==='own'){
-      var briefRows='<div class="bi"><span class="bk">Writing to</span><span class="bv">'+esc(s.who||'—')+'</span></div>'
+      var bsc=situ(s.scenario)||{};
+      var briefRows='<div class="bi"><span class="bk">Situation</span><span class="bv">'+esc(bsc.title||'—')+'</span></div>'
+        +'<div class="bi"><span class="bk">Writing to</span><span class="bv">'+esc(s.who||'—')+'</span></div>'
         +(s.ctx?('<div class="bi"><span class="bk">Context</span><span class="bv">'+esc(s.ctx)+'</span></div>'):'')
         +'<div class="bi"><span class="bk">Your ask</span><span class="bv">'+esc(s.ask||'—')+'</span></div>';
       colActive.innerHTML='<h2 class="f-title">Write your first version — <em>in your words.</em></h2><p class="f-lede">Rough is fine — your situation’s right here. When you’re ready, I’ll check it.</p>'
