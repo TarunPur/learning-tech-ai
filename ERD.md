@@ -268,6 +268,10 @@ begin
   return new;
 end; $$;
 revoke execute on function public.handle_new_user() from anon, authenticated;
+revoke execute on function public.handle_new_user() from public;
+-- Postgres grants EXECUTE to PUBLIC by default on function creation; anon/authenticated inherit
+-- through that even after being revoked directly, so PUBLIC must be revoked too (confirmed via
+-- information_schema.routine_privileges + the Supabase Advisor on the first apply, 2026-08-21).
 
 create trigger on_auth_user_created
   after insert on auth.users
@@ -275,7 +279,10 @@ create trigger on_auth_user_created
 ```
 
 > **Security note (Supabase advisor):** `security definer` functions must not be executable by `anon`
-> — hence the explicit `revoke`. Do not grant execute to `anon`/`authenticated`.
+> — hence the explicit `revoke`. Do not grant execute to `anon`/`authenticated`. **Also revoke from
+> `public`** — Postgres auto-grants EXECUTE to `PUBLIC` on function creation, and `anon`/`authenticated`
+> inherit through it even after a direct per-role revoke; the advisor keeps flagging the function until
+> `public` is revoked too (see [[reference_supabase_definer_anon_grant]] memory).
 
 ---
 
