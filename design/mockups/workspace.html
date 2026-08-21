@@ -269,7 +269,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
   function recapOf(key){
     var s=store.load(), sc=situ(s.scenario)||{};
     if(key==='situation') return {label:'Your task', value:sc.title||'—', extra:'<b>You’re writing</b>'+esc(sc.writing||'')};
-    if(key==='details') return {label:'Your details', value:s.who||'—', extra:s.ask?('<b>Asking for</b>'+esc(s.ask)):''};
+    if(key==='details'){ var ex=''; if(s.ctx)ex+='<b>Context</b>'+esc(s.ctx); if(s.ask)ex+='<b'+(s.ctx?' style="margin-top:14px"':'')+'>Asking for</b>'+esc(s.ask); return {label:'Your details', value:s.who||'—', extra:ex}; }
     if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
     if(key==='draft'){ var pk = s.path==='nod' ? 'You spotted the weak line' : ((s.ownText||'').split('\n')[0]||'Your first version'); if(pk.length>46) pk=pk.slice(0,46)+'…'; return {label:'Your version', value:pk, extra:''}; }
     if(key==='feedback'){ var o=s.fbOutcome; return {label:'Feedback', value:(o==='tightened'?'One line tightened':(o==='kept'?'Kept my wording':'No changes needed')), extra:'<b>Status</b>Prototype check'}; }
@@ -356,6 +356,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
       var why=fix?fix.why:'This line reads like a template and buries your real reason.';
       colActive.innerHTML='<h2 class="f-title">First, <em>spot what’s weak.</em></h2><p class="f-lede">I wrote a version from your notes. Before I say a word — which one line would a busy reader trip on?</p>'
         +'<p class="mailto">To <b>'+esc(c.recipient)+'</b> <span class="masked">· masked before processing</span></p>'
+        +(c.sample?'<p class="eg" style="margin:0 0 16px">A generic sample — you gave me no context to work from, so make it yours.</p>':'')
         +'<p class="spotq"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Tap the line you’d change.</p>'
         +'<div class="lines picking" id="lines">'+paras.map(function(p,i){return '<button class="line" type="button" data-i="'+i+'">'+esc(p)+'</button>';}).join('')+'</div>'
         +'<button class="linkbtn" id="unsure" type="button">I’m not sure — show me →</button>'

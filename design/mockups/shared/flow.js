@@ -248,24 +248,32 @@
     return m ? m[1] : 'there';
   }
 
-  /* Compose the guided draft's three paragraphs from stored intake + scenario copy.
-     P2 is the soft, flaggable line; feedback rewrites P2 to `tight`. */
+  /* Compose the guided draft's three paragraphs. P2 is the soft, flaggable line;
+     feedback rewrites P2 to `tight`. The draft is grounded in the user's OWN captured
+     context (never invented specifics like a launch/June): when `ctx` is present it becomes
+     the reason line; when it's absent the draft is a clearly-labeled generic sample. */
   function composeDraft() {
     var id = Store.get('scenario', 'quiet');
     var sc = scenario(id);
     var d = sc.draft;
     var who = Store.get('who', '');
     var ask = Store.get('ask', '') || sc.askPh.replace(/^e\.g\.\s*/, '');
+    var ctx = String(Store.get('ctx', '') || '').trim().replace(/[.\s]+$/, '');
+    var hasCtx = !!ctx;
     var tone = Store.get('tone', 'warm');
     var name = firstName(who);
-    var opener = 'Hi ' + name + ' — ' + (tone === 'direct' ? d.direct : d.warm) + '.';
-    var soft = SOFT_FLAG + ' ' + d.reason + '.';
+    // opener stays neutral — it never asserts a fact NOD wasn't told
+    var lead = tone === 'direct' ? "I'll keep this short." : "I wanted to reach out properly.";
+    var reason = hasCtx ? (ctx.charAt(0).toLowerCase() + ctx.slice(1)) : "there's a specific reason I'm reaching out now";
+    var tight = hasCtx ? (ctx.charAt(0).toUpperCase() + ctx.slice(1) + '.') : "Here's the real reason I'm reaching out now.";
+    var opener = 'Hi ' + name + ' — ' + lead;
+    var soft = SOFT_FLAG + ' ' + reason + '.';
     var askLine = d.ask.replace('{ask}', ask);
     return {
-      scenario: id, sample: !!d.sample, name: name,
+      scenario: id, sample: !hasCtx, name: name,
       recipient: who || d.to, tone: tone,
       p1: opener, p2: soft, p3: askLine,
-      flag: SOFT_FLAG, tight: d.tight, why: FLAG_WHY,
+      flag: SOFT_FLAG, tight: tight, why: FLAG_WHY,
       artTitle: sc.artTitle
     };
   }
