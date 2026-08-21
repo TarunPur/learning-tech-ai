@@ -29,7 +29,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;overflow-x:hidden;background:va
 :focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;}
 button,input,textarea{font-family:inherit;color:inherit;}
 
-.stage{width:100%;max-width:1204px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:44px 28px;}
+.stage{width:100%;max-width:1260px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:44px 28px;}
 
 /* ---- global header: persistent Brand Lockup (application chrome, never animates) ---- */
 .ghead{display:flex;align-items:center;gap:16px;min-height:78px;}
@@ -38,10 +38,10 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .ghead .gtext{display:flex;flex-direction:column;justify-content:center;}
 .ghead .gname{display:block;font-weight:800;font-size:29px;letter-spacing:-0.02em;line-height:1;}
 .ghead .gtag{display:block;font-weight:600;font-size:15px;color:var(--blue-deep);margin-top:6px;line-height:1;letter-spacing:0;white-space:nowrap;}
-.ghair{display:none;}
+.ghair{display:block;height:1px;background:var(--line);margin:20px 0 0;}
 
 /* ---- two columns (share the header's left edge; centred in the space below the fixed header) ---- */
-.cols{display:grid;grid-template-columns:440px 700px;gap:64px;align-items:center;flex:1;align-content:center;}
+.cols{display:grid;grid-template-columns:440px minmax(0,700px);gap:64px;align-items:center;flex:1;align-content:center;}
 
 /* ---- left: dimmed recap of the previous frame ---- */
 .recap-empty{color:var(--ink-faint);font-size:13.5px;line-height:1.6;max-width:30ch;padding-top:6px;}
