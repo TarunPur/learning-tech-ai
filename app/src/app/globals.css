@@ -280,3 +280,255 @@ button.nod-card:focus-visible {
   color: var(--blue-deep);
   background: var(--blue-tint);
 }
+
+/* ---- two-frame workspace layout (Phase 4, ported from workspace.html) ---- */
+
+.nod-stage {
+  width: 100%;
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 0 28px 64px;
+}
+
+.nod-cols {
+  display: grid;
+  grid-template-columns: 440px minmax(0, 700px);
+  gap: 64px;
+  align-items: start;
+  align-content: start;
+  padding-top: 52px;
+}
+@media (max-width: 1160px) {
+  .nod-cols {
+    grid-template-columns: minmax(0, 700px);
+    gap: 22px;
+    justify-content: center;
+    align-content: start;
+    padding-top: 0;
+  }
+  .nod-col-prev {
+    order: 1;
+  }
+  .nod-col-active {
+    order: 2;
+  }
+}
+
+.nod-recap-empty {
+  color: var(--ink-faint);
+  font-size: 13.5px;
+  line-height: 1.6;
+  max-width: 30ch;
+  padding-top: 6px;
+}
+.nod-recap {
+  background: var(--tint);
+  border-left: 2px solid var(--blue-tint-2);
+  padding: 28px 30px;
+}
+@media (max-width: 1160px) {
+  .nod-recap {
+    padding: 20px 22px;
+  }
+  .nod-recap .nod-recap-value {
+    font-size: 21px;
+  }
+}
+.nod-recap-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 18px;
+}
+.nod-recap-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.nod-recap-edit {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  padding: 14px 12px;
+  margin: -14px -12px;
+  line-height: 1.2;
+  transition: color 0.18s;
+}
+.nod-recap-edit:hover {
+  color: var(--blue-deep);
+}
+.nod-recap-value {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 1.18;
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  margin: 0;
+  overflow-wrap: break-word;
+}
+.nod-recap-extra {
+  margin: 20px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.nod-recap-extra b {
+  display: block;
+  color: var(--ink-2);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.nod-f-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(28px, 3.4vw, 39px);
+  line-height: 1.08;
+  letter-spacing: -0.018em;
+  margin: 0 0 12px;
+}
+.nod-f-title em {
+  font-style: italic;
+  color: var(--blue-deep);
+}
+.nod-f-lede {
+  margin: 0 0 36px;
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  line-height: 1.55;
+  max-width: 56ch;
+}
+.nod-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+/* Situation / choose cards: same shape as .nod-card, with the
+   label→title→arrow→subtitle anatomy design.md names "Situation Card". */
+.nod-primary-path .nod-pp-k {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-deep);
+  margin: 0 0 14px;
+}
+.nod-primary-path .nod-pp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.nod-primary-path .nod-pp-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.12;
+  color: var(--ink);
+}
+.nod-primary-path .nod-pp-arrow {
+  flex: none;
+  color: var(--blue);
+  transition: transform 0.24s;
+}
+.nod-primary-path:hover .nod-pp-arrow {
+  transform: translateX(4px);
+}
+.nod-primary-path .nod-pp-sub {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 48ch;
+}
+
+.nod-secondary-path {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+.nod-secondary-path .nod-sp-q {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin: 0 0 7px;
+}
+.nod-secondary-path .nod-sp-copy {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+  max-width: 54ch;
+}
+.nod-secondary-path .nod-sp-link {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  padding: 2px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.nod-secondary-path .nod-sp-link:hover {
+  color: var(--blue-deep);
+}
+
+.nod-privacy {
+  margin: 0 0 34px;
+  font-size: 13px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+.nod-masknote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.nod-masknote svg {
+  color: var(--blue);
+  flex: none;
+}
+.nod-masknote b {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.nod-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.nod-suggest .nod-sl {
+  width: 100%;
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin: 0 0 2px;
+}
+.nod-eg {
+  margin: 9px 2px 0;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
