@@ -213,6 +213,13 @@ button,input,textarea{font-family:inherit;color:inherit;}
   var store = window.NOD ? NOD.store : {load:function(){return{};},save:function(){},get:function(_,f){return f;}};
   if(window.NOD){ var _prev=NOD.store.load(); var _hist=Array.isArray(_prev.history)?_prev.history:[]; NOD.store.clear(); NOD.store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,reuseSeed:'',history:_hist}); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  /* Privacy (Decision 9): the recipient's real name stays device-local (localStorage
+     is display-only, never a network payload here); the only "processing" boundary in
+     this prototype is the evaluator, so the name is masked to [name] before it is passed
+     to evaluateText, and unmasked for on-screen display. Reversible, so highlighting
+     still lands on the user's real words. Real backend/model masking is server-side at build. */
+  function maskName(text,name){ if(!name||name==='there')return String(text); var re=new RegExp('\\b'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','gi'); return String(text).replace(re,'[name]'); }
+  function unmaskName(text,name){ if(!name||name==='there')return String(text); return String(text).replace(/\[name\]/g,name); }
 
   var SITU=[
     {id:'quiet',title:'A prospect went quiet',desc:'Restart the conversation without sounding pushy.',writing:'A follow-up message'},
@@ -343,8 +350,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
       function sy(){ var ok=ta.value.trim()!==''; cb.disabled=!ok; oh.style.display=ok?'none':''; } ta.addEventListener('input',sy); sy();
       cb.addEventListener('click',function(){ if(cb.disabled)return; commitFrame('draft',{ownText:ta.value.trim()}); advance(); });
     } else {
-      var c=NOD.composeDraft(); var paras=[c.p1,c.p2,c.p3];
-      var fix=NOD.evaluateText(paras.join('\n\n')); var weak=1;
+      var c=NOD.composeDraft(); var paras=[c.p1,c.p2,c.p3]; var nm=NOD.firstName(store.get('who',''));
+      var fix=NOD.evaluateText(maskName(paras.join('\n\n'),nm)); if(fix){ fix.sentence=unmaskName(fix.sentence,nm); if(fix.tight)fix.tight=unmaskName(fix.tight,nm); } var weak=1;
       if(fix&&fix.sentence){ for(var i=0;i<paras.length;i++){ if(paras[i].toLowerCase().indexOf(fix.sentence.toLowerCase().slice(0,18))!==-1){ weak=i; break; } } }
       var why=fix?fix.why:'This line reads like a template and buries your real reason.';
       colActive.innerHTML='<h2 class="f-title">First, <em>spot what’s weak.</em></h2><p class="f-lede">I wrote a version from your notes. Before I say a word — which one line would a busy reader trip on?</p>'
@@ -368,7 +375,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
 
   function buildFlag(p,sent){ var t=sent.trim().split(/\s+/).map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}); if(!t.length)return null; var re=new RegExp(t.join('\\s+'),'i'); var m=p.match(re); return m?{start:m.index,end:m.index+m[0].length}:null; }
   function r_feedback(){
-    var s=store.load(); var text=NOD.workingDraftText(); var fix=NOD.evaluateText(text);
+    var s=store.load(); var text=NOD.workingDraftText(); var nm=NOD.firstName(s.who||'');
+    var fix=NOD.evaluateText(maskName(text,nm)); if(fix){ fix.sentence=unmaskName(fix.sentence,nm); if(fix.tight)fix.tight=unmaskName(fix.tight,nm); }
     var paras=text.split(/\n\s*\n/).map(function(x){return x.trim();}).filter(Boolean); if(paras.length<=1)paras=text.split('\n').map(function(x){return x.trim();}).filter(Boolean); if(!paras.length)paras=[text];
     var fi=-1,minfo=null,html='';
     paras.forEach(function(p,i){ if(fix&&fi===-1){ var info=buildFlag(p,fix.sentence); if(info){ fi=i; minfo=info; html+='<p>'+esc(p.slice(0,info.start))+'<span class="flag" id="flag">'+esc(p.slice(info.start,info.end))+'</span>'+esc(p.slice(info.end))+'</p>'; return; } } html+='<p>'+esc(p)+'</p>'; });
