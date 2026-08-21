@@ -49,6 +49,15 @@
         ],
         "createdAt": "2026-08-20T13:44:03.725Z",
         "reason": "user confirmed: owner explicitly requested right-to-left scrolling research sources; mitigated with pause-on-hover, edge fades, and a static prefers-reduced-motion fallback"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "design/mockups/workspace.html"
+        ],
+        "createdAt": "2026-08-21T06:34:36.888Z",
+        "reason": "user confirmed: owner's redesign point 3 explicitly asked for a subtle left-side blue rule on the completed/previous (Column 2) frame as the moved-out-of-focus cue"
       }
     ]
   }

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOD — Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,600&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* NOD — two-column workspace. One global header, a dimmed recap of the last
+   frame on the left, the single active frame on the right (on paper, no outer
+   card). Calm Apple-style judgement: large type, whitespace, one action, few
+   borders. Square corners, warm paper, one blue. Logic reuses flow.js. */
+:root{
+  --bg:#F6F5F1; --card:#FFFFFF; --tint:#EEEDE6; --blue-paper:rgba(47,111,224,0.05);
+  --ink:#1A1A1A; --ink-2:#3A3A3A; --ink-soft:#5F5F58; --ink-faint:#6B6B61;
+  --line:#E4E3DC; --line-2:#D8D7CF;
+  --blue:#2F6FE0; --blue-deep:#1E52B0; --blue-tint:rgba(47,111,224,0.08); --blue-tint-2:rgba(47,111,224,0.16);
+  --serif:"Spectral",Georgia,serif; --sans:"Hanken Grotesk",system-ui,sans-serif;
+  --sh-card:0 1px 2px rgba(28,40,72,0.05),0 18px 38px -20px rgba(28,40,72,0.20);
+  --sh-lift:0 8px 18px -10px rgba(30,50,90,0.16),0 30px 56px -26px rgba(30,50,90,0.28);
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;caret-color:var(--blue);}
+::selection{background:var(--blue-tint-2);color:var(--blue-deep);}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;}
+button,input,textarea{font-family:inherit;color:inherit;}
+
+.stage{width:100%;max-width:1204px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:44px 28px;}
+
+/* ---- global header: persistent Brand Lockup (application chrome, never animates) ---- */
+.ghead{display:flex;align-items:center;gap:16px;min-height:78px;}
+.ghead .logo{width:56px;height:56px;border-radius:16px;background:var(--blue);display:grid;place-items:center;
+  box-shadow:0 9px 20px -8px rgba(47,111,224,0.5);flex:none;}
+.ghead .gtext{display:flex;flex-direction:column;justify-content:center;}
+.ghead .gname{display:block;font-weight:800;font-size:29px;letter-spacing:-0.02em;line-height:1;}
+.ghead .gtag{display:block;font-weight:600;font-size:15px;color:var(--blue-deep);margin-top:6px;line-height:1;letter-spacing:0;white-space:nowrap;}
+.ghair{display:none;}
+
+/* ---- two columns (share the header's left edge; centred in the space below the fixed header) ---- */
+.cols{display:grid;grid-template-columns:440px 700px;gap:64px;align-items:start;flex:1;align-content:center;}
+
+/* ---- left: dimmed recap of the previous frame ---- */
+.recap-empty{color:var(--ink-faint);font-size:13.5px;line-height:1.6;max-width:30ch;padding-top:6px;}
+.recap{background:var(--tint);border-left:2px solid var(--blue-tint-2);padding:28px 30px;animation:pop .34s cubic-bezier(.16,1,.3,1);}
+.recap-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 18px;}
+.recap-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
+.recap-edit{border:0;background:transparent;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--blue);cursor:pointer;padding:2px 0;transition:color .18s;}
+.recap-edit:hover{color:var(--blue-deep);}
+.recap-value{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.18;letter-spacing:-0.014em;color:var(--ink);margin:0;}
+.recap-extra{margin:20px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink-soft);}
+.recap-extra b{display:block;color:var(--ink-2);font-weight:600;font-size:12px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:5px;}
+@keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+
+/* ---- right: the active frame, on paper ---- */
+.active{transition:transform .26s ease,opacity .26s ease;}
+.cols.out .active{transform:translateX(26px);opacity:0;}
+.cols.in .active{animation:slideIn .44s cubic-bezier(.16,1,.3,1);}
+@keyframes slideIn{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){ .active,.recap{animation:none!important;transition:none!important;} }
+
+.f-title{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,39px);line-height:1.08;letter-spacing:-0.018em;margin:0 0 12px;}
+.f-title em{font-style:italic;color:var(--blue-deep);}
+.f-lede{margin:0 0 36px;color:var(--ink-soft);font-size:15.5px;line-height:1.55;max-width:56ch;}
+
+/* controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:9999px;
+  background:var(--blue);color:#fff;font-weight:600;font-size:15px;padding:14px 28px;cursor:pointer;
+  box-shadow:0 8px 20px -10px rgba(47,111,224,0.6);transition:background .2s,transform .12s,opacity .2s;}
+.btn:hover{background:var(--blue-deep);} .btn:active{transform:scale(.98);}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn svg{transition:transform .24s;} .btn:hover:not(:disabled) svg{transform:translateX(3px);}
+.btn.ghost{background:transparent;color:var(--ink-soft);box-shadow:none;padding:14px 4px;} .btn.ghost:hover{color:var(--blue);}
+.linkbtn{border:0;background:transparent;font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;padding:6px 2px;transition:color .2s;} .linkbtn:hover{color:var(--blue);}
+.actions{display:flex;align-items:center;gap:18px;margin-top:34px;flex-wrap:wrap;}
+.actions .hint{font-size:12.5px;color:var(--ink-faint);}
+
+/* progressively-revealed fields, bottom-border only */
+.field{margin-bottom:30px;}
+.field.reveal{animation:fieldIn .42s cubic-bezier(.16,1,.3,1);}
+@keyframes fieldIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.field label{display:block;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:11px;}
+.field label .lblopt{font-weight:400;color:var(--ink-faint);font-size:12.5px;margin-left:8px;letter-spacing:.02em;}
+.field .ipt{border-bottom:1.5px solid var(--line-2);transition:border-color .2s;}
+.field .ipt:focus-within{border-color:var(--blue);}
+.field input,.field textarea{width:100%;border:0;background:transparent;font-size:17px;color:var(--ink);padding:9px 2px;line-height:1.5;resize:none;}
+.field input:focus,.field textarea:focus{outline:none;}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-faint);font-size:15.5px;}
+.field .eg{margin:9px 2px 0;font-size:12.5px;color:var(--ink-faint);line-height:1.5;}
+.masknote{display:none;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--ink-soft);}
+.masknote.show{display:inline-flex;} .masknote svg{color:var(--blue);flex:none;} .masknote b{color:var(--ink-2);font-weight:600;}
+.suggest{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;} .suggest.hide{display:none;}
+.suggest .sl{width:100%;font-size:12px;color:var(--ink-faint);margin:0 0 2px;}
+.chip{border:1px solid var(--line-2);background:var(--card);font-size:12.5px;font-weight:500;color:var(--ink-soft);padding:8px 14px;cursor:pointer;transition:border-color .18s,color .18s,background .18s;}
+.chip:hover{border-color:var(--blue);color:var(--blue-deep);background:var(--blue-tint);}
+.privacy{margin:0 0 34px;font-size:13px;color:var(--ink-faint);line-height:1.5;}
+
+/* choose: one primary card + plain text-link fallback */
+.primary-path{display:block;width:100%;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--sh-card);padding:26px 28px;transition:transform .26s cubic-bezier(.16,1,.3,1),box-shadow .26s,border-color .22s;}
+.primary-path:hover,.primary-path:focus-visible{transform:translateY(-3px);box-shadow:var(--sh-lift);border-color:var(--blue);outline:none;}
+.primary-path .pp-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-deep);margin:0 0 14px;}
+.primary-path .pp-row{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.primary-path .pp-title{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.12;color:var(--ink);}
+.primary-path .pp-arrow{flex:none;color:var(--blue);transition:transform .24s;} .primary-path:hover .pp-arrow{transform:translateX(4px);}
+.primary-path .pp-sub{margin:10px 0 0;font-size:14px;line-height:1.5;color:var(--ink-soft);max-width:48ch;}
+.secondary-path{margin-top:30px;padding-top:26px;border-top:1px solid var(--line);}
+.secondary-path .sp-q{font-size:14.5px;font-weight:700;color:var(--ink-2);margin:0 0 7px;}
+.secondary-path .sp-copy{font-size:14px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px;max-width:54ch;}
+.secondary-path .sp-link{border:0;background:transparent;font-family:inherit;font-size:14.5px;font-weight:600;color:var(--blue);cursor:pointer;padding:2px 0;display:inline-flex;align-items:center;gap:8px;transition:color .2s;}
+.secondary-path .sp-link:hover{color:var(--blue-deep);} .secondary-path .sp-link svg{transition:transform .24s;} .secondary-path .sp-link:hover svg{transform:translateX(3px);}
+
+/* draft / spot-the-flaw */
+.mailto{font-size:13.5px;color:var(--ink-soft);margin:0 0 16px;} .mailto b{color:var(--ink-2);font-weight:600;} .mailto .masked{margin-left:6px;font-size:11.5px;color:var(--blue-deep);font-weight:600;}
+.spotq{font-size:14px;font-weight:600;color:var(--ink-2);margin:0 0 14px;display:flex;align-items:center;gap:8px;} .spotq svg{color:var(--blue);}
+.lines{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.line{display:block;width:100%;text-align:left;border:0;background:transparent;font-size:16.5px;line-height:1.72;color:var(--ink);cursor:pointer;padding:10px 12px;margin:0 -12px;transition:background .18s,box-shadow .18s;}
+.lines.picking .line:hover,.lines.picking .line:focus-visible{background:rgba(124,124,115,0.07);box-shadow:inset 0 0 0 1px var(--line-2);outline:none;}
+.line.weak{background:rgba(124,124,115,0.09);border-bottom:2px dotted var(--ink-faint);cursor:default;}
+.line.picked{background:rgba(124,124,115,0.06);cursor:default;}
+.reaction{display:none;margin-top:16px;padding:18px 20px;background:var(--tint);}
+.reaction.show{display:block;animation:fieldIn .42s cubic-bezier(.16,1,.3,1);}
+.reaction .rk{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--blue-deep);margin-bottom:8px;} .reaction .rk svg{color:var(--blue);}
+.reaction p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-soft);} .reaction p b{color:var(--ink-2);font-weight:600;}
+
+/* feedback */
+.msgbox{font-size:16.5px;line-height:1.74;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:26px 28px;}
+.msgbox p{margin:0 0 15px;} .msgbox p:last-child{margin-bottom:0;}
+.flag{border-bottom:2px dotted var(--ink-faint);background:rgba(124,124,115,0.08);padding:0 2px;}
+.flag.cleared{border-bottom:2px solid var(--blue);background:var(--blue-tint);}
+.fix{margin-top:20px;padding:24px 26px;background:var(--tint);}
+.fix .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 14px;}
+.fix .row{margin:0 0 14px;} .fix .rlabel{font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 6px;}
+.fix .quote{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink);line-height:1.45;}
+.fix .why{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0;}
+.fix .suggest2{font-family:var(--serif);font-size:16px;color:var(--blue-deep);line-height:1.45;}
+.strength{display:flex;gap:9px;align-items:flex-start;margin-top:18px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;} .strength svg{color:var(--blue);flex:none;margin-top:2px;} .strength b{color:var(--ink-2);font-weight:600;}
+.proto{margin-top:15px;font-size:11.5px;color:var(--ink-faint);line-height:1.5;border-left:2px solid var(--line-2);padding-left:12px;}
+.readybadge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--blue-deep);margin-bottom:12px;} .readybadge svg{color:var(--blue);}
+.final{font-size:16.5px;line-height:1.74;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:26px 28px;margin-bottom:18px;}
+.final p{margin:0 0 15px;} .final p:last-child{margin-bottom:0;}
+.copied{margin-left:12px;font-size:13px;font-weight:600;color:var(--blue-deep);opacity:0;transition:opacity .2s;} .copied.show{opacity:1;}
+
+/* ---- responsive: never squeeze; active first, recap a compact strip above it ---- */
+@media(max-width:1160px){
+  .cols{grid-template-columns:minmax(0,700px);gap:22px;justify-content:center;align-content:start;}
+  .col-prev{order:2;} .col-active{order:1;}
+  .recap{padding:20px 22px;} .recap-value{font-size:21px;}
+  .ghair{margin:20px 0 32px;}
+}
+@media(max-width:560px){
+  body{padding:26px 18px;align-items:flex-start;}
+  .f-title{font-size:clamp(25px,7vw,31px);}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="ghead">
+    <span class="logo" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="gtext"><span class="gname">NOD</span><span class="gtag">Your coach against the AI slop — so the skill sticks</span></span>
+  </header>
+  <div class="ghair"></div>
+
+  <div class="cols" id="cols">
+    <div class="col-prev" id="colPrev"></div>
+    <div class="col-active"><div class="active" id="colActive"></div></div>
+  </div>
+
+</div>
+
+<script src="shared/flow.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var store = window.NOD ? NOD.store : {load:function(){return{};},save:function(){},get:function(_,f){return f;}};
+  if(window.NOD){ NOD.store.clear(); NOD.store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null}); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+
+  var SITU=[
+    {id:'quiet',title:'A prospect went quiet',desc:'Restart the conversation without sounding pushy.',writing:'A follow-up message'},
+    {id:'cold',title:'Reach out to someone new',desc:'Write a personalized first message.',writing:'A first message'},
+    {id:'meeting',title:'Book a meeting or demo',desc:'Turn interest into a conversation.',writing:'A meeting request'},
+    {id:'event',title:'Follow up after an event',desc:'Reconnect while it’s still fresh.',writing:'An event follow-up'}
+  ];
+  function situ(id){ return SITU.filter(function(x){return x.id===id;})[0]; }
+  var ORDER=['situation','details','choose','draft','feedback','done'];
+  var activeIndex=0;
+  var cols=document.getElementById('cols'), colPrev=document.getElementById('colPrev'), colActive=document.getElementById('colActive');
+
+  function go(i){
+    if(reduce){ activeIndex=i; renderAll(); return; }
+    cols.classList.remove('in'); cols.classList.add('out');
+    setTimeout(function(){ activeIndex=i; renderAll(); cols.classList.remove('out'); void colActive.offsetWidth; cols.classList.add('in'); },210);
+  }
+  function advance(){ go(activeIndex+1); }
+  function edit(i){ go(i); }
+  function renderAll(){ renderPrev(); renderActive(); }
+
+  /* ---- left: recap of the single previous frame ---- */
+  function recapOf(key){
+    var s=store.load(), sc=situ(s.scenario)||{};
+    if(key==='situation') return {label:'Your task', value:sc.title||'—', extra:'<b>You’re writing</b>'+esc(sc.writing||'')};
+    if(key==='details') return {label:'Your details', value:s.who||'—', extra:s.ask?('<b>Asking for</b>'+esc(s.ask)):''};
+    if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
+    if(key==='draft') return {label:'Your version', value:s.path==='nod'?'You spotted the weak line':'Your first version, written', extra:''};
+    if(key==='feedback') return {label:'Feedback', value:'One line tightened', extra:'<b>Status</b>Meets the standard'};
+    return {label:'',value:'',extra:''};
+  }
+  function renderPrev(){
+    if(activeIndex<=0){ colPrev.innerHTML='<p class="recap-empty">What you decide will stay here — clear, and always yours to change.</p>'; return; }
+    var d=recapOf(ORDER[activeIndex-1]);
+    colPrev.innerHTML='<div class="recap"><div class="recap-head"><span class="recap-label">'+esc(d.label)+'</span><button class="recap-edit" type="button" id="editPrev">Edit</button></div>'
+      +'<p class="recap-value">'+esc(d.value)+'</p>'+(d.extra?'<p class="recap-extra">'+d.extra+'</p>':'')+'</div>';
+    var e=document.getElementById('editPrev'); if(e) e.addEventListener('click',function(){ edit(activeIndex-1); });
+  }
+
+  /* ---- right: active frame ---- */
+  function renderActive(){ ({situation:r_situation,details:r_details,choose:r_choose,draft:r_draft,feedback:r_feedback,done:r_done}[ORDER[activeIndex]])(); }
+
+  function r_situation(){
+    var opts=SITU.map(function(x){ return '<button class="primary-path" type="button" data-id="'+x.id+'" style="margin-bottom:12px"><span class="pp-row"><span class="pp-title">'+esc(x.title)+'</span><span class="pp-arrow"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><p class="pp-sub">'+esc(x.desc)+'</p></button>'; }).join('');
+    colActive.innerHTML='<h2 class="f-title">What are you <em>working on?</em></h2><p class="f-lede">Pick the situation closest to yours. You’ll make it specific next.</p>'+opts;
+    [].slice.call(colActive.querySelectorAll('.primary-path')).forEach(function(b){ b.addEventListener('click',function(){ store.save({scenario:b.dataset.id}); advance(); }); });
+  }
+
+  function r_details(){
+    var s=store.load();
+    colActive.innerHTML='<h2 class="f-title">Tell me about <em>this one.</em></h2><p class="privacy">NOD masks real names before anything is processed.</p>'
+      +'<div class="field" id="fWho"><label for="who">Who are you writing to?</label><div class="ipt"><input id="who" type="text" autocomplete="off" placeholder="A name and how you know them"></div>'
+      +'<p class="eg">e.g. Nidhi, a marketing lead I met in June</p>'
+      +'<span class="masknote" id="maskNote"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 9V6.5a4 4 0 0 1 8 0V9M5 9h10a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Masked before processing — you’ll still see <b id="maskName">their name</b> in your draft.</span></span></div>'
+      +'<div class="field" id="fAsk" style="display:none"><label for="ask">What’s the one thing you’re asking for?</label><div class="ipt"><input id="ask" type="text" autocomplete="off" placeholder="One clear, easy request"></div>'
+      +'<div class="suggest hide" id="askSuggest"></div></div>'
+      +'<div class="field" id="fCtx" style="display:none"><label for="ctx">Anything that makes now the moment? <span class="lblopt">Optional</span></label><div class="ipt"><textarea id="ctx" rows="2" placeholder="A reason it’s worth reaching out today"></textarea></div><p class="eg">e.g. we spoke at the expo and she asked me to follow up</p></div>'
+      +'<div class="actions"><button class="btn" id="detailsGo" type="button" disabled>Continue <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+    var who=document.getElementById('who'),ask=document.getElementById('ask'),ctx=document.getElementById('ctx'),go2=document.getElementById('detailsGo'),
+        note=document.getElementById('maskNote'),mn=document.getElementById('maskName'),sug=document.getElementById('askSuggest'),
+        fAsk=document.getElementById('fAsk'),fCtx=document.getElementById('fCtx'); var askShown=false, ctxShown=false, sugBuilt=false;
+    if(s.who)who.value=s.who; if(s.ask)ask.value=s.ask; if(s.ctx)ctx.value=s.ctx;
+    function dn(v){ var m=(v||'').match(/\b([A-Z][a-z]{1,})\b/); return m?m[1]:null; }
+    function revealAsk(){ if(askShown)return; askShown=true; fAsk.style.display=''; fAsk.classList.add('reveal');
+      if(!sugBuilt && window.NOD){ sugBuilt=true; sug.innerHTML='<span class="sl">Not sure how to phrase it? Try:</span>'; NOD.ASK_SUGGESTIONS.forEach(function(t){ var c=document.createElement('button'); c.type='button'; c.className='chip'; c.textContent=t; c.addEventListener('click',function(){ ask.value=t; sync(); ask.focus(); }); sug.appendChild(c); }); } }
+    function revealCtx(){ if(ctxShown)return; ctxShown=true; fCtx.style.display=''; fCtx.classList.add('reveal'); }
+    function sync(){
+      var w=who.value.trim(), a=ask.value.trim();
+      if(w.length>=2) revealAsk();
+      if(askShown && a.length>=2) revealCtx();
+      sug.classList.toggle('hide', a!=='' || !askShown);
+      go2.disabled = !(w && a);
+      var n=dn(who.value); if(n){ mn.textContent=n; note.classList.add('show'); } else note.classList.remove('show');
+    }
+    who.addEventListener('input',sync); ask.addEventListener('input',sync);
+    go2.addEventListener('click',function(){ if(go2.disabled)return; store.save({who:who.value.trim(),ask:ask.value.trim(),ctx:ctx.value.trim()}); advance(); });
+    // restore reveal state on edit-return
+    if(s.who) sync();
+  }
+
+  function r_choose(){
+    colActive.innerHTML='<h2 class="f-title">How do you want <em>to start?</em></h2><p class="f-lede">Start with your own words. If you’re stuck, NOD can give you something to react to.</p>'
+      +'<button class="primary-path" type="button" id="pickOwn"><p class="pp-k">Start here</p><span class="pp-row"><span class="pp-title">Write my first version</span><span class="pp-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><p class="pp-sub">Put down a rough version. NOD will show you what to tighten.</p></button>'
+      +'<div class="secondary-path"><p class="sp-q">Not sure where to start?</p><p class="sp-copy">NOD writes a first version. You’ll tap the one line you would change before NOD weighs in.</p><button class="sp-link" type="button" id="pickNod">Start with a NOD draft <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+    document.getElementById('pickOwn').addEventListener('click',function(){ store.save({path:'own',ownText:'',flawPick:null}); advance(); });
+    document.getElementById('pickNod').addEventListener('click',function(){ store.save({path:'nod',ownText:'',flawPick:null}); advance(); });
+  }
+
+  function r_draft(){
+    var s=store.load();
+    if(s.path==='own'){
+      colActive.innerHTML='<h2 class="f-title">Write your first version — <em>in your words.</em></h2><p class="f-lede">Rough is fine. Your task and details are on the left. When you’re ready, I’ll check it.</p>'
+        +'<div class="field"><div class="ipt"><textarea id="composeText" rows="7" placeholder="Start with “Hi …”, say why you’re really reaching out, then make one clear ask."></textarea></div></div>'
+        +'<div class="actions"><button class="btn" id="checkOwn" type="button" disabled>Check it against the standard <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="hint" id="ownHint">Write a few lines, then check it.</span></div>';
+      var ta=document.getElementById('composeText'),cb=document.getElementById('checkOwn'),oh=document.getElementById('ownHint');
+      if(s.ownText)ta.value=s.ownText;
+      function sy(){ var ok=ta.value.trim()!==''; cb.disabled=!ok; oh.style.display=ok?'none':''; } ta.addEventListener('input',sy); sy();
+      cb.addEventListener('click',function(){ if(cb.disabled)return; store.save({path:'own',ownText:ta.value.trim(),feedbackDone:false}); advance(); });
+    } else {
+      var c=NOD.composeDraft(); var paras=[c.p1,c.p2,c.p3];
+      var fix=NOD.evaluateText(paras.join('\n\n')); var weak=1;
+      if(fix&&fix.sentence){ for(var i=0;i<paras.length;i++){ if(paras[i].toLowerCase().indexOf(fix.sentence.toLowerCase().slice(0,18))!==-1){ weak=i; break; } } }
+      var why=fix?fix.why:'This line reads like a template and buries your real reason.';
+      colActive.innerHTML='<h2 class="f-title">First, <em>spot what’s weak.</em></h2><p class="f-lede">I wrote a version from your notes. Before I say a word — which one line would a busy reader trip on?</p>'
+        +'<p class="mailto">To <b>'+esc(c.recipient)+'</b><span class="masked">– masked before processing</span></p>'
+        +'<p class="spotq"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Tap the line you’d change.</p>'
+        +'<div class="lines picking" id="lines">'+paras.map(function(p,i){return '<button class="line" type="button" data-i="'+i+'">'+esc(p)+'</button>';}).join('')+'</div>'
+        +'<button class="linkbtn" id="unsure" type="button">I’m not sure — show me →</button>'
+        +'<div class="reaction" id="reaction"><span class="rk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rkt"></span></span><p id="rb"></p></div>'
+        +'<div class="actions" id="nodActions" style="display:none"><button class="btn" id="checkNod" type="button">Check it against the standard <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+      var lines=document.getElementById('lines'),lineEls=[].slice.call(lines.querySelectorAll('.line')),reaction=document.getElementById('reaction'),rkt=document.getElementById('rkt'),rb=document.getElementById('rb'),nodActions=document.getElementById('nodActions');var locked=false;
+      function reveal(pick,unsure){ if(locked)return; locked=true; store.save({flawPick:unsure?'unsure':pick}); lines.classList.remove('picking'); lineEls.forEach(function(el){el.disabled=true;}); lineEls[weak].classList.add('weak'); if(!unsure&&pick!==weak)lineEls[pick].classList.add('picked');
+        if(unsure){ rkt.textContent='No problem — here’s the one I’d watch.'; rb.innerHTML='<b>The marked line.</b> '+why; }
+        else if(pick===weak){ rkt.textContent='Nice — that’s the one.'; rb.innerHTML='You caught it. '+why; }
+        else { rkt.textContent='Good instinct — but here’s the one that loses them.'; rb.innerHTML='The line most likely to lose a busy reader is <b>the marked line</b>. '+why; }
+        reaction.classList.add('show'); nodActions.style.display=''; }
+      lineEls.forEach(function(el){ el.addEventListener('click',function(){ reveal(parseInt(el.dataset.i,10),false); }); });
+      document.getElementById('unsure').addEventListener('click',function(){ reveal(weak,true); });
+      document.getElementById('checkNod').addEventListener('click',function(){ store.save({feedbackDone:false}); advance(); });
+    }
+  }
+
+  function buildFlag(p,sent){ var t=sent.trim().split(/\s+/).map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}); if(!t.length)return null; var re=new RegExp(t.join('\\s+'),'i'); var m=p.match(re); return m?{start:m.index,end:m.index+m[0].length}:null; }
+  function r_feedback(){
+    var s=store.load(); var text=NOD.workingDraftText(); var fix=NOD.evaluateText(text);
+    var paras=text.split(/\n\s*\n/).map(function(x){return x.trim();}).filter(Boolean); if(paras.length<=1)paras=text.split('\n').map(function(x){return x.trim();}).filter(Boolean); if(!paras.length)paras=[text];
+    var fi=-1,minfo=null,html='';
+    paras.forEach(function(p,i){ if(fix&&fi===-1){ var info=buildFlag(p,fix.sentence); if(info){ fi=i; minfo=info; html+='<p>'+esc(p.slice(0,info.start))+'<span class="flag" id="flag">'+esc(p.slice(info.start,info.end))+'</span>'+esc(p.slice(info.end))+'</p>'; return; } } html+='<p>'+esc(p)+'</p>'; });
+    var head=fix?({'soft-opener':['One line to <em>make clearer.</em>',"It’s close — there’s one soft opener worth cutting."],'no-ask':['Make the ask <em>unmissable.</em>',"It’s close — a busy reader needs one obvious thing to do."],'too-long':['Tighten it <em>right down.</em>',"It’s close — the shorter it is, the likelier a reply."]}[fix.kind]||['One line to <em>make clearer.</em>','']):['This reads <em>clean.</em>','I checked it against the standard and found nothing worth changing.'];
+    colActive.innerHTML='<h2 class="f-title">'+head[0]+'</h2><p class="f-lede">'+esc(head[1])+'</p>'
+      +'<div class="msgbox" id="msgbox">'+html+'</div>'
+      +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn ghost" id="keepMine" type="button">'+(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it')+'</button></div></div>'):'')
+      +'<div class="strength"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Already working:</b> you brought a real, specific situation — that’s what makes this yours, not a template.</span></div>'
+      +'<p class="proto">Prototype note: this check is a lightweight stand-in that looks at your own words — the full expert check arrives with the built product.</p>'
+      +'<div id="readyWrap" style="display:'+(fix?'none':'block')+';margin-top:24px"><span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Meets the standard</span><div class="actions"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>';
+    var msgbox=document.getElementById('msgbox');
+    function finishText(){ return [].slice.call(msgbox.querySelectorAll('p')).map(function(p){return p.textContent.trim();}).filter(Boolean).join('\n\n'); }
+    function toReady(){ var fb=document.getElementById('fixbox'); if(fb)fb.style.display='none'; document.getElementById('readyWrap').style.display='block'; }
+    var ue=document.getElementById('useEdit'); if(ue)ue.addEventListener('click',function(){ if(fi>=0&&minfo&&fix.tight){ var p=msgbox.querySelectorAll('p')[fi]; var o=paras[fi]; p.innerHTML=esc(o.slice(0,minfo.start))+'<span class="flag cleared">'+esc(fix.tight)+'</span>'+esc(o.slice(minfo.end)); } toReady(); });
+    var km=document.getElementById('keepMine'); if(km)km.addEventListener('click',function(){ var fl=document.getElementById('flag'); if(fl)fl.className=''; toReady(); });
+    document.getElementById('saveMsg').addEventListener('click',function(){ var t=finishText(); var sc=NOD.scenario(s.scenario||'quiet'); var entry={title:sc.artTitle||'Your message',scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,when:'just now',path:s.path,unaided:s.path==='own'}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true}); advance(); });
+  }
+
+  function r_done(){
+    var s=store.load(); var t=s.finalText||''; var paras=t.split(/\n\s*\n/).filter(function(x){return x.trim();}); if(paras.length<=1)paras=t.split('\n').filter(function(x){return x.trim();});
+    colActive.innerHTML='<span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Meets the standard · saved</span>'
+      +'<h2 class="f-title" style="margin-top:10px">It’s ready — <em>and it’s yours to keep.</em></h2>'
+      +'<p class="f-lede">Copy it and send it your way. '+(s.path==='own'?'You wrote this one.':'You started from a NOD draft — and sharpened it.')+'</p>'
+      +'<div class="final">'+paras.map(function(p){return '<p>'+esc(p.trim())+'</p>';}).join('')+'</div>'
+      +'<div class="actions"><button class="btn" id="copyMsg" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7V4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5v7A1.5 1.5 0 0 1 15.5 13H13M4.5 7h7A1.5 1.5 0 0 1 13 8.5v7A1.5 1.5 0 0 1 11.5 17h-7A1.5 1.5 0 0 1 3 15.5v-7A1.5 1.5 0 0 1 4.5 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Copy message</button><span class="copied" id="copied">Copied — with your real names filled in.</span><button class="btn ghost" id="again" type="button">Start another →</button></div>';
+    document.getElementById('copyMsg').addEventListener('click',function(){ if(navigator.clipboard)navigator.clipboard.writeText(t).catch(function(){}); var c=document.getElementById('copied'); c.classList.add('show'); setTimeout(function(){c.classList.remove('show');},2400); });
+    document.getElementById('again').addEventListener('click',function(){ location.reload(); });
+  }
+
+  renderAll(); cols.classList.add('in');
+})();
+</script>
+</body>
+</html>
