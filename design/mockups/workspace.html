@@ -32,7 +32,9 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .stage{width:100%;max-width:1260px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:44px 28px;}
 
 /* ---- global header: persistent Brand Lockup (application chrome, never animates) ---- */
-.ghead{display:flex;align-items:center;gap:16px;min-height:78px;}
+/* persistent application chrome: pinned so the brand lockup never scrolls off or
+   jumps between frames of different heights (locked interaction model) */
+.ghead{position:sticky;top:0;z-index:30;background:var(--bg);display:flex;align-items:center;gap:16px;min-height:78px;padding:16px 0 14px;}
 .ghead .logo{width:56px;height:56px;border-radius:16px;background:var(--blue);display:grid;place-items:center;
   box-shadow:0 9px 20px -8px rgba(47,111,224,0.5);flex:none;}
 .ghead .gtext{display:flex;flex-direction:column;justify-content:center;}
@@ -278,7 +280,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     if(key==='situation'){ var tt=s.scenario==='custom'?(s.customText||'A different outreach message'):(sc.title||'—'); var wr=s.scenario==='custom'?'A message':(sc.writing||''); return {label:'Your task', value:tt, extra:'<b>You’re writing</b>'+esc(wr)}; }
     if(key==='details'){ var ex=''; if(s.ctx)ex+='<b>Context</b>'+esc(s.ctx); if(s.ask)ex+='<b'+(s.ctx?' style="margin-top:14px"':'')+'>Asking for</b>'+esc(s.ask); return {label:'Your details', value:s.who||'—', extra:ex}; }
     if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
-    if(key==='draft'){ var pk = s.path==='nod' ? 'You spotted the weak line' : ((s.ownText||'').split('\n')[0]||'Your first version'); if(pk.length>46) pk=pk.slice(0,46)+'…'; return {label:'Your version', value:pk, extra:''}; }
+    if(key==='draft'){ var pk; if(s.path==='nod'){ pk='You spotted the weak line'; } else { pk=(s.ownText||'').replace(/\s+/g,' ').trim()||'Your first version'; if(pk.length>110) pk=pk.slice(0,110)+'…'; } return {label:'Your version', value:pk, extra:''}; }
     if(key==='feedback'){ var o=s.fbOutcome; return {label:'Feedback', value:(o==='tightened'?'One line tightened':(o==='kept'?'Kept my wording':'No changes needed')), extra:'<b>Status</b>Prototype check'}; }
     return {label:'',value:'',extra:''};
   }
@@ -437,7 +439,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     var head=fix?({'soft-opener':['One line to <em>make clearer.</em>',"It’s close — there’s one soft opener worth cutting."],'no-ask':['Make the ask <em>unmissable.</em>',"It’s close — a busy reader needs one obvious thing to do."],'too-long':['Tighten it <em>right down.</em>',"It’s close — the shorter it is, the likelier a reply."]}[fix.kind]||['One line to <em>make clearer.</em>','']):['It’s ready — <em>here’s what’s working.</em>',cleanJudgement(text)];
     colActive.innerHTML='<h2 class="f-title">'+head[0]+'</h2><p class="f-lede">'+esc(head[1])+'</p>'
       +'<div class="msgbox" id="msgbox">'+html+'</div>'
-      +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn ghost" id="keepMine" type="button">'+(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it')+'</button></div></div>'):'')
+      +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn'+(fix.tight?' ghost':'')+'" id="keepMine" type="button">'+(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it')+'</button></div></div>'):'')
       +'<div class="strength"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Already working:</b> you brought a real, specific situation — that’s what makes this yours, not a template.</span></div>'
       +'<p class="proto">Prototype note: this check is a lightweight stand-in that looks at your own words — the full expert check arrives with the built product.</p>'
       +'<div id="readyWrap" style="display:'+(fix?'none':'block')+';margin-top:24px"><span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="readyBadgeText">Prototype check · looks ready</span></span><div class="actions"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>';
