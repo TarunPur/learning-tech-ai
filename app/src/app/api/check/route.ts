@@ -57,9 +57,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  return NextResponse.json({
-    core_pass: result.core_pass,
-    top_misses: result.top_misses,
-    criteria: result.criteria,
-  });
+  return NextResponse.json(result);
 }
