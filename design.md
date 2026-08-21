@@ -1,4 +1,4 @@
-<!-- STATUS: current as of 2026-08-21. Brand = NOD. This file is the VISUAL SYSTEM + component library (how NOD looks). The FLOW (what happens, screen by screen, the two-path loop) lives in journey.md. Canonical implementation in design/mockups/ with shared tokens/primitives in design/mockups/shared/system.css. -->
+<!-- STATUS: LOCKED 2026-08-21. Brand = NOD. This file is the VISUAL SYSTEM + component library (how NOD looks). The FLOW (what happens — the two-frame workspace + coaching loop) lives in journey.md. The BUILD lives in implementation.md + ERD.md. Canonical prototype: design/mockups/workspace.html (single two-frame workspace) + design/mockups/landing-editorial-blue-v3.html (marketing) + shared/flow.js + shared/system.css. The build ports these tokens/components into the React/Tailwind app; do not restyle. -->
 ---
 name: NOD
 description: Help a non-technical professional finish one real outreach message, with help that fades — and know it's good before they send.
@@ -135,11 +135,31 @@ A warm-neutral canvas carried almost entirely by paper and ink, with a single bl
 ### Named Rule
 **The Serif-Statement / Sans-Support Rule.** Spectral appears only on statements, titles, and quoted lines. Everything the user reads *in order to act* — sub-lines, labels, inputs, captions, buttons — is Hanken. Never set UI controls in the serif.
 
-## Layout
+## Layout — the Two-Frame Workspace (LOCKED)
 
-A two-column editorial composition centered in a max-width **1240px** stage, vertically centered in the viewport. On desktop (≥940px) it splits **0.86fr / 1.14fr** with a **64px** gap: left is the statement column (mark, headline, sub, plus a reassurance/context line), right is the working surface (recognition grid, intake card, draft, feedback, saved messages, or a single situation card). Below 940px the stage collapses to a single column.
+v1 is **one persistent two-frame workspace**, not a sequence of pages (see `journey.md` §0). Canonical
+build: `design/mockups/workspace.html`.
 
-The recognition grid on **Home ①** is an **aligned 2×2** of situation cards (26px gap). *(This replaced the earlier staggered/zig-zag numbered layout.)*
+- **Pinned brand header** (application chrome): `position: sticky; top:0`, opaque warm-paper background,
+  so the lockup never scrolls off or jumps between frames. It never resizes, relocates, hides, or
+  animates. A hairline sits beneath it.
+- **Below the header, a two-column grid**, top-anchored so the active heading holds a **stable vertical
+  position** across frames of different heights (`align-items/align-content: start`, not centered). Max
+  stage width **1260px**; columns **`440px  minmax(0,700px)`** with a **64px** gap.
+  - **LEFT — Recap:** the single immediately-previous completed frame as a warm-tinted (`--tint`), still
+    **editable** snapshot with a blue **Edit** action. It must look *secondary, not disabled* — never
+    lower text contrast with opacity. Left border in `blue-tint-strong`. Shows the frame's key value(s)
+    (e.g. Details shows recipient + context + ask). One prior frame only — never a stack.
+  - **RIGHT — Active frame:** the one live frame, on the **paper surface** (no giant outer white card —
+    avoid "card inside card"). Only genuine surfaces (the compose box, a fix box, the saved message) get
+    a bordered card.
+- **Responsive:** at ≤1160px the grid becomes a single column with the **recap directly above** the
+  active frame (never squeezed side-by-side); at ≤560px paddings tighten and the header tagline is
+  allowed to **wrap** (no `nowrap` clip). Interactive targets stay **≥44px**.
+
+The situation frame's four cards are equal, full-width primary cards stacked vertically (not a 2×2 grid in
+the workspace), with the quiet "Something else?" escape beneath. *(The older standalone-page 2×2 grid and
+the 0.86/1.14 split are retired — the workspace is the locked layout.)*
 
 ## Elevation & Depth
 
@@ -179,8 +199,12 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 ### Decision Chips (fallback draft path ④b)
 - Square 1px-bordered chips; selected state = blue border + blue tint + blue-deep text (`aria-pressed`). Used for the two hand-off decisions (tone, the ask) when NOD drafts on the fallback path.
 
-### Feedback fix (Feedback ⑤)
-- The fix-target in the draft gets a **neutral dotted marker** (never red/green); once edited it resolves to a blue "cleared" state. The fix is presented as *Your line → why it's worth changing → a tighter version*, framed as an edit the user accepts ("Use this edit") or declines ("Keep mine") — **advisory, never a gate**. Reads the user's **own** words (whether they wrote the draft ④a or judged a NOD draft ④b), not a planted line.
+### Workspace Recap (LEFT frame)
+- The single previous completed frame, rendered warm-tinted with an uppercase meta label + a blue **Edit**. Value in Spectral; supporting detail (e.g. context / ask) below in Hanken. Secondary but never dimmed-via-opacity. On the "Your version" recap, show a real excerpt of what the user *actually wrote* (not just the first line). Edit re-activates the frame on the right and resets contradictory downstream state.
+
+### Feedback fix + the coaching loop (Feedback ⑤)
+- The fix-target in the draft gets a **neutral dotted marker** (never red/green); once edited it resolves to a blue "cleared" state. The fix is presented as *Your line → why it's worth changing → a tighter version (when we have one)*, framed as an edit the user accepts ("Use this edit") or does themselves — **advisory, never a gate**. Reads the user's **own** words (④a written, or the ④b NOD draft they judged), not a planted line.
+- **Loop states (own path, LOCKED — see `journey.md` §5):** *issue → "Let me tighten it"* (solid when it's the sole action) sends the user back to the editable compose with a "one thing to tighten" reminder and the "Check it against the standard" action; up to **two** self-edit + recheck cycles; then **NOD writes a better version** (shown in a clean message card + a "the move to keep" takeaway + Save). A **clean** check shows *"It's ready — here's what's working"* with one concrete reusable judgement, then Save. Never a score.
 
 ### Saved-message list (Saved message ⑥)
 - Plain rows (blue tick, situation title, date, one-line peek, hover "Reuse →"). The freshest row carries a small "just saved" chip. Called **"Your saved messages"** (never "bench").
@@ -221,22 +245,23 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 
 ---
 
-## Status & Roadmap (project note)
+## Status & Roadmap (project note) — LOCKED
 
-**The flow now lives in `journey.md`** (screens, the two paths, where they split and rejoin, the states on each). This file is the **visual system + component library**; it no longer narrates the flow. The visual system is unchanged and fully reusable for the new screens.
+**The design is LOCKED (2026-08-21).** The flow lives in `journey.md`; this file is the visual system +
+component library. The canonical, built artifact both describe is the **single two-frame workspace**,
+`design/mockups/workspace.html` (logic in `shared/flow.js`), plus the marketing landing
+`landing-editorial-blue-v3.html`. The earlier per-page mockups (`compose/draft/feedback/artifact/return`
+etc.) are **superseded** by the workspace and are no longer the reference.
 
-**All six v1 mockups were built and committed** (in `design/mockups/`) but capture the **pre-2026-08-21 single-path flow**; they need reworking to the two-path loop in `journey.md`. Mapping to the new screen set:
-1. `recognition-editorial-blue-v3.html` — **Home ①** (LOCKED baseline) · *reusable as-is; the path choice is a **new** screen ③ that comes **after Personalize**, not on Home.*
-2. `personalize.html` — **Personalize ②** + silent auto-mask · *reusable; feeds both paths.*
-3. *(new)* **Choose how to start ③** — the fork; loud write-your-own default + quiet "let NOD draft one" fallback. See the **Path-choice** component above.
-4. `compose.html` — **Write your own ④a** (the new **default** path) · *the write-your-own composer is the base; anchor it with the situation + specifics so it's never a blank page.*
-5. `draft.html` — **NOD drafts + spot-the-flaw ④b** (the **fallback** path) · *add the **tap-the-weak-line** beat before feedback (see component above). Spot-the-flaw form is resolved = tap the line, not type-a-critique.*
-6. `feedback.html` — **Feedback ⑤** · *must render **real** categorical fixes on the user's **own** text (arbitrary user-written on ④a), not a planted line.*
-7. `artifact.html` — **Saved message ⑥** · *reusable.*
-8. `return.html` (+ `compose.html`) — **Later ⑦** · *reusable; the unaided re-attempt, with the path choice reappearing and help thinner.*
+**What the build must reproduce (do not restyle):** every token in the frontmatter; the Calm Correspondent
+system; the pinned brand header; the recap-left / active-right two-frame layout and its responsive stack;
+the four equal situation cards + quiet escape; the Path-choice, Tap-the-weak-line, Feedback-fix +
+coaching-loop, and Saved-message components above. The build ports these into React + Tailwind (tokens →
+Tailwind theme / CSS variables) — a **faithful port**, not a redesign.
 
-Plus the marketing **landing** (`landing-editorial-blue-v3.html` is the current build; `-v2` is the LOCKED baseline).
+**Verification owed:** a real-device **mobile** pass on the workspace (tooling can't render < ~1456px, so
+the ≤560px behaviour is CSS-verified only).
 
-**Design decisions resolved (the old §24 opens):** auto-mask = detect-and-mask, silent, with gentle inline reassurance; feedback UI = one concrete fix at a time pointing at the user's actual words, never a score/checklist; **spot-the-flaw = tap the weak line** (2026-08-21). Capturing the user's *own* first version is now the default (Decisions 7, 11); the "where do I start" case falls to the NOD-drafts + spot-the-flaw fallback; the *visual* rough→shaped ("Aha") staging remains design-owned and is specified in `journey.md`.
-
-**Still to do (in order):** (a) sign off this design layer (`journey.md` + this file); (b) rework the mockups above to the two-path flow; (c) a real-device **mobile** verification pass (tooling can't render narrow); (d) then ERD / technical architecture / build (incl. the real evaluator endpoint — the prototype's check is faked). Do not start the ERD/build before the design is signed off.
+**Next:** `ERD.md` → `implementation.md` → build. The prototype's check is **faked**; the real hybrid
+evaluator (deterministic B4 + anchored Claude call for B1/B2/B3/B5, PRD §16) is built per
+`implementation.md`, and the rubric **discrimination test** runs before shipping.
