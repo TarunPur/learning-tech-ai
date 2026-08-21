@@ -374,19 +374,29 @@ button,input,textarea{font-family:inherit;color:inherit;}
   }
 
   function buildFlag(p,sent){ var t=sent.trim().split(/\s+/).map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}); if(!t.length)return null; var re=new RegExp(t.join('\\s+'),'i'); var m=p.match(re); return m?{start:m.index,end:m.index+m[0].length}:null; }
+  /* Clean-state judgement (Chunk 1): the prototype found nothing to cut, so instead of a
+     hollow "no issue" it names ONE concrete, reusable thing the user's OWN draft did right,
+     from the same signals evaluateText uses (a clear ask / the right length / leads with the
+     reason). Not a score — a takeaway. A clean draft always satisfies the last branch. */
+  function cleanJudgement(t){
+    var wc=NOD.wordCount(t);
+    if(String(t).indexOf('?')!==-1) return 'Your ask lands as one clear question — the reader knows exactly what to say yes to.';
+    if(wc>=40&&wc<=125) return 'It’s short enough to take in at a glance, which is what gets a busy person to actually reply.';
+    return 'You lead with your real reason instead of a throat-clearing opener — that’s what keeps a reader going.';
+  }
   function r_feedback(){
     var s=store.load(); var text=NOD.workingDraftText(); var nm=NOD.firstName(s.who||'');
     var fix=NOD.evaluateText(maskName(text,nm)); if(fix){ fix.sentence=unmaskName(fix.sentence,nm); if(fix.tight)fix.tight=unmaskName(fix.tight,nm); }
     var paras=text.split(/\n\s*\n/).map(function(x){return x.trim();}).filter(Boolean); if(paras.length<=1)paras=text.split('\n').map(function(x){return x.trim();}).filter(Boolean); if(!paras.length)paras=[text];
     var fi=-1,minfo=null,html='';
     paras.forEach(function(p,i){ if(fix&&fi===-1){ var info=buildFlag(p,fix.sentence); if(info){ fi=i; minfo=info; html+='<p>'+esc(p.slice(0,info.start))+'<span class="flag" id="flag">'+esc(p.slice(info.start,info.end))+'</span>'+esc(p.slice(info.end))+'</p>'; return; } } html+='<p>'+esc(p)+'</p>'; });
-    var head=fix?({'soft-opener':['One line to <em>make clearer.</em>',"It’s close — there’s one soft opener worth cutting."],'no-ask':['Make the ask <em>unmissable.</em>',"It’s close — a busy reader needs one obvious thing to do."],'too-long':['Tighten it <em>right down.</em>',"It’s close — the shorter it is, the likelier a reply."]}[fix.kind]||['One line to <em>make clearer.</em>','']):['This prototype check found <em>no obvious issue.</em>','A light check on your own words — the full expert standard comes with the built product.'];
+    var head=fix?({'soft-opener':['One line to <em>make clearer.</em>',"It’s close — there’s one soft opener worth cutting."],'no-ask':['Make the ask <em>unmissable.</em>',"It’s close — a busy reader needs one obvious thing to do."],'too-long':['Tighten it <em>right down.</em>',"It’s close — the shorter it is, the likelier a reply."]}[fix.kind]||['One line to <em>make clearer.</em>','']):['It’s ready — <em>here’s what’s working.</em>',cleanJudgement(text)];
     colActive.innerHTML='<h2 class="f-title">'+head[0]+'</h2><p class="f-lede">'+esc(head[1])+'</p>'
       +'<div class="msgbox" id="msgbox">'+html+'</div>'
       +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn ghost" id="keepMine" type="button">'+(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it')+'</button></div></div>'):'')
       +'<div class="strength"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Already working:</b> you brought a real, specific situation — that’s what makes this yours, not a template.</span></div>'
       +'<p class="proto">Prototype note: this check is a lightweight stand-in that looks at your own words — the full expert check arrives with the built product.</p>'
-      +'<div id="readyWrap" style="display:'+(fix?'none':'block')+';margin-top:24px"><span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="readyBadgeText">Prototype check · no obvious issues</span></span><div class="actions"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>';
+      +'<div id="readyWrap" style="display:'+(fix?'none':'block')+';margin-top:24px"><span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="readyBadgeText">Prototype check · looks ready</span></span><div class="actions"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>';
     var msgbox=document.getElementById('msgbox'); var fbOutcome=fix?null:'clean';
     function finishText(){ return [].slice.call(msgbox.querySelectorAll('p')).map(function(p){return p.textContent.trim();}).filter(Boolean).join('\n\n'); }
     function toReady(outcome){ if(outcome)fbOutcome=outcome; var fb=document.getElementById('fixbox'); if(fb)fb.style.display='none'; var bt=document.getElementById('readyBadgeText'); if(bt)bt.textContent='Prototype check · '+fbLabel(fbOutcome); document.getElementById('readyWrap').style.display='block'; }
