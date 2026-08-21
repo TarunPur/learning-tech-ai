@@ -41,7 +41,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .ghair{display:none;}
 
 /* ---- two columns (share the header's left edge; centred in the space below the fixed header) ---- */
-.cols{display:grid;grid-template-columns:440px 700px;gap:64px;align-items:start;flex:1;align-content:center;}
+.cols{display:grid;grid-template-columns:440px 700px;gap:64px;align-items:center;flex:1;align-content:center;}
 
 /* ---- left: dimmed recap of the previous frame ---- */
 .recap-empty{color:var(--ink-faint);font-size:13.5px;line-height:1.6;max-width:30ch;padding-top:6px;}
@@ -98,6 +98,12 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .chip:hover{border-color:var(--blue);color:var(--blue-deep);background:var(--blue-tint);}
 .privacy{margin:0 0 34px;font-size:13px;color:var(--ink-faint);line-height:1.5;}
 
+/* shared "your message" surface — compose textarea, feedback message, saved message all match */
+.composer{background:var(--card);border:1px solid var(--line);padding:20px 22px;transition:border-color .2s;}
+.composer:focus-within{border-color:var(--blue);}
+.composer textarea{width:100%;border:0;background:transparent;font-size:16.5px;line-height:1.74;color:var(--ink);resize:vertical;min-height:184px;padding:0;outline:none;}
+.composer textarea::placeholder{color:var(--ink-faint);}
+
 /* choose: one primary card + plain text-link fallback */
 .primary-path{display:block;width:100%;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);
   box-shadow:var(--sh-card);padding:26px 28px;transition:transform .26s cubic-bezier(.16,1,.3,1),box-shadow .26s,border-color .22s;}
@@ -116,11 +122,13 @@ button,input,textarea{font-family:inherit;color:inherit;}
 /* draft / spot-the-flaw */
 .mailto{font-size:13.5px;color:var(--ink-soft);margin:0 0 16px;} .mailto b{color:var(--ink-2);font-weight:600;} .mailto .masked{margin-left:6px;font-size:11.5px;color:var(--blue-deep);font-weight:600;}
 .spotq{font-size:14px;font-weight:600;color:var(--ink-2);margin:0 0 14px;display:flex;align-items:center;gap:8px;} .spotq svg{color:var(--blue);}
-.lines{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
-.line{display:block;width:100%;text-align:left;border:0;background:transparent;font-size:16.5px;line-height:1.72;color:var(--ink);cursor:pointer;padding:10px 12px;margin:0 -12px;transition:background .18s,box-shadow .18s;}
-.lines.picking .line:hover,.lines.picking .line:focus-visible{background:rgba(124,124,115,0.07);box-shadow:inset 0 0 0 1px var(--line-2);outline:none;}
-.line.weak{background:rgba(124,124,115,0.09);border-bottom:2px dotted var(--ink-faint);cursor:default;}
-.line.picked{background:rgba(124,124,115,0.06);cursor:default;}
+.lines{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+/* selectable rows: a resting border makes them clearly tappable, not plain paragraphs */
+.line{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);font-size:16.5px;line-height:1.6;color:var(--ink);cursor:pointer;padding:14px 16px;margin:0;transition:border-color .18s,background .18s,transform .18s;}
+.lines.picking .line:hover,.lines.picking .line:focus-visible{border-color:var(--blue);background:var(--blue-tint);transform:translateX(2px);outline:none;}
+.line:disabled{cursor:default;}
+.line.weak{border-color:var(--ink-faint);background:rgba(124,124,115,0.09);cursor:default;}
+.line.picked{border-color:var(--line-2);background:rgba(124,124,115,0.06);cursor:default;}
 .reaction{display:none;margin-top:16px;padding:18px 20px;background:var(--tint);}
 .reaction.show{display:block;animation:fieldIn .42s cubic-bezier(.16,1,.3,1);}
 .reaction .rk{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--blue-deep);margin-bottom:8px;} .reaction .rk svg{color:var(--blue);}
@@ -207,7 +215,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     if(key==='situation') return {label:'Your task', value:sc.title||'—', extra:'<b>You’re writing</b>'+esc(sc.writing||'')};
     if(key==='details') return {label:'Your details', value:s.who||'—', extra:s.ask?('<b>Asking for</b>'+esc(s.ask)):''};
     if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
-    if(key==='draft') return {label:'Your version', value:s.path==='nod'?'You spotted the weak line':'Your first version, written', extra:''};
+    if(key==='draft'){ var pk = s.path==='nod' ? 'You spotted the weak line' : ((s.ownText||'').split('\n')[0]||'Your first version'); if(pk.length>46) pk=pk.slice(0,46)+'…'; return {label:'Your version', value:pk, extra:''}; }
     if(key==='feedback') return {label:'Feedback', value:'One line tightened', extra:'<b>Status</b>Meets the standard'};
     return {label:'',value:'',extra:''};
   }
@@ -230,7 +238,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 
   function r_details(){
     var s=store.load();
-    colActive.innerHTML='<h2 class="f-title">Tell me about <em>this one.</em></h2><p class="privacy">NOD masks real names before anything is processed.</p>'
+    colActive.innerHTML='<h2 class="f-title">Tell me about <em>this one.</em></h2><p class="privacy">One question at a time. NOD masks real names before anything is processed.</p>'
       +'<div class="field" id="fWho"><label for="who">Who are you writing to?</label><div class="ipt"><input id="who" type="text" autocomplete="off" placeholder="A name and how you know them"></div>'
       +'<p class="eg">e.g. Nidhi, a marketing lead I met in June</p>'
       +'<span class="masknote" id="maskNote"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 9V6.5a4 4 0 0 1 8 0V9M5 9h10a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Masked before processing — you’ll still see <b id="maskName">their name</b> in your draft.</span></span></div>'
@@ -272,7 +280,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     var s=store.load();
     if(s.path==='own'){
       colActive.innerHTML='<h2 class="f-title">Write your first version — <em>in your words.</em></h2><p class="f-lede">Rough is fine. Your task and details are on the left. When you’re ready, I’ll check it.</p>'
-        +'<div class="field"><div class="ipt"><textarea id="composeText" rows="7" placeholder="Start with “Hi …”, say why you’re really reaching out, then make one clear ask."></textarea></div></div>'
+        +'<div class="composer"><textarea id="composeText" rows="8" placeholder="Start with “Hi …”, say why you’re really reaching out, then make one clear ask."></textarea></div>'
         +'<div class="actions"><button class="btn" id="checkOwn" type="button" disabled>Check it against the standard <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="hint" id="ownHint">Write a few lines, then check it.</span></div>';
       var ta=document.getElementById('composeText'),cb=document.getElementById('checkOwn'),oh=document.getElementById('ownHint');
       if(s.ownText)ta.value=s.ownText;
@@ -284,7 +292,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
       if(fix&&fix.sentence){ for(var i=0;i<paras.length;i++){ if(paras[i].toLowerCase().indexOf(fix.sentence.toLowerCase().slice(0,18))!==-1){ weak=i; break; } } }
       var why=fix?fix.why:'This line reads like a template and buries your real reason.';
       colActive.innerHTML='<h2 class="f-title">First, <em>spot what’s weak.</em></h2><p class="f-lede">I wrote a version from your notes. Before I say a word — which one line would a busy reader trip on?</p>'
-        +'<p class="mailto">To <b>'+esc(c.recipient)+'</b><span class="masked">– masked before processing</span></p>'
+        +'<p class="mailto">To <b>'+esc(c.recipient)+'</b> <span class="masked">· masked before processing</span></p>'
         +'<p class="spotq"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Tap the line you’d change.</p>'
         +'<div class="lines picking" id="lines">'+paras.map(function(p,i){return '<button class="line" type="button" data-i="'+i+'">'+esc(p)+'</button>';}).join('')+'</div>'
         +'<button class="linkbtn" id="unsure" type="button">I’m not sure — show me →</button>'
