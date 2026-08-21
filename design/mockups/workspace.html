@@ -41,7 +41,9 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .ghair{display:block;height:1px;background:var(--line);margin:20px 0 0;}
 
 /* ---- two columns (share the header's left edge; centred in the space below the fixed header) ---- */
-.cols{display:grid;grid-template-columns:440px minmax(0,700px);gap:64px;align-items:center;flex:1;align-content:center;}
+/* Top-anchored so the active heading holds a stable Y as frame height changes
+   between states (Chunk 8); recap top-aligns with the active title. */
+.cols{display:grid;grid-template-columns:440px minmax(0,700px);gap:64px;align-items:start;flex:1;align-content:start;padding-top:52px;}
 
 /* ---- left: dimmed recap of the previous frame ---- */
 .recap-empty{color:var(--ink-faint);font-size:13.5px;line-height:1.6;max-width:30ch;padding-top:6px;}
@@ -102,7 +104,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 /* shared "your message" surface — compose textarea, feedback message, saved message all match */
 .composer{background:var(--card);border:1px solid var(--line);padding:20px 22px;transition:border-color .2s;}
 .composer:focus-within{border-color:var(--blue);}
-.composer textarea{width:100%;border:0;background:transparent;font-size:16.5px;line-height:1.74;color:var(--ink);resize:vertical;min-height:168px;padding:0;outline:none;}
+.composer textarea{width:100%;border:0;background:transparent;font-size:16.5px;line-height:1.74;color:var(--ink);resize:vertical;min-height:140px;padding:0;outline:none;}
 .composer textarea::placeholder{color:var(--ink-faint);}
 /* compact brief — keeps the user's real task (recipient/context/ask) visible in the writing frame (journey.md §3 ④a). Not a card, not a third column. */
 .brief{margin:0 0 22px;display:grid;gap:11px;}
@@ -180,7 +182,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 /* ---- responsive: never squeeze the two desktop columns; stack with the
    editable recap directly ABOVE the dominant active frame ---- */
 @media(max-width:1160px){
-  .cols{grid-template-columns:minmax(0,700px);gap:22px;justify-content:center;align-content:start;}
+  .cols{grid-template-columns:minmax(0,700px);gap:22px;justify-content:center;align-content:start;padding-top:0;}
   .col-prev{order:1;} .col-active{order:2;}
   .recap{padding:20px 22px;} .recap-value{font-size:21px;}
   .ghair{margin:20px 0 32px;}
@@ -190,7 +192,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
   .ghead{gap:13px;}
   .ghead .gtag{white-space:normal;}   /* let the tagline wrap instead of clipping/overflowing */
   .f-title{font-size:clamp(25px,7vw,31px);}
-  .composer textarea{min-height:150px;}
+  .composer textarea{min-height:128px;}
+  .cols{padding-top:0;}
 }
 </style>
 </head>
@@ -382,7 +385,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
       var stuck=later?'<div style="margin-top:16px"><button class="linkbtn" id="stuckToggle" type="button">Stuck? Show me the starting moves</button><p class="eg" id="stuckHelp" style="display:none;margin-top:8px">Try: open with “Hi …”, then the real reason you’re reaching out, then end with one clear ask.</p></div>':'';
       colActive.innerHTML='<h2 class="f-title">Write your first version — <em>in your words.</em></h2><p class="f-lede">'+lede+'</p>'
         +'<div class="brief">'+briefRows+'</div>'+reuseNote
-        +'<div class="composer"><textarea id="composeText" rows="8" placeholder="'+ph+'"></textarea></div>'
+        +'<div class="composer"><textarea id="composeText" rows="5" placeholder="'+ph+'"></textarea></div>'
         +'<div class="actions"><button class="btn" id="checkOwn" type="button" disabled>Check it against the standard <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+hint+'</div>'+stuck;
       var ta=document.getElementById('composeText'),cb=document.getElementById('checkOwn'),oh=document.getElementById('ownHint');
       if(s.ownText)ta.value=s.ownText; else if(s.reuseSeed)ta.value=s.reuseSeed;
