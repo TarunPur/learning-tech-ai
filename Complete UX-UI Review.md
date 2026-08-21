@@ -279,14 +279,20 @@ After every chunk:
 
 ## Build log (maintained by the building agent)
 
+All committed to local branch `feedback-pass-20aug` (not pushed). Verified in Chrome
+desktop; mobile (Chunk 7) is CSS/CSSOM-verified only (extension can't render < ~1456px).
+
 | Order | Chunk | Status | Commit |
 |---|---|---|---|
-| 1 | 1 — task brief | pending | — |
-| 2 | 2 — feedback/recap honesty | pending | — |
-| 3 | 5 — edit reset | pending | — |
-| 4 | 7 — responsive | pending | — |
-| 5 | 8 — header/grid | pending | — |
-| 6 | 3 — saved history | pending | — |
-| 7 | 4 — next-use cue | pending | — |
-| 8 | 6 — privacy separation | pending | — |
-| 9 | 9 — visual polish | pending | — |
+| 1 | 1 — task brief | ✅ committed | `f7ce5b3` + `a4f7966` |
+| 2 | 2 — feedback/recap honesty | ✅ committed | `2ab686f` |
+| 3 | 5 — edit reset | ✅ committed | `748c68b` |
+| 4 | 7 — responsive | ✅ committed (mobile CSS-verified) | `2aa7b1d` |
+| 5 | 8 — header/grid | ✅ committed | `ab34ef9` |
+| 6 | 3 — saved history | ✅ committed | `6d2a524` |
+| 7 | 4 — next-use cue | ✅ committed | `96a3eee` |
+| 8 | 6 — privacy separation | ✅ committed (prototype scope; server masking = build) | `d8fcecc` |
+| 9 | 9 — visual polish | ✅ committed | `3473f76` |
+
+Docs commit: `2b50536`. Real evaluator (Chunk 2 backend) and server-side masking
+(Chunk 6 backend) remain deferred to build per the review's own framing.
