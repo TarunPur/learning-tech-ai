@@ -402,7 +402,11 @@ button,input,textarea{font-family:inherit;color:inherit;}
     function toReady(outcome){ if(outcome)fbOutcome=outcome; var fb=document.getElementById('fixbox'); if(fb)fb.style.display='none'; var bt=document.getElementById('readyBadgeText'); if(bt)bt.textContent='Prototype check · '+fbLabel(fbOutcome); document.getElementById('readyWrap').style.display='block'; }
     var ue=document.getElementById('useEdit'); if(ue)ue.addEventListener('click',function(){ if(fi>=0&&minfo&&fix.tight){ var p=msgbox.querySelectorAll('p')[fi]; var o=paras[fi]; p.innerHTML=esc(o.slice(0,minfo.start))+'<span class="flag cleared">'+esc(fix.tight)+'</span>'+esc(o.slice(minfo.end)); } toReady('tightened'); });
     var km=document.getElementById('keepMine'); if(km)km.addEventListener('click',function(){ var fl=document.getElementById('flag'); if(fl)fl.className=''; toReady('kept'); });
-    document.getElementById('saveMsg').addEventListener('click',function(){ var t=finishText(); var sc=NOD.scenario(s.scenario||'quiet'); var entry={title:sc.artTitle||'Your message',scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,when:'just now',path:s.path,unaided:s.path==='own'}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true,fbOutcome:fbOutcome||'clean'}); advance(); });
+    /* Privacy (Chunk 2 / FAQ): the SAVED artifact is masked. finalText + history text/peek
+       persist with [name], never the real recipient; the real name is filled back in only by
+       the copy-to-send action (r_done). The live `who` stays plaintext for the active draft
+       (device-local) and is reset on reload — only `history` survives a reload, and it's masked. */
+    document.getElementById('saveMsg').addEventListener('click',function(){ var t=maskName(finishText(),nm); var sc=NOD.scenario(s.scenario||'quiet'); var entry={title:sc.artTitle||'Your message',scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,when:'just now',path:s.path,unaided:s.path==='own'}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true,fbOutcome:fbOutcome||'clean'}); advance(); });
   }
 
   function r_done(){
@@ -425,7 +429,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
       +'<div class="final">'+paras.map(function(p){return '<p>'+esc(p.trim())+'</p>';}).join('')+'</div>'
       +'<div class="actions"><button class="btn" id="copyMsg" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7V4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5v7A1.5 1.5 0 0 1 15.5 13H13M4.5 7h7A1.5 1.5 0 0 1 13 8.5v7A1.5 1.5 0 0 1 11.5 17h-7A1.5 1.5 0 0 1 3 15.5v-7A1.5 1.5 0 0 1 4.5 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Copy message</button><span class="copied" id="copied">Copied — with your real names filled in.</span><button class="btn ghost" id="again" type="button">Start another →</button></div>'
       +savedList+cueHtml;
-    document.getElementById('copyMsg').addEventListener('click',function(){ if(navigator.clipboard)navigator.clipboard.writeText(t).catch(function(){}); var c=document.getElementById('copied'); c.classList.add('show'); setTimeout(function(){c.classList.remove('show');},2400); });
+    /* Copy-to-send is the ONLY place the real recipient name is restored (FAQ contract). */
+    document.getElementById('copyMsg').addEventListener('click',function(){ var out=unmaskName(t,NOD.firstName(s.who||'')); if(navigator.clipboard)navigator.clipboard.writeText(out).catch(function(){}); var c=document.getElementById('copied'); c.classList.add('show'); setTimeout(function(){c.classList.remove('show');},2400); });
     // Start another / Reuse begin a fresh attempt WITHOUT wiping saved history.
     function freshAttempt(seed){ store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',reuseSeed:seed||''}); go(0); }
     document.getElementById('again').addEventListener('click',function(){ freshAttempt(''); });
