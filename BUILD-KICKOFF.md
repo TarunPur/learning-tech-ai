@@ -33,8 +33,9 @@ exact interaction you are reproducing. The prototype's check is **faked** — yo
   loop. This is not a redesign.
 - When you write the **Anthropic evaluator call** (Phase 5), **invoke the `claude-api` skill (TypeScript)**
   for the exact current SDK syntax (structured outputs via `output_config.format` / `client.messages.parse()`,
-  adaptive thinking, server-side key). Default model `claude-opus-5`; make it env-configurable and flag the
-  cheaper-model cost/latency tradeoff to the owner rather than downgrading silently.
+  adaptive thinking, server-side key). Default model `claude-opus-4-8` (owner amendment, 2026-08-21 — supersedes
+  the `claude-opus-5` default in `implementation.md`'s original Phase 5 text); make it env-configurable and
+  flag the cheaper-model cost/latency tradeoff to the owner rather than downgrading silently.
 - When you write **Supabase SSR auth** (Phase 2), **invoke the `supabase` skill** for the current
   `@supabase/ssr` App Router pattern; don't hand-roll cookies.
 - **Commit per phase** (small, incremental) with the commit messages suggested in each phase.

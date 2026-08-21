@@ -16,6 +16,25 @@ The **canonical UI + logic to port** is `design/mockups/workspace.html` + `desig
 
 ---
 
+## Amendments (owner, 2026-08-21 — override the sections below where they conflict)
+
+1. **Evaluator model = `claude-opus-4-8`** (Claude Opus 4.8), not the `claude-opus-5` default named in Phase 5 /
+   Appendix. Same $5/$25-per-MTok tier as Opus 5, current (not deprecated) — verified against the live model
+   table via the `claude-api` skill. `NOD_EVALUATOR_MODEL` defaults to `claude-opus-4-8`; still owner-configurable,
+   still flag the cost/latency tradeoff rather than silently changing it again.
+2. **Google sign-on is required** — it's the way users sign in and use NOD, not an optional provider among
+   several. Phase 2 already builds Google OAuth + email magic-link as a fallback; Google is the primary/must-work
+   path. Get the OAuth client id/secret before Phase 2's DoD can pass.
+3. **Analytics ships after the core build, not inline.** The PRD §14 / ERD `events` table instrumentation
+   (Phase 8) is **deferred to a follow-up pass after the rest of implementation.md is done** — build the full
+   product loop (Phases 0–7, 9–13) first, wire in the six-event instrumentation afterward. Phase 9 (nudge +
+   unaided re-attempt) still ships its **product mechanics** (nudge UI, the unaided flow, thinner scaffolding) on
+   schedule; only its event-emission calls (`unaided_started`/`unaided_completed`) move into the deferred
+   analytics pass along with the rest of Phase 8. Do not let this block Phase 11 (discrimination test) or
+   Phase 12 (build/test/deploy) — those don't depend on the events table being wired.
+
+---
+
 ## Prime directives (do not violate — from the owner's standing rules + the locked decisions)
 
 1. **Never use TypeScript `any`.** Always real types. `strict: true`.
@@ -176,10 +195,11 @@ tests pass. No network calls yet. Commit: `feat(workspace): masking, flow state,
 **B4 computed in code**, **B1/B2/B3/B5 via one anchored Claude call**, returning per-criterion pass/needs-work
 **with the exact quote**, then the core/advisory verdict and the 1–2 highest-impact misses.
 
-> **Model note (honest, per the claude-api skill):** default to **`claude-opus-5`**. This evaluator is
-> called on every "Check," so cost/latency matter — **whether to use the cheaper `claude-sonnet-5` or
-> `claude-haiku-4-5` is the owner's call, not a silent downgrade.** Implement it model-configurable via an
-> env var `NOD_EVALUATOR_MODEL` (default `claude-opus-5`) and surface the tradeoff to the owner.
+> **Model note (owner amendment, 2026-08-21 — supersedes the original default below):** default to
+> **`claude-opus-4-8`** (Claude Opus 4.8), not `claude-opus-5`. This evaluator is called on every "Check," so
+> cost/latency matter — **whether to use the cheaper `claude-sonnet-5` or `claude-haiku-4-5` is the owner's
+> call, not a silent downgrade.** Implement it model-configurable via an env var `NOD_EVALUATOR_MODEL`
+> (default `claude-opus-4-8`) and surface the tradeoff to the owner.
 
 Build:
 1. **Deterministic B4** (`src/lib/rubric/b4.ts`, pure, unit-tested): from the masked draft compute
@@ -285,7 +305,11 @@ Commit: `feat(saved): masked artifacts, history, reuse`.
 
 ---
 
-## Phase 8 — Instrumentation (PRD §14 — the experiment)
+## Phase 8 — Instrumentation (PRD §14 — the experiment) — DEFERRED (owner amendment, 2026-08-21)
+
+**Do not build this phase inline.** Per the Amendments section above, analytics is wired in **after** the rest
+of implementation.md (Phases 0–7, 9–13) is done, as a follow-up pass. Keep the spec below as the reference for
+that later pass; skip ahead to Phase 9 once Phase 7's DoD passes.
 
 **Goal:** the six events written server-side with **exact** names (ERD.md `events.name` enum).
 
