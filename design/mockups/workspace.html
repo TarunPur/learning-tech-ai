@@ -268,7 +268,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
   /* ---- left: recap of the single previous frame ---- */
   function recapOf(key){
     var s=store.load(), sc=situ(s.scenario)||{};
-    if(key==='situation') return {label:'Your task', value:sc.title||'—', extra:'<b>You’re writing</b>'+esc(sc.writing||'')};
+    if(key==='situation'){ var tt=s.scenario==='custom'?(s.customText||'A different outreach message'):(sc.title||'—'); var wr=s.scenario==='custom'?'A message':(sc.writing||''); return {label:'Your task', value:tt, extra:'<b>You’re writing</b>'+esc(wr)}; }
     if(key==='details'){ var ex=''; if(s.ctx)ex+='<b>Context</b>'+esc(s.ctx); if(s.ask)ex+='<b'+(s.ctx?' style="margin-top:14px"':'')+'>Asking for</b>'+esc(s.ask); return {label:'Your details', value:s.who||'—', extra:ex}; }
     if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
     if(key==='draft'){ var pk = s.path==='nod' ? 'You spotted the weak line' : ((s.ownText||'').split('\n')[0]||'Your first version'); if(pk.length>46) pk=pk.slice(0,46)+'…'; return {label:'Your version', value:pk, extra:''}; }
@@ -287,9 +287,33 @@ button,input,textarea{font-family:inherit;color:inherit;}
   function renderActive(){ ({situation:r_situation,details:r_details,choose:r_choose,draft:r_draft,feedback:r_feedback,done:r_done}[ORDER[activeIndex]])(); }
 
   function r_situation(){
-    var opts=SITU.map(function(x){ return '<button class="primary-path" type="button" data-id="'+x.id+'" style="margin-bottom:12px"><span class="pp-row"><span class="pp-title">'+esc(x.title)+'</span><span class="pp-arrow"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><p class="pp-sub">'+esc(x.desc)+'</p></button>'; }).join('');
-    colActive.innerHTML='<h2 class="f-title">What are you <em>working on?</em></h2><p class="f-lede">Pick the situation closest to yours. You’ll make it specific next.</p>'+opts;
-    [].slice.call(colActive.querySelectorAll('.primary-path')).forEach(function(b){ b.addEventListener('click',function(){ commitFrame('situation',{scenario:b.dataset.id}); advance(); }); });
+    var arrow='<svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var arrowS='<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var opts=SITU.map(function(x){ return '<button class="primary-path" type="button" data-id="'+x.id+'" style="margin-bottom:12px"><span class="pp-row"><span class="pp-title">'+esc(x.title)+'</span><span class="pp-arrow">'+arrow+'</span></span><p class="pp-sub">'+esc(x.desc)+'</p></button>'; }).join('');
+    /* Scoped "something else" escape (Chunk 4 / PRD §13): a quiet fallback under the four
+       equal cards — a one-line outreach intake, never an open ChatGPT box. classifyTask keeps
+       off-scope work (proposals, decks) out with a warm boundary + an explicit override. */
+    var elseBlock='<div class="secondary-path" id="elseWrap"><p class="sp-q">Something else?</p>'
+      +'<p class="sp-copy">A different outreach message that doesn’t fit these four? Tell me in a line — I’ll shape it into the same flow.</p>'
+      +'<button class="sp-link" type="button" id="elseToggle">A different outreach message '+arrowS+'</button>'
+      +'<div id="elseForm" style="display:none;margin-top:16px">'
+        +'<div class="field" style="margin-bottom:0"><div class="ipt"><input id="elseInput" type="text" autocomplete="off" placeholder="e.g. a thank-you note to a client who just renewed"></div></div>'
+        +'<div id="elseBoundary"></div>'
+        +'<div class="actions" style="margin-top:18px"><button class="btn" id="elseGo" type="button" disabled>Continue '+arrow+'</button></div>'
+      +'</div></div>';
+    colActive.innerHTML='<h2 class="f-title">What are you <em>working on?</em></h2><p class="f-lede">Pick the situation closest to yours. You’ll make it specific next.</p>'+opts+elseBlock;
+    [].slice.call(colActive.querySelectorAll('.primary-path')).forEach(function(b){ b.addEventListener('click',function(){ commitFrame('situation',{scenario:b.dataset.id,customText:''}); advance(); }); });
+    var toggle=document.getElementById('elseToggle'),form=document.getElementById('elseForm'),input=document.getElementById('elseInput'),elseGo=document.getElementById('elseGo'),boundary=document.getElementById('elseBoundary');
+    toggle.addEventListener('click',function(){ form.style.display=''; form.classList.add('reveal'); toggle.style.display='none'; input.focus(); });
+    input.addEventListener('input',function(){ elseGo.disabled=input.value.trim()===''; boundary.innerHTML=''; });
+    function start(text){ commitFrame('situation',{scenario:'custom',customText:text}); advance(); }
+    elseGo.addEventListener('click',function(){ var text=input.value.trim(); if(!text)return; var c=NOD.classifyTask(text);
+      if(c.kind==='outreach'){ start(text); return; }
+      // off-scope: warm boundary, not a hard stop — user can still shape it as a message
+      boundary.innerHTML='<div class="reaction show" style="margin-top:16px"><span class="rk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3v8M10 14.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>That reads bigger than a message</span></span><p>NOD coaches short outreach — emails, follow-ups, intros — not documents like proposals or decks. If it’s really an outreach message, we can shape it as one.</p><div class="actions" style="margin-top:14px"><button class="btn" id="elseOverride" type="button">Shape it as a message anyway '+arrowS+'</button></div></div>';
+      elseGo.disabled=true;
+      document.getElementById('elseOverride').addEventListener('click',function(){ start(text); });
+    });
   }
 
   function r_details(){
@@ -336,7 +360,8 @@ button,input,textarea{font-family:inherit;color:inherit;}
     var s=store.load();
     if(s.path==='own'){
       var bsc=situ(s.scenario)||{};
-      var briefRows='<div class="bi"><span class="bk">Situation</span><span class="bv">'+esc(bsc.title||'—')+'</span></div>'
+      var bTitle=s.scenario==='custom'?(s.customText||'A different outreach message'):(bsc.title||'—');
+      var briefRows='<div class="bi"><span class="bk">Situation</span><span class="bv">'+esc(bTitle)+'</span></div>'
         +'<div class="bi"><span class="bk">Writing to</span><span class="bv">'+esc(s.who||'—')+'</span></div>'
         +(s.ctx?('<div class="bi"><span class="bk">Context</span><span class="bv">'+esc(s.ctx)+'</span></div>'):'')
         +'<div class="bi"><span class="bk">Your ask</span><span class="bv">'+esc(s.ask||'—')+'</span></div>';
