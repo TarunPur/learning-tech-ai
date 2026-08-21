@@ -23,13 +23,13 @@
 }
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);
+body{margin:0;min-height:100vh;min-height:100dvh;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:var(--sans);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;caret-color:var(--blue);}
 ::selection{background:var(--blue-tint-2);color:var(--blue-deep);}
 :focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;}
 button,input,textarea{font-family:inherit;color:inherit;}
 
-.stage{width:100%;max-width:1204px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:44px 28px;}
+.stage{width:100%;max-width:1204px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:44px 28px;}
 
 /* ---- global header: persistent Brand Lockup (application chrome, never animates) ---- */
 .ghead{display:flex;align-items:center;gap:16px;min-height:78px;}
@@ -50,7 +50,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .recap-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
 .recap-edit{border:0;background:transparent;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--blue);cursor:pointer;padding:2px 0;transition:color .18s;}
 .recap-edit:hover{color:var(--blue-deep);}
-.recap-value{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.18;letter-spacing:-0.014em;color:var(--ink);margin:0;}
+.recap-value{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.18;letter-spacing:-0.014em;color:var(--ink);margin:0;overflow-wrap:break-word;}
 .recap-extra{margin:20px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink-soft);}
 .recap-extra b{display:block;color:var(--ink-2);font-weight:600;font-size:12px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:5px;}
 @keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
@@ -107,7 +107,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .brief{margin:0 0 22px;display:grid;gap:11px;}
 .brief .bi{display:flex;gap:16px;align-items:baseline;}
 .brief .bk{flex:none;width:78px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);padding-top:1px;}
-.brief .bv{font-size:14.5px;line-height:1.5;color:var(--ink-2);}
+.brief .bv{font-size:14.5px;line-height:1.5;color:var(--ink-2);overflow-wrap:break-word;min-width:0;}
 
 /* choose: one primary card + plain text-link fallback */
 .primary-path{display:block;width:100%;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);
@@ -157,16 +157,18 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .final p{margin:0 0 15px;} .final p:last-child{margin-bottom:0;}
 .copied{margin-left:12px;font-size:13px;font-weight:600;color:var(--blue-deep);opacity:0;transition:opacity .2s;} .copied.show{opacity:1;}
 
-/* ---- responsive: never squeeze; active first, recap a compact strip above it ---- */
+/* ---- responsive: never squeeze the two desktop columns; stack with the
+   editable recap directly ABOVE the dominant active frame ---- */
 @media(max-width:1160px){
   .cols{grid-template-columns:minmax(0,700px);gap:22px;justify-content:center;align-content:start;}
-  .col-prev{order:2;} .col-active{order:1;}
+  .col-prev{order:1;} .col-active{order:2;}
   .recap{padding:20px 22px;} .recap-value{font-size:21px;}
   .ghair{margin:20px 0 32px;}
 }
 @media(max-width:560px){
-  body{padding:26px 18px;align-items:flex-start;}
+  .stage{padding:28px 18px;}
   .f-title{font-size:clamp(25px,7vw,31px);}
+  .composer textarea{min-height:150px;}
 }
 </style>
 </head>
