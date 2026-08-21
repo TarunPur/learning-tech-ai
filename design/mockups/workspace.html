@@ -165,6 +165,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 .srow .smain{min-width:0;flex:1;}
 .srow .stitle{font-size:14.5px;font-weight:600;color:var(--ink);}
 .srow .speek{font-size:13px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;}
+.srow .sctx{font-size:12px;color:var(--ink-faint);margin-top:4px;}
 .srow .smeta{font-size:12.5px;color:var(--ink-faint);flex:none;}
 .srow .schip{font-size:11px;font-weight:600;color:var(--blue-deep);background:var(--blue-tint);padding:3px 9px;flex:none;}
 .srow .sreuse{border:0;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:var(--blue);cursor:pointer;flex:none;padding:6px 2px;transition:color .18s;}
@@ -443,17 +444,18 @@ button,input,textarea{font-family:inherit;color:inherit;}
        persist with [name], never the real recipient; the real name is filled back in only by
        the copy-to-send action (r_done). The live `who` stays plaintext for the active draft
        (device-local) and is reset on reload — only `history` survives a reload, and it's masked. */
-    document.getElementById('saveMsg').addEventListener('click',function(){ var t=maskName(finishText(),nm); var sc=NOD.scenario(s.scenario||'quiet'); var entry={title:sc.artTitle||'Your message',scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,when:'just now',path:s.path,unaided:s.path==='own'}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true,fbOutcome:fbOutcome||'clean'}); advance(); });
+    document.getElementById('saveMsg').addEventListener('click',function(){ var t=maskName(finishText(),nm); var sc=NOD.scenario(s.scenario||'quiet'); var title=s.scenario==='custom'?(s.customText||sc.artTitle||'Your message'):(sc.artTitle||'Your message'); var entry={title:title,scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,ask:s.ask||'',ts:Date.now(),when:'just now',path:s.path,unaided:s.path==='own'}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true,fbOutcome:fbOutcome||'clean'}); advance(); });
   }
 
   function r_done(){
     var s=store.load(); var t=s.finalText||''; var paras=t.split(/\n\s*\n/).filter(function(x){return x.trim();}); if(paras.length<=1)paras=t.split('\n').filter(function(x){return x.trim();});
     var hist=Array.isArray(s.history)?s.history:[];
     var tick='<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    function relTime(ts){ if(!ts)return'earlier'; var m=Math.floor((Date.now()-ts)/60000); if(m<1)return'just now'; if(m<60)return m+'m ago'; var h=Math.floor(m/60); if(h<24)return h+'h ago'; var dd=Math.floor(h/24); if(dd===1)return'yesterday'; if(dd<7)return dd+'d ago'; return Math.floor(dd/7)+'w ago'; }
     var savedList = hist.length ? ('<div class="saved"><h3>Your saved messages</h3>'+hist.map(function(e,i){
         return '<div class="srow"><span class="stick">'+tick+'</span>'
-          +'<div class="smain"><div class="stitle">'+esc(e.title||'Your message')+'</div><div class="speek">'+esc(e.peek||'')+'</div></div>'
-          +(i===0?'<span class="schip">Just saved</span>':'<span class="smeta">Saved</span>')
+          +'<div class="smain"><div class="stitle">'+esc(e.title||'Your message')+'</div><div class="speek">'+esc(e.peek||'')+'</div>'+(e.ask?'<div class="sctx">Asked for: '+esc(e.ask)+'</div>':'')+'</div>'
+          +(i===0?'<span class="schip">Just saved</span>':'<span class="smeta">'+esc(relTime(e.ts))+'</span>')
           +'<button class="sreuse" type="button" data-i="'+i+'">Reuse →</button></div>';
       }).join('')+'</div>') : '';
     var CUE={quiet:['Got another prospect who’s gone quiet? Do the next one yourself — I’ll jump in if you get stuck.','Write another follow-up'],cold:['Someone new to reach out to? Write the next one yourself — I’ll jump in if you get stuck.','Write another intro'],meeting:['Another meeting to line up? Write the next one yourself — I’ll jump in if you get stuck.','Write another request'],event:['Another contact to follow up with? Write the next one yourself — I’ll jump in if you get stuck.','Write another follow-up']};
