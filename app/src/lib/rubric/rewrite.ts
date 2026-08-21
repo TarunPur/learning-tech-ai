@@ -2,7 +2,9 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { ScenarioId } from "@/lib/flow";
 import { evaluate } from "./evaluate";
 
-const SYSTEM_PROMPT = `You are NOD, rewriting a Marketing/Sales professional's masked outreach draft so it meets the expert standard. Lead with the real reason for reaching out (drawn only from what's actually in the draft — never invent facts, names, or events not present). Exactly one clear, low-friction ask matched to the message's stage. 50–125 words. Plain, direct language. No soft opener ("just checking in", "I hope this finds you well", "I wanted to reach out"). Keep any masked placeholders ([name], [company]) exactly as written — never fill in a real name. Output the rewritten message only, no preamble, no explanation.`;
+const SYSTEM_PROMPT = `You are NOD, rewriting a Marketing/Sales professional's masked outreach draft so it meets the expert standard. State the real reason for reaching out as a plain declarative statement (drawn only from what's actually in the draft — never invent facts, names, or events not present) — never phrase it as a question ("did you get a chance to review it?", "any thoughts?"), since a question about the earlier context reads as a second ask alongside the real one, and that's exactly the dual-ask failure you're fixing. Exactly one clear, low-friction ask matched to the message's stage, phrased as the message's only question. 50–125 words. Plain, direct language. No soft opener ("just checking in", "I hope this finds you well", "I wanted to reach out"). Keep any masked placeholders ([name], [company]) exactly as written — never fill in a real name. Output the rewritten message only, no preamble, no explanation.
+
+Example shape (adapt the specifics to the actual draft, don't reuse this content): "Hi [name], following up on the doc I sent over — would Thursday at 2pm work for a 15-minute call to walk through it?" — one declarative reason clause, one specific-time question, nothing else.`;
 
 async function generateOnce(maskedDraft: string, scenario: ScenarioId): Promise<string> {
   const client = new Anthropic();

@@ -139,10 +139,15 @@ export function Workspace() {
       if (!result.core_pass && nextCheckCount >= 3) {
         // Third check still fails — NOD writes a better version (journey.md §3 ⑤).
         const rewrite = await rewriteDraftRequest(draftTextMasked, effectiveScenario);
-        setDraft((prev) => ({ ...prev, checkCount: nextCheckCount, checkResult: result, rewriteText: rewrite.text }));
+        setDraft((prev) => ({ ...prev, path, checkCount: nextCheckCount, checkResult: result, rewriteText: rewrite.text }));
       } else {
+        // A DraftFrame submission (whether the text started blank or was
+        // tightened from a NOD draft) is the user's own checked text from
+        // here on — persist `path` so handleSave() saves what was actually
+        // checked, not a stale draft.nodDraftText from before the edit.
         setDraft((prev) => ({
           ...prev,
+          path,
           checkCount: nextCheckCount,
           checkResult: result,
           lastFixWhy: result.top_misses[0]?.why ?? "",

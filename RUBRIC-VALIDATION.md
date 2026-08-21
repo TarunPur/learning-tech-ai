@@ -1,6 +1,6 @@
 # Rubric discrimination validation
 
-Run: 2026-08-21T23:18:33.461Z
+Run: 2026-08-21T23:53:23.197Z
 Model: NOD_EVALUATOR_MODEL env (claude-opus-4-8 per owner amendment)
 
 ## Summary
