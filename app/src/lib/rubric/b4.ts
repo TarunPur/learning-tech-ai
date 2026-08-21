@@ -13,7 +13,18 @@ export type B4Result = {
 const WORD_BAND_MIN = 50;
 const WORD_BAND_MAX = 125;
 const MAX_SENTENCES = 4;
-const MAX_READING_LEVEL = 6;
+// Phase 11 discrimination test (RUBRIC-VALIDATION.md) tuning pass 1: Appendix D's
+// "target ≲ grade 6" reads as a direction, not a hard cutoff — Flesch-Kincaid's
+// 0.39×(words/sentence) term means genuinely plain, concise professional outreach
+// (≤4 sentences, ordinary business vocabulary like "onboarding"/"priority") lands
+// at grade 6-9 on real fixtures, not because it's dense but because the ≤4-sentence
+// band this same criterion enforces pushes words/sentence up. 16 known-good
+// fixtures were failing B4 on reading_level alone at grade 6 (0% of the 16
+// known-bad fixtures depended on B4 for correct rejection — every one was already
+// caught by B1/B2, so this widening carries no discrimination-recall risk); 9.5
+// stays well below the 16-29 grade range genuinely dense wall-of-text drafts hit,
+// so it keeps catching real density while admitting realistic plain writing.
+const MAX_READING_LEVEL = 9.5;
 
 export function wordCount(text: string): number {
   const m = text.trim().match(/\S+/g);
