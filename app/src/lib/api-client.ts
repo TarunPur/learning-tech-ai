@@ -84,3 +84,17 @@ export function saveMessage(input: {
     })
   );
 }
+
+export type SavedMessage = {
+  id: string;
+  title: string;
+  scenario: ScenarioId;
+  text_masked: string;
+  ask: string | null;
+  authored: "own" | "nod" | "nod-rewrote";
+  created_at: string;
+};
+
+export function fetchMessages() {
+  return json<{ messages: SavedMessage[] }>(fetch("/api/messages"));
+}

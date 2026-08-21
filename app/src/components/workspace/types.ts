@@ -20,6 +20,8 @@ export type DraftState = {
   lastFixWhy: string;
   rewriteText: string;
   savedMessageId: string | null;
+  savedTextMasked: string;
+  reuseSeed: string;
 };
 
 export const INITIAL_DRAFT: DraftState = {
@@ -38,6 +40,8 @@ export const INITIAL_DRAFT: DraftState = {
   lastFixWhy: "",
   rewriteText: "",
   savedMessageId: null,
+  savedTextMasked: "",
+  reuseSeed: "",
 };
 
 // Editing a prior frame must never leave contradictory downstream state —
@@ -52,15 +56,19 @@ export function resetFor(frameKey: FrameKey): Partial<DraftState> {
     lastFixWhy: "",
     rewriteText: "",
     savedMessageId: null,
+    savedTextMasked: "",
   };
   if (frameKey === "situation") {
+    // reuseSeed deliberately survives a situation commit — it's only
+    // consumed once the draft frame mounts, and handleReuse() is the only
+    // place that sets it, always immediately before a fresh situation pick.
     return { ...clearedDraft, who: "", ask: "", ctx: "", path: "own", attemptId: null };
   }
   if (frameKey === "details" || frameKey === "choose") {
     return clearedDraft;
   }
   if (frameKey === "draft") {
-    return { checkResult: null, lastFixWhy: "", rewriteText: "", savedMessageId: null };
+    return { checkResult: null, lastFixWhy: "", rewriteText: "", savedMessageId: null, savedTextMasked: "" };
   }
   return {};
 }

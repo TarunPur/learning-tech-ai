@@ -25,7 +25,7 @@ type DraftFrameProps = {
 
 // ④a — write your own (the default path). journey.md §3 ④a.
 export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
-  const [text, setText] = useState(draft.ownText);
+  const [text, setText] = useState(draft.ownText || draft.reuseSeed);
   const reediting = draft.checkCount > 0;
 
   const isCustom = draft.scenario === "custom";
@@ -49,6 +49,11 @@ export function DraftFrame({ draft, loading, onSubmit }: DraftFrameProps) {
     <div>
       <h2 className="nod-f-title">{title}</h2>
       <p className="nod-f-lede">{lede}</p>
+      {!draft.ownText && draft.reuseSeed && !reediting && (
+        <p className="nod-eg" style={{ marginTop: -20, marginBottom: 22 }}>
+          Starting from a saved message — adapt it for this one.
+        </p>
+      )}
 
       <div style={{ marginBottom: 22, display: "grid", gap: 11 }}>
         <BriefRow label="Situation" value={situationTitle} />

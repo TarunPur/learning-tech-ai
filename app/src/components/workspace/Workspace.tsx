@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BrandHeader } from "@/components/ui/BrandHeader";
 import { firstName, scenario, type ScenarioId } from "@/lib/flow";
 import { maskName } from "@/lib/masking";
+import { rememberName } from "@/lib/name-map";
 import {
   checkDraft,
   createAttempt,
@@ -229,11 +230,22 @@ export function Workspace() {
         completed_at: new Date().toISOString(),
       });
 
-      setDraft((prev) => ({ ...prev, savedMessageId: id }));
+      if (name !== "there") rememberName(id, name);
+      setDraft((prev) => ({ ...prev, savedMessageId: id, savedTextMasked: finalMasked }));
       goTo("saved");
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleReuse(textMasked: string) {
+    setDraft({ ...INITIAL_DRAFT, reuseSeed: textMasked });
+    setActiveIndex(0);
+  }
+
+  function handleStartNew() {
+    setDraft(INITIAL_DRAFT);
+    setActiveIndex(0);
   }
 
   return (
@@ -275,7 +287,14 @@ export function Workspace() {
           {activeKey === "feedback" && (
             <FeedbackFrame draft={draft} loading={loading} onTighten={handleTighten} onSave={handleSave} />
           )}
-          {activeKey === "saved" && <SavedFrame savedMessageId={draft.savedMessageId} />}
+          {activeKey === "saved" && (
+            <SavedFrame
+              savedMessageId={draft.savedMessageId}
+              savedTextMasked={draft.savedTextMasked}
+              onReuse={handleReuse}
+              onStartNew={handleStartNew}
+            />
+          )}
         </div>
       </div>
     </div>
