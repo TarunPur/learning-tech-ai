@@ -220,7 +220,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var store = window.NOD ? NOD.store : {load:function(){return{};},save:function(){},get:function(_,f){return f;}};
-  if(window.NOD){ var _prev=NOD.store.load(); var _hist=Array.isArray(_prev.history)?_prev.history:[]; NOD.store.clear(); NOD.store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,reuseSeed:'',history:_hist}); }
+  if(window.NOD){ var _prev=NOD.store.load(); var _hist=Array.isArray(_prev.history)?_prev.history:[]; NOD.store.clear(); NOD.store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,reuseSeed:'',checkCount:0,lastFixWhy:'',history:_hist}); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
   /* Privacy (Decision 9): the recipient's real name stays device-local (localStorage
      is display-only, never a network payload here); the only "processing" boundary in
@@ -255,7 +255,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
      everything derived from it before saving the new value. Same-value re-commits
      preserve downstream work. history (past saved artifacts) is never wiped. */
   function resetFor(frameKey){
-    var draft={ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:''};
+    var draft={ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',checkCount:0,lastFixWhy:''};
     if(frameKey==='situation'){ draft.who=''; draft.ask=''; draft.ctx=''; draft.path='own'; return draft; }
     if(frameKey==='details') return draft;       // keep scenario + path; reset the draft + its result
     if(frameKey==='choose') return draft;         // a different path means a different working draft
@@ -272,7 +272,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
   /* Prototype check outcome → honest label. The prototype only ran the heuristic,
      so it never claims the full expert standard; the blue signal is preserved for
      the real evaluator (v1PRD §16, deferred to build). */
-  function fbLabel(o){ return o==='tightened'?'one line tightened':(o==='kept'?'you kept your wording':'no obvious issues'); }
+  function fbLabel(o){ return o==='tightened'?'one line tightened':(o==='kept'?'you kept your wording':(o==='nod-rewrote'?'NOD wrote a tighter version':'no obvious issues')); }
 
   /* ---- left: recap of the single previous frame ---- */
   function recapOf(key){
@@ -281,7 +281,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     if(key==='details'){ var ex=''; if(s.ctx)ex+='<b>Context</b>'+esc(s.ctx); if(s.ask)ex+='<b'+(s.ctx?' style="margin-top:14px"':'')+'>Asking for</b>'+esc(s.ask); return {label:'Your details', value:s.who||'—', extra:ex}; }
     if(key==='choose') return {label:'How you’re starting', value:s.path==='nod'?'Reacting to a NOD draft':'Writing my own version', extra:''};
     if(key==='draft'){ var pk; if(s.path==='nod'){ pk='You spotted the weak line'; } else { pk=(s.ownText||'').replace(/\s+/g,' ').trim()||'Your first version'; if(pk.length>110) pk=pk.slice(0,110)+'…'; } return {label:'Your version', value:pk, extra:''}; }
-    if(key==='feedback'){ var o=s.fbOutcome; return {label:'Feedback', value:(o==='tightened'?'One line tightened':(o==='kept'?'Kept my wording':'No changes needed')), extra:'<b>Status</b>Prototype check'}; }
+    if(key==='feedback'){ var o=s.fbOutcome; return {label:'Feedback', value:(o==='tightened'?'One line tightened':(o==='kept'?'Kept my wording':(o==='nod-rewrote'?'NOD tightened it':'No changes needed'))), extra:'<b>Status</b>Prototype check'}; }
     return {label:'',value:'',extra:''};
   }
   function renderPrev(){
@@ -376,24 +376,27 @@ button,input,textarea{font-family:inherit;color:inherit;}
         +'<div class="bi"><span class="bk">Your ask</span><span class="bv">'+esc(s.ask||'—')+'</span></div>';
       var reuseNote=(!s.ownText && s.reuseSeed)?'<p class="eg" style="margin:0 0 16px">Starting from a saved message — adapt it for this one.</p>':'';
       /* Help fades (Decision 11 / Chunk 5): once the user has finished a message, later
-         attempts get lighter scaffolding — trimmed lede, a plain placeholder, no coaxing
-         hint — with a quiet "Stuck?" toggle that hands the starting moves back on demand.
-         The task brief stays. No counters, streaks, or progress UI. */
+         attempts get lighter scaffolding. When re-editing after a check (checkCount>0), we
+         also show the one thing to tighten and switch the copy to a "tighten & recheck" cue. */
       var later=Array.isArray(s.history)&&s.history.length>0;
+      var reediting=(s.checkCount||0)>0;
+      var light=later||reediting;
       var recipe='Start with “Hi …”, say why you’re really reaching out, then make one clear ask.';
-      var lede=later?'Your details are right here — take it from the top, in your own words.':'Rough is fine — your situation’s right here. When you’re ready, I’ll check it.';
-      var ph=later?'Write your message…':recipe;
-      var hint=later?'':'<span class="hint" id="ownHint">Write a few lines, then check it.</span>';
-      var stuck=later?'<div style="margin-top:16px"><button class="linkbtn" id="stuckToggle" type="button">Stuck? Show me the starting moves</button><p class="eg" id="stuckHelp" style="display:none;margin-top:8px">Try: open with “Hi …”, then the real reason you’re reaching out, then end with one clear ask.</p></div>':'';
-      colActive.innerHTML='<h2 class="f-title">Write your first version — <em>in your words.</em></h2><p class="f-lede">'+lede+'</p>'
-        +'<div class="brief">'+briefRows+'</div>'+reuseNote
+      var title=reediting?'Tighten your version — <em>in your words.</em>':'Write your first version — <em>in your words.</em>';
+      var lede=reediting?'Tighten it in your own words, then check it against the standard again.':(later?'Your details are right here — take it from the top, in your own words.':'Rough is fine — your situation’s right here. When you’re ready, I’ll check it.');
+      var ph=light?'Write your message…':recipe;
+      var hint=light?'':'<span class="hint" id="ownHint">Write a few lines, then check it.</span>';
+      var stuck=(later&&!reediting)?'<div style="margin-top:16px"><button class="linkbtn" id="stuckToggle" type="button">Stuck? Show me the starting moves</button><p class="eg" id="stuckHelp" style="display:none;margin-top:8px">Try: open with “Hi …”, then the real reason you’re reaching out, then end with one clear ask.</p></div>':'';
+      var fixNote=(reediting&&s.lastFixWhy)?'<div class="reaction show" style="margin:0 0 20px"><span class="rk"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2.6a7.4 7.4 0 1 0 7.4 7.4M13.5 4.5l-4 5.5-2.2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>One thing to tighten</span></span><p>'+esc(s.lastFixWhy)+'</p></div>':'';
+      colActive.innerHTML='<h2 class="f-title">'+title+'</h2><p class="f-lede">'+lede+'</p>'
+        +'<div class="brief">'+briefRows+'</div>'+reuseNote+fixNote
         +'<div class="composer"><textarea id="composeText" rows="5" placeholder="'+ph+'"></textarea></div>'
         +'<div class="actions"><button class="btn" id="checkOwn" type="button" disabled>Check it against the standard <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+hint+'</div>'+stuck;
       var ta=document.getElementById('composeText'),cb=document.getElementById('checkOwn'),oh=document.getElementById('ownHint');
       if(s.ownText)ta.value=s.ownText; else if(s.reuseSeed)ta.value=s.reuseSeed;
       function sy(){ var ok=ta.value.trim()!==''; cb.disabled=!ok; if(oh)oh.style.display=ok?'none':''; } ta.addEventListener('input',sy); sy();
       var st=document.getElementById('stuckToggle'); if(st)st.addEventListener('click',function(){ var h=document.getElementById('stuckHelp'); if(h)h.style.display=''; ta.setAttribute('placeholder',recipe); st.style.display='none'; ta.focus(); });
-      cb.addEventListener('click',function(){ if(cb.disabled)return; commitFrame('draft',{ownText:ta.value.trim()}); advance(); });
+      cb.addEventListener('click',function(){ if(cb.disabled)return; commitFrame('draft',{ownText:ta.value.trim()}); store.save({checkCount:(store.get('checkCount',0)+1)}); advance(); });
     } else {
       var c=NOD.composeDraft(); var paras=[c.p1,c.p2,c.p3]; var nm=NOD.firstName(store.get('who',''));
       var fix=NOD.evaluateText(maskName(paras.join('\n\n'),nm)); if(fix){ fix.sentence=unmaskName(fix.sentence,nm); if(fix.tight)fix.tight=unmaskName(fix.tight,nm); } var weak=1;
@@ -430,16 +433,44 @@ button,input,textarea{font-family:inherit;color:inherit;}
     if(wc>=40&&wc<=125) return 'It’s short enough to take in at a glance, which is what gets a busy person to actually reply.';
     return 'You lead with your real reason instead of a throat-clearing opener — that’s what keeps a reader going.';
   }
+  /* NOD's takeover rewrite (owner's flow): after the user's two self-edits still miss, NOD
+     writes a better version FROM their intake — leads with their real reason, ends on one clear
+     ask, no soft opener. Prototype stand-in for the real generator (deferred to build). */
+  function betterVersion(s){
+    var name=NOD.firstName(s.who||'');
+    var ask=(s.ask||'').trim();
+    var ctx=(s.ctx||'').trim().replace(/[.\s]+$/,'');
+    var sc=NOD.scenario(s.scenario||'quiet');
+    var reason=ctx?(ctx.charAt(0).toLowerCase()+ctx.slice(1)):'I’ll keep this brief';
+    var askLine=((sc.draft&&sc.draft.ask)?sc.draft.ask:'Would {ask} work for you?').replace('{ask}', ask||'a few minutes');
+    return ['Hi '+name+' — '+reason+'.', askLine];
+  }
   function r_feedback(){
     var s=store.load(); var text=NOD.workingDraftText(); var nm=NOD.firstName(s.who||'');
     var fix=NOD.evaluateText(maskName(text,nm)); if(fix){ fix.sentence=unmaskName(fix.sentence,nm); if(fix.tight)fix.tight=unmaskName(fix.tight,nm); }
+    /* Coaching loop: on the own path the user may tighten and re-check up to twice; only after
+       the third check still finds an issue does NOD write it for them. checkCount is bumped by
+       the compose "Check" button and reset when the message identity changes. */
+    var checkCount=s.checkCount||0, draftIdx=ORDER.indexOf('draft'), ownLoop=fix&&s.path==='own';
+    store.save({lastFixWhy: fix?fix.why:''});
+    if(ownLoop && checkCount>=3){
+      var bv=betterVersion(s), bvText=bv.join('\n\n');
+      colActive.innerHTML='<h2 class="f-title">Here’s a tighter version — <em>built on your words.</em></h2>'
+        +'<p class="f-lede">You’ve taken a couple of passes. Using your situation, here’s a version that leads with your reason and lands one clear ask.</p>'
+        +'<div class="final">'+bv.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div>'
+        +'<div class="strength"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>The move to keep:</b> your real reason goes first, and the ask is one clear question.</span></div>'
+        +'<p class="proto">Prototype note: a lightweight stand-in rewrite — the full expert version arrives with the built product.</p>'
+        +'<div class="actions" style="margin-top:24px"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+      document.getElementById('saveMsg').addEventListener('click',function(){ var t=maskName(bvText,nm); var sc=NOD.scenario(s.scenario||'quiet'); var title=s.scenario==='custom'?(s.customText||sc.artTitle||'Your message'):(sc.artTitle||'Your message'); var entry={title:title,scenario:s.scenario||'quiet',peek:t.split('\n')[0],text:t,ask:s.ask||'',ts:Date.now(),when:'just now',path:s.path,unaided:false}; var hist=Array.isArray(s.history)?s.history.slice():[]; hist.unshift(entry); store.save({finalText:t,history:hist,feedbackDone:true,fbOutcome:'nod-rewrote'}); advance(); });
+      return;
+    }
     var paras=text.split(/\n\s*\n/).map(function(x){return x.trim();}).filter(Boolean); if(paras.length<=1)paras=text.split('\n').map(function(x){return x.trim();}).filter(Boolean); if(!paras.length)paras=[text];
     var fi=-1,minfo=null,html='';
     paras.forEach(function(p,i){ if(fix&&fi===-1){ var info=buildFlag(p,fix.sentence); if(info){ fi=i; minfo=info; html+='<p>'+esc(p.slice(0,info.start))+'<span class="flag" id="flag">'+esc(p.slice(info.start,info.end))+'</span>'+esc(p.slice(info.end))+'</p>'; return; } } html+='<p>'+esc(p)+'</p>'; });
     var head=fix?({'soft-opener':['One line to <em>make clearer.</em>',"It’s close — there’s one soft opener worth cutting."],'no-ask':['Make the ask <em>unmissable.</em>',"It’s close — a busy reader needs one obvious thing to do."],'too-long':['Tighten it <em>right down.</em>',"It’s close — the shorter it is, the likelier a reply."]}[fix.kind]||['One line to <em>make clearer.</em>','']):['It’s ready — <em>here’s what’s working.</em>',cleanJudgement(text)];
     colActive.innerHTML='<h2 class="f-title">'+head[0]+'</h2><p class="f-lede">'+esc(head[1])+'</p>'
       +'<div class="msgbox" id="msgbox">'+html+'</div>'
-      +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn'+(fix.tight?' ghost':'')+'" id="keepMine" type="button">'+(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it')+'</button></div></div>'):'')
+      +(fix?('<div class="fix" id="fixbox"><p class="k">The one thing to tighten</p><div class="row"><p class="rlabel">Your line</p><p class="quote">“'+esc(fix.sentence)+'”</p></div><div class="row"><p class="rlabel">Why it’s worth changing</p><p class="why">'+esc(fix.why)+'</p></div>'+(fix.tight?('<div class="row"><p class="rlabel">A tighter version</p><p class="suggest2">“'+esc(fix.tight)+'”</p></div>'):'')+'<div class="actions">'+(fix.tight?'<button class="btn" id="useEdit" type="button">Use this edit</button>':'')+'<button class="btn'+(fix.tight?' ghost':'')+'" id="keepMine" type="button">'+(s.path==='own'?'Let me tighten it':(fix.tight?'Keep mine, I’ll edit':'Got it — I’ll tighten it'))+'</button></div></div>'):'')
       +'<div class="strength"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Already working:</b> you brought a real, specific situation — that’s what makes this yours, not a template.</span></div>'
       +'<p class="proto">Prototype note: this check is a lightweight stand-in that looks at your own words — the full expert check arrives with the built product.</p>'
       +'<div id="readyWrap" style="display:'+(fix?'none':'block')+';margin-top:24px"><span class="readybadge"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l3.2 3L17 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="readyBadgeText">Prototype check · looks ready</span></span><div class="actions"><button class="btn" id="saveMsg" type="button">Save this message <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>';
@@ -447,7 +478,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
     function finishText(){ return [].slice.call(msgbox.querySelectorAll('p')).map(function(p){return p.textContent.trim();}).filter(Boolean).join('\n\n'); }
     function toReady(outcome){ if(outcome)fbOutcome=outcome; var fb=document.getElementById('fixbox'); if(fb)fb.style.display='none'; var bt=document.getElementById('readyBadgeText'); if(bt)bt.textContent='Prototype check · '+fbLabel(fbOutcome); document.getElementById('readyWrap').style.display='block'; }
     var ue=document.getElementById('useEdit'); if(ue)ue.addEventListener('click',function(){ if(fi>=0&&minfo&&fix.tight){ var p=msgbox.querySelectorAll('p')[fi]; var o=paras[fi]; p.innerHTML=esc(o.slice(0,minfo.start))+'<span class="flag cleared">'+esc(fix.tight)+'</span>'+esc(o.slice(minfo.end)); } toReady('tightened'); });
-    var km=document.getElementById('keepMine'); if(km)km.addEventListener('click',function(){ var fl=document.getElementById('flag'); if(fl)fl.className=''; toReady('kept'); });
+    var km=document.getElementById('keepMine'); if(km)km.addEventListener('click',function(){ if(ownLoop){ go(draftIdx); return; } var fl=document.getElementById('flag'); if(fl)fl.className=''; toReady('kept'); });
     /* Privacy (Chunk 2 / FAQ): the SAVED artifact is masked. finalText + history text/peek
        persist with [name], never the real recipient; the real name is filled back in only by
        the copy-to-send action (r_done). The live `who` stays plaintext for the active draft
@@ -472,18 +503,18 @@ button,input,textarea{font-family:inherit;color:inherit;}
     var cueHtml='<div class="nextcue"><p>'+esc(cue[0])+'</p><button class="nc-link" type="button" id="nextSame">'+esc(cue[1])+' '+arrow+'</button></div>';
     colActive.innerHTML='<span class="readybadge">'+tick+'Prototype check · saved</span>'
       +'<h2 class="f-title" style="margin-top:10px">It’s ready — <em>and it’s yours to keep.</em></h2>'
-      +'<p class="f-lede">Copy it and send it your way. '+(s.path==='own'?'You wrote this one.':'You started from a NOD draft — and sharpened it.')+'</p>'
+      +'<p class="f-lede">Copy it and send it your way. '+(s.fbOutcome==='nod-rewrote'?'NOD tightened this one after your passes — the moves are yours to keep.':(s.path==='own'?'You wrote this one.':'You started from a NOD draft — and sharpened it.'))+'</p>'
       +'<div class="final">'+paras.map(function(p){return '<p>'+esc(p.trim())+'</p>';}).join('')+'</div>'
       +'<div class="actions"><button class="btn" id="copyMsg" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7V4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5v7A1.5 1.5 0 0 1 15.5 13H13M4.5 7h7A1.5 1.5 0 0 1 13 8.5v7A1.5 1.5 0 0 1 11.5 17h-7A1.5 1.5 0 0 1 3 15.5v-7A1.5 1.5 0 0 1 4.5 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Copy message</button><span class="copied" id="copied">Copied — with your real names filled in.</span><button class="btn ghost" id="again" type="button">Start another →</button></div>'
       +savedList+cueHtml;
     /* Copy-to-send is the ONLY place the real recipient name is restored (FAQ contract). */
     document.getElementById('copyMsg').addEventListener('click',function(){ var out=unmaskName(t,NOD.firstName(s.who||'')); if(navigator.clipboard)navigator.clipboard.writeText(out).catch(function(){}); var c=document.getElementById('copied'); c.classList.add('show'); setTimeout(function(){c.classList.remove('show');},2400); });
     // Start another / Reuse begin a fresh attempt WITHOUT wiping saved history.
-    function freshAttempt(seed){ store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',reuseSeed:seed||''}); go(0); }
+    function freshAttempt(seed){ store.save({scenario:'',path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',reuseSeed:seed||'',checkCount:0,lastFixWhy:''}); go(0); }
     document.getElementById('again').addEventListener('click',function(){ freshAttempt(''); });
     [].slice.call(colActive.querySelectorAll('.sreuse')).forEach(function(b){ b.addEventListener('click',function(){ var e=hist[parseInt(b.dataset.i,10)]; freshAttempt(e?e.text:''); }); });
     // outcome-tied next-use cue: another one in the SAME situation, write-your-own, help thinner
-    var ns=document.getElementById('nextSame'); if(ns)ns.addEventListener('click',function(){ store.save({path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',reuseSeed:''}); go(1); });
+    var ns=document.getElementById('nextSame'); if(ns)ns.addEventListener('click',function(){ store.save({path:'own',tone:'warm',who:'',ask:'',ctx:'',ownText:'',flawPick:null,finalText:'',feedbackDone:false,fbOutcome:'',reuseSeed:'',checkCount:0,lastFixWhy:''}); go(1); });
   }
 
   renderAll(); cols.classList.add('in');
