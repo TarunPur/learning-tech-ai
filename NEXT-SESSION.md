@@ -1,6 +1,47 @@
 # NEXT SESSION — resume here
 
-## ★ LATEST HANDOFF — workspace UI refinement (2026-08-22)
+## ★ LATEST HANDOFF — 9-chunk UX/UI review pass DONE + committed to local (2026-08-21)
+
+**Read this block first; the older handoffs below are kept for context.** An external agent produced a **9-chunk UX/UI review of the two-frame workspace** (`design/mockups/workspace.html`). That review is saved as **`Complete UX-UI Review.md`** (repo root) and was worked **in full, in the review's recommended order (1, 2, 5, 7, 8, 3, 4, 6, 9)**, one commit per chunk, all **committed to `feedback-pass-20aug` (local only, NOT pushed)**.
+
+### What shipped this session (all on `feedback-pass-20aug`, local)
+| Chunk | What | Commit |
+|---|---|---|
+| 1 | Task brief (Situation/Recipient/Context/Ask) visible in the write frame | `f7ce5b3`+`a4f7966` |
+| 2 | Feedback honesty: heuristic no longer claims a full expert pass; recap derived from real outcome (No changes needed / One line tightened / Kept my wording); blue signal kept | `2ab686f` |
+| 5 | Edit resets contradictory downstream state (`commitFrame`/`resetFor`) | `748c68b` |
+| 7 | Responsive: recap-above-active on ≤1160px, 100dvh, overflow guards | `2aa7b1d` |
+| 8 | Header hairline restored; desktop grid contained (stage 1260px, active `minmax(0,700px)`) | `ab34ef9` |
+| 3 | Saved history list + Reuse (history now persists across loads) | `6d2a524` |
+| 4 | One outcome-tied next-use cue (same situation, write-your-own) | `96a3eee` |
+| 6 | Privacy: name masked at the evaluator boundary, unmasked for display; real name device-local | `d8fcecc` |
+| 9 | Visual polish (shadows→design.md tokens, Edit hit area, textarea 168px) | `3473f76` |
+
+Docs: `2b50536` (review doc) + `5075c67` (build log). **Working tree clean** except the untracked source briefs (leave untracked). **Nothing pushed.**
+
+### ⚠️ Verification caveats (do not assume 100% device-tested)
+- **Chunk 7 mobile is CSS/CSSOM-verified only** — the Chrome extension can't render < ~1456px. **Real-device mobile pass is still owed.**
+- **Chunk 2 "tightened"/"kept" recap branches and Chunk 5 step-8** (edit-details-only resets draft) are **code-verified**, not each clicked. Low risk; walk them to close out.
+- **Behavior change:** saved history now **persists across page reloads** (needed for Chunk 3). For clean demos, consider a quiet "clear" affordance — not yet built.
+
+### 🅿️ Parked / deferred to build (owner's calls)
+1. **Real evaluator** — build **after `implementation.md` is ready** (owner's explicit sequencing). Length-math in code + one anchored Claude call to replace `flow.js` `evaluateText()`; then run the deferred **rubric discrimination test** (PRD §16/§24). Chunk 2 only made the *prototype* honest; Chunk 6 masking is prototype-boundary only — **server-side masking is part of the same build.**
+2. **Intake trim decision** — whether to shorten the write-your-own intake (recipient/ask/why-now). **Kept as-is for now; revisit when the evaluator spec shows which fields the rubric actually consumes.**
+3. **Finish-line "skill you keep" takeaway** — was built then **reverted** this session (its clean-pass branch fabricated praise on the fake evaluator). Bring it back **wired to the real evaluator's finding**, honest across adopted/kept/clean branches. Design is in the session thread + `journey.md §6`.
+
+### Next thing to pick up
+1. (Owner test pass on this URL if wanted.) 2. **Real-device mobile** verification. 3. **`implementation.md` / ERD** → then the **real evaluator** (+ discrimination test) → then bring back the takeaway. Do not start the evaluator before `implementation.md`.
+
+### Run it (local only, ephemeral — restart the server)
+```
+cd design/mockups && python3 -m http.server 8734
+http://localhost:8734/landing-editorial-blue-v3.html?v=<cache-buster>
+```
+Continuous flow: landing → "Start with your first task" → workspace → saved. Append `?v=` when re-testing (stale-cache caveat).
+
+---
+
+## ★ PRIOR HANDOFF — workspace UI refinement (2026-08-22)
 
 **First action for the next agent:** before inspecting or changing the workspace UI, load the project's design skill — `CLAUDE.md` designates **impeccable** (it ran this session's critique and is the default for design work); a **frontend-design** skill, if present, is complementary. Ground every change in `design.md` / `journey.md`, not generic component habits. Do not begin with generic component changes.
 
