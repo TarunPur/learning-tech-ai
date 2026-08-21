@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
+/* NOD design tokens — "The Calm Correspondent". Ported 1:1 from
+   design.md's frontmatter + design/mockups/workspace.html's :root.
+   Do not invent new colors/spacing (implementation.md Phase 3). */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f6f5f1;
+  --card: #ffffff;
+  --tint: #eeede6;
+  --blue-paper: rgba(47, 111, 224, 0.05);
+  --ink: #1a1a1a;
+  --ink-2: #3a3a3a;
+  --ink-soft: #5f5f58;
+  --ink-faint: #6b6b61;
+  --line: #e4e3dc;
+  --line-2: #d8d7cf;
+  --blue: #2f6fe0;
+  --blue-deep: #1e52b0;
+  --blue-tint: rgba(47, 111, 224, 0.08);
+  --blue-tint-2: rgba(47, 111, 224, 0.16);
+  --sh-card: 0 1px 2px rgba(28, 40, 72, 0.05), 0 14px 30px -18px rgba(28, 40, 72, 0.2);
+  --sh-lift: 0 6px 16px -8px rgba(30, 50, 90, 0.14), 0 26px 50px -24px rgba(30, 50, 90, 0.26);
+  --sh-logo: 0 8px 18px -7px rgba(47, 111, 224, 0.55);
 }
 
+/* Tailwind v4 is CSS-first (@theme, no tailwind.config.ts theme.extend) —
+   implementation.md's literal "map into tailwind.config.ts" instruction
+   predates this project's Tailwind version; @theme is the current
+   equivalent and carries the same tokens through to utility classes. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--bg);
+  --color-card: var(--card);
+  --color-tint: var(--tint);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-blue: var(--blue);
+  --color-blue-deep: var(--blue-deep);
+  --color-blue-tint: var(--blue-tint);
+  --color-blue-tint-2: var(--blue-tint-2);
+
+  --shadow-card: var(--sh-card);
+  --shadow-lift: var(--sh-lift);
+  --shadow-logo: var(--sh-logo);
+
+  --radius-sharp: 0px;
+  --radius-logo: 15px;
+  --radius-pill: 9999px;
+  --radius-focus: 6px;
+
+  --font-serif: var(--font-spectral), Georgia, serif;
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  caret-color: var(--blue);
+}
+
+::selection {
+  background: var(--blue-tint-2);
+  color: var(--blue-deep);
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--blue);
+  outline-offset: 3px;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* ---- base primitives (ported 1:1 from design/mockups/workspace.html) ---- */
+
+/* Brand header: pinned application chrome, never resizes/relocates/animates. */
+.nod-ghead {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 78px;
+  padding: 16px 0 14px;
+}
+.nod-ghead .nod-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--blue);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--sh-logo);
+  flex: none;
+}
+.nod-ghead .nod-gtext {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.nod-ghead .nod-gname {
+  display: block;
+  font-weight: 800;
+  font-size: 29px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.nod-ghead .nod-gtag {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--blue-deep);
+  margin-top: 6px;
+  line-height: 1;
+}
+.nod-ghair {
+  display: block;
+  height: 1px;
+  background: var(--line);
+  margin: 20px 0 0;
+}
+@media (max-width: 560px) {
+  .nod-ghead {
+    gap: 13px;
+  }
+  .nod-ghead .nod-gtag {
+    white-space: normal;
+  }
+}
+
+/* Pill button — the sole primary CTA shape. `.ghost` is transparent/ink-soft. */
+.nod-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 28px;
+  min-height: 44px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -10px rgba(47, 111, 224, 0.6);
+  transition: background 0.2s, transform 0.12s, opacity 0.2s;
+}
+.nod-btn:hover {
+  background: var(--blue-deep);
+}
+.nod-btn:active {
+  transform: scale(0.98);
+}
+.nod-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.nod-btn svg {
+  transition: transform 0.24s;
+}
+.nod-btn:hover:not(:disabled) svg {
+  transform: translateX(3px);
+}
+.nod-btn.nod-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  box-shadow: none;
+  padding: 14px 4px;
+}
+.nod-btn.nod-ghost:hover {
+  color: var(--blue);
+  background: transparent;
+}
+
+/* Square-cornered card, flat-but-floating (Sharp-Card rule). Interactive
+   cards (rendered as <button>) lift + border-blue on hover/focus. */
+.nod-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-card);
+}
+button.nod-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.26s, border-color 0.22s;
+}
+button.nod-card:hover,
+button.nod-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-lift);
+  border-color: var(--blue);
+  outline: none;
+}
+
+/* Field: bottom-border only, no box. Matches workspace.html's compose/detail
+   inputs (a separate pill Button is the field's action, not an inline arrow —
+   the workspace prototype, not the earlier standalone mockups, is canonical). */
+.nod-field {
+  margin-bottom: 30px;
+}
+.nod-field label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 11px;
+}
+.nod-field .nod-ipt {
+  border-bottom: 1.5px solid var(--line-2);
+  transition: border-color 0.2s;
+}
+.nod-field .nod-ipt:focus-within {
+  border-color: var(--blue);
+}
+.nod-field input,
+.nod-field textarea {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 17px;
+  color: var(--ink);
+  padding: 9px 2px;
+  line-height: 1.5;
+  resize: none;
+}
+.nod-field input:focus,
+.nod-field textarea:focus {
+  outline: none;
+}
+.nod-field input::placeholder,
+.nod-field textarea::placeholder {
+  color: var(--ink-faint);
+  font-size: 15.5px;
+}
+
+/* Chip — square, 1px-bordered; selected = blue border + tint + blue-deep text. */
+.nod-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  padding: 0 16px;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+.nod-chip:hover {
+  border-color: var(--blue);
+  color: var(--blue-deep);
+  background: var(--blue-tint);
+}
+.nod-chip[aria-pressed="true"] {
+  border-color: var(--blue);
+  color: var(--blue-deep);
+  background: var(--blue-tint);
 }
