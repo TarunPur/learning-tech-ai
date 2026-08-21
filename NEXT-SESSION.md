@@ -1,19 +1,74 @@
 # NEXT SESSION — resume here
 
+## ★ LATEST HANDOFF — workspace UI refinement (2026-08-22)
+
+**First action for the next agent:** before inspecting or changing the workspace UI, load the project's design skill — `CLAUDE.md` designates **impeccable** (it ran this session's critique and is the default for design work); a **frontend-design** skill, if present, is complementary. Ground every change in `design.md` / `journey.md`, not generic component habits. Do not begin with generic component changes.
+
+### The owner’s current design direction
+
+The per-page app flow is now being presented as a **single persistent two-frame workspace**. The latest iterations are in `design/mockups/workspace.html` and should be viewed through the continuous entry URL:
+
+```text
+cd design/mockups && python3 -m http.server 8734
+http://localhost:8734/landing-editorial-blue-v3.html?v=<cache-buster>
+```
+
+The interaction model is locked for the current design pass:
+
+```text
+Global, stable NOD brand lockup above the workspace
+────────────────────────────────────────────────────
+LEFT: the single immediately previous completed frame (dimmed but editable)
+RIGHT: the only active frame (where the user acts now)
+```
+
+- This is the *spatial result* of a Tinder/Bumble-style left swipe, **not** a literal swipe gesture. Completing the active frame moves it left into the recap position; the old recap disappears; the next active frame arrives on the right.
+- Show **only one** prior frame. Never turn this into a history stack, stepper, checklist, “Step 2 of 5,” percentage, score, or course-like workflow.
+- Clicking `Edit` on the recap makes it the active right-hand frame again, preserves its values, and resets/recomputes the downstream active state so contradictory states cannot remain.
+- The NOD logo/name/tagline are persistent application chrome. They must not resize, relocate, hide, or animate between frames. Treat the brand lockup as a reusable fixed component, not page content.
+- The workspace is desktop-first, but mobile must stack cleanly: active work is dominant; the editable recap stays immediately above it. Never squeeze the two desktop columns side-by-side on narrow screens.
+
+### Current visual direction and non-negotiables
+
+- **Calm Correspondent** system remains authoritative: warm paper `#F6F5F1`, ink, restrained signal blue, Spectral only for editorial statements, Hanken Grotesk for functional UI, square cards, no glass / bevel / gradients / green or red grading cues.
+- The latest UI is closer but not final. The earlier three-column version was rejected because the brand column was underused and the work was pushed too far right. Do not reintroduce it.
+- Avoid “card inside card” composition. The active right frame should be a clear work surface, not a giant white panel containing multiple nested white panels.
+- The left recap should be a larger, readable warm-tinted snapshot of the prior decision with a blue `Edit` action. It must look secondary, **not disabled**; do not lower text contrast via opacity.
+- The choose-path frame: user-written first version is the visual default; `Start with a NOD draft` stays a quiet fallback link below it. Do not turn it back into equal buttons/cards. Exact intent: user effort first; NOD-drafts-and-tap-the-weak-line only for the genuinely stuck user.
+- Intake must be conversational and reduce cognitive load. The user has three short inputs: recipient (required), one ask (required), why-now/context (optional). Reveal the questions progressively, one meaningful prompt at a time. Inputs must make the requested information unambiguous; a prior test answer “Tarun went quiet” exposed that `Who are you writing to?` was too easy to misread as task context.
+- Privacy: mask real identifiers before persistence/model processing, while allowing the user’s local UI to show their original name. The reassurance must be technically truthful and calm.
+
+### Latest visual QA findings (not abstract theory)
+
+1. The **fixed global header** is now the correct direction: larger readable NOD mark + wordmark + tagline, consistent location above both columns, subtle hairline below. Preserve it across every workspace state.
+2. The earlier oversized blank outer panel around the active area was wrong; it was removed. Keep avoiding empty white containers as fake structure.
+3. The current recap/active composition works better, but copy/data mapping must be precise: recipient, situation, ask, and context must never be conflated. Example: `Tarun` = recipient; `went quiet after our demo` = context; `15-minute call` = ask.
+4. The primary choice card should be fully clickable (not only a small arrow), with keyboard focus and a restrained hover lift. The fallback is text/link treatment.
+5. CTA placement must remain close to the final relevant field; do not make users hunt through large vertical empty space for `Continue`.
+6. BeUniq was tried as an automated UI audit. Treat it as a linting signal, **not a design director**:
+   - valid: remove landing-page backdrop-blur/glass nav; switch `100vh` workspace sizing to dynamic viewport-safe `100dvh` with fallback; audit genuinely excessive shadows/glows; prevent low-contrast helper text.
+   - reject: making one situation card “featured,” removing equal recognition choices, banning all font/color mixing, replacing warm paper with stark SaaS contrast, removing NOD’s intentional tagline punctuation, or claiming every current transition is `transition: all` (current relevant workspace uses property-specific transitions).
+   - only the NOD logo may have a blue glow. Cards use neutral ambient shadow, never glass or glow.
+
+### How to work with the owner in this design pass
+
+- The owner is highly sensitive to generic AI UI. Do not bring unvetted design references, generic steppers, procurement UI, or “feature-card” advice and present it as a fit. Check visual quality, interaction model, desktop relevance, and NOD fit before sharing a reference.
+- Think as a senior product designer for a user who is already struggling with real work. Every decision must reduce “what do I do next?” without turning NOD into a course or a get-it-done generator.
+- Be candid. If an idea is poor or conflicts with `v1PRD.md`, `PRODUCT.md`, `design.md`, or `journey.md`, explain the concrete conflict rather than agreeing loosely.
+- Before drafting a new high-consequence interaction concept, ask concise free-form clarification questions when user intent materially affects the result. Do **not** use multiple-choice question tools; the owner dislikes them.
+- Make one change-set at a time; show exactly what elements were inspected. Do not broad redesign without consent. Never push or release without explicit permission.
+
 > Read this whole file first. **Last updated:** 2026-08-22 (early) — the design direction has EVOLVED past the page-by-page flow into a **single-session two-frame WORKSPACE** (`design/mockups/workspace.html`), now the active direction. Built, critiqued (/impeccable, 28/40), UX-fixed, and merged to `feedback-pass-20aug`.
 > **✅ Fork decided (get-better coach) · ✅ journey.md/design.md · ✅ page-flow mockups + polish · ✅ NEW two-frame workspace built + critiqued + fixed + merged · ✅ landing wired into the workspace (continuous landing→workspace→saved).** Next: owner test pass on the continuous flow, formally retire the page-flow + rework journey.md/design.md to the workspace model, real-device mobile, then ERD → build. **See "★ CURRENT FOCUS — the two-frame workspace" below.**
 
 Project: **"Learning Tech & AI" v1**, brand **NOD**, at `~/Desktop/Learning Tech AI` (private GitHub `TarunPur/learning-tech-ai`). **The branch is pushed and in sync with `origin`.** Current tagline: **"Your coach against the AI slop — so the skill sticks."**
 
-## ★ CURRENT FOCUS — the two-frame workspace (read this first)
-The owner drove a redesign away from full-page-per-step screens into **one persistent workspace**, `design/mockups/workspace.html` (self-contained; reuses `shared/flow.js`). This is where the active design work is.
-- **Model:** a fixed top-left **Brand Lockup** header (persistent chrome, never animates) + **two columns** — LEFT = a dimmed, editable recap of the *single* previous frame ("what I just chose"); RIGHT = the active frame on paper ("what I do now"). Completing a frame slides it left; the next opens on the right (Tinder-style). Square-cornered Calm Correspondent; no steppers/scores/green.
-- **Flow inside it:** situation → details (progressive one-field-at-a-time disclosure) → choose (write-your-own default vs NOD-draft link) → [own composer] / [NOD draft + tap-the-weak-line] → feedback → saved. Both paths browser-verified.
-- **Serve + view the CONTINUOUS flow from ONE url:** `cd design/mockups && python3 -m http.server 8734` → open the **landing** `http://localhost:8734/landing-editorial-blue-v3.html` → its "Start with your first task" CTA now opens `workspace.html` → situation → … → **saved**. So landing → workspace → saved is one continuous journey. **Always share the landing URL** for review (append `?v=x` when re-testing; **desktop-only — Chrome tool can't render <~1456px, mobile is CSSOM-only**).
-- **/impeccable critique done (28/40 "Good").** UX fixes applied + merged (commit `20c7ab3`): visible compose box (was invisible), one consistent message surface, tappable NOD-draft rows, "one question at a time" cue, better vertical balance. Full critique log is in the plan file `~/.claude/plans/replicated-imagining-cerf.md`.
-- **✅ Landing → workspace WIRED (2026-08-22):** all 5 landing CTAs now `href="workspace.html"` (was `recognition-editorial-blue-v3.html`). This effectively makes the **two-frame workspace the canonical app flow** — the landing no longer opens the page-flow screens.
-- **Open decisions (owner's call):** (1) formally retire the page-flow screens + rework `journey.md`/`design.md` to the workspace model (the wiring already leans this way). (2) real-device **mobile** pass (stacked order: active first, recap above). (3) the compose/feedback still use the **faked/heuristic** checker — the real evaluator is deferred to build.
-- **Relationship to the page-flow:** the earlier per-screen mockups (recognition/personalize/choose/compose/draft/feedback/artifact/return) still exist and work, but are now **unreferenced from the landing**; the workspace is the same journey + `flow.js` logic in a single-page presentation, and is now the lead direction.
+## Build state & git (this session — 2026-08-22)
+The two-frame workspace described above is built and **committed on `feedback-pass-20aug`** (pushed, in sync with `origin`). Facts the design brief above doesn't cover:
+- **/impeccable critique run → 28/40 "Good".** UX fixes applied + **merged (commit `20c7ab3`)**: visible compose box (was an invisible bottom-border textarea), one consistent "your message" surface across compose/feedback/saved, tappable bordered NOD-draft rows, a "one question at a time" cue on Personalize, better vertical balance. Full critique log: `~/.claude/plans/replicated-imagining-cerf.md`.
+- **Landing → workspace wired:** all 5 `landing-editorial-blue-v3.html` CTAs now `href="workspace.html"`, so the continuous journey is **landing → workspace → saved** from the landing URL. The old page-flow screens (recognition/personalize/choose/compose/draft/feedback/artifact/return) still exist and work but are now **unreferenced from the landing**; the workspace is the lead direction.
+- `workspace.html` **reuses `shared/flow.js`** (scenarios, `evaluateText`, state) — same journey logic, single-page presentation. The evaluator is still the **faked/heuristic** stand-in; the real one is deferred to build.
+- **Open (owner's call):** formally retire the page-flow + rework `journey.md`/`design.md` to the workspace model; real-device mobile pass; build the real evaluator.
 
 ## Branch state (read first)
 - **`main`** = pre-feedback baseline, commit `af99828`, **left untouched on purpose** for side-by-side comparison.
@@ -24,7 +79,7 @@ The owner drove a redesign away from full-page-per-step screens into **one persi
 ## Hosted designs (LOCAL ONLY — ephemeral; you must restart the server)
 There is **no deployed URL** — the "hosted" designs are a local static server that does **not** persist across sessions.
 - **Run it:** `cd design/mockups && python3 -m http.server 8734`
-- **New build (this branch), entry point:** `http://localhost:8734/landing-editorial-blue-v3.html` → click through the whole flow (landing → recognition → personalize → draft → feedback → artifact → return/compose).
+- **Entry point (continuous flow):** `http://localhost:8734/landing-editorial-blue-v3.html` → "Start with your first task" now opens `workspace.html` → situation → details → choose → draft → feedback → **saved** (landing → workspace → saved, one URL). *(The old landing → recognition → personalize → … page-flow screens still exist, but the landing no longer links to them.)*
 - **Baseline for comparison:** check out `main` (or add a git worktree) and serve on a different port (e.g. 8735).
 - **⚠️ Cache caveat:** editing `shared/system.css` or `shared/flow.js` serves a **stale cached file** in the browser — append a `?v=<anything>` query to the page URL when re-testing (forces a fresh fetch of the HTML *and* revalidates flow.js), or hard-refresh.
 - **Chrome viewport limit:** the extension can't render below ~1456px → mobile is CSSOM-verified only.
