@@ -120,7 +120,7 @@ export function NodDraftFrame({ draft, loading, onGenerate, onProceed, onUnsure 
       </div>
 
       {!revealed && (
-        <button className="nod-secondary-path .nod-sp-link" type="button" onClick={() => reveal(-1, true)} style={{ border: 0, background: "transparent", fontSize: "13px", fontWeight: 600, color: "var(--ink-soft)", cursor: "pointer", padding: "6px 2px" }}>
+        <button className="nod-sp-link" type="button" onClick={() => reveal(-1, true)} style={{ border: 0, background: "transparent", fontSize: "13px", fontWeight: 600, color: "var(--ink-soft)", cursor: "pointer", padding: "6px 2px" }}>
           I&rsquo;m not sure — show me →
         </button>
       )}

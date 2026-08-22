@@ -116,15 +116,16 @@ function VoiceCard({ v, hidden }: { v: (typeof VOICES)[number]; hidden?: boolean
 
 export default function Home() {
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set([0]));
+  // UX-004: one answer open at a time (the mockup's own accordion script
+  // toggled a class per-item without closing siblings, contradicting its own
+  // comment "expand one answer at a time on click" — a Set here had the same
+  // gap, letting every answer accumulate open. A single nullable index makes
+  // "one open" structurally true instead of something callers have to
+  // remember to enforce.
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   function toggleFaq(i: number) {
-    setOpenFaqs((prev) => {
-      const next = new Set(prev);
-      if (next.has(i)) next.delete(i);
-      else next.add(i);
-      return next;
-    });
+    setOpenFaq((prev) => (prev === i ? null : i));
   }
 
   // Nav hairline-on-scroll + section reveal-on-enter + the ChatGPT transform-demo
@@ -456,7 +457,7 @@ export default function Home() {
             <div
               className="transform-demo rise d2"
               role="img"
-              aria-label="A live demo you can watch: your vague ask 'Let me know your thoughts' is checked against the standard, replaced with a clear one 'Would Thursday at 4 work for a quick call?', and you learn to write it yourself next time."
+              aria-label="A live demo you can watch: your vague ask 'Let me know your thoughts' is checked against the standard, replaced with a clear one 'Would Thursday at 4 work for a quick call?', and you can write it yourself next time."
             >
               <div className="demo-card" id="demoCard" aria-hidden="true">
                 <span className="demo-ctx" id="demoCtx">Your draft · a prospect who went quiet</span>
@@ -602,7 +603,7 @@ export default function Home() {
             </div>
             <div className="faq-list rise">
               {FAQS.map((item, i) => {
-                const open = openFaqs.has(i);
+                const open = openFaq === i;
                 return (
                   <div className={open ? "faq-item open" : "faq-item"} key={item.q}>
                     <button className="faq-q" type="button" aria-expanded={open} onClick={() => toggleFaq(i)}>
