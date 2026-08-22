@@ -1,6 +1,6 @@
 # Rubric discrimination validation
 
-Run: 2026-08-21T23:53:23.197Z
+Run: 2026-08-22T05:30:39.687Z
 Model: NOD_EVALUATOR_MODEL env (claude-opus-4-8 per owner amendment)
 
 ## Summary
@@ -22,10 +22,10 @@ Model: NOD_EVALUATOR_MODEL env (claude-opus-4-8 per owner amendment)
 | quiet-good-1 | quiet | good | true | ✅ | — |
 | quiet-good-2 | quiet | good | true | ✅ | — |
 | quiet-good-3 | quiet | good | true | ✅ | fresh-reason-to-reply |
-| quiet-good-4 | quiet | good | true | ✅ | b5 |
+| quiet-good-4 | quiet | good | true | ✅ | — |
 | quiet-bad-1 | quiet | bad | false | ✅ | b1, b2 |
 | quiet-bad-2 | quiet | bad | false | ✅ | b1, b2 |
-| quiet-bad-3 | quiet | bad | false | ✅ | b1, b2 |
+| quiet-bad-3 | quiet | bad | false | ✅ | b1, b4 |
 | quiet-bad-4 | quiet | bad | false | ✅ | b1, b2 |
 | cold-good-1 | cold | good | true | ✅ | — |
 | cold-good-2 | cold | good | true | ✅ | — |
@@ -41,15 +41,15 @@ Model: NOD_EVALUATOR_MODEL env (claude-opus-4-8 per owner amendment)
 | meeting-good-4 | meeting | good | true | ✅ | — |
 | meeting-bad-1 | meeting | bad | false | ✅ | b1, b2 |
 | meeting-bad-2 | meeting | bad | false | ✅ | b1, b2 |
-| meeting-bad-3 | meeting | bad | false | ✅ | b1, b2 |
+| meeting-bad-3 | meeting | bad | false | ✅ | b2, b3 |
 | meeting-bad-4 | meeting | bad | false | ✅ | b1, b2 |
 | event-good-1 | event | good | true | ✅ | — |
 | event-good-2 | event | good | true | ✅ | — |
 | event-good-3 | event | good | true | ✅ | — |
 | event-good-4 | event | good | true | ✅ | — |
 | event-bad-1 | event | bad | false | ✅ | b1, b2 |
-| event-bad-2 | event | bad | false | ✅ | b1, b5 |
-| event-bad-3 | event | bad | false | ✅ | b1, b2 |
+| event-bad-2 | event | bad | false | ✅ | b1, b3 |
+| event-bad-3 | event | bad | false | ✅ | b1, b3 |
 | event-bad-4 | event | bad | false | ✅ | b1, b4 |
 
 ## Misses
