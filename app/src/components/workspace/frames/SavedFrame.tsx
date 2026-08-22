@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchMessages, type SavedMessage } from "@/lib/api-client";
 import { recallName } from "@/lib/name-map";
-import { unmaskName } from "@/lib/masking";
+import { unmask } from "@/lib/masking";
 
 function relativeDate(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -25,18 +25,27 @@ type SavedFrameProps = {
 
 export function SavedFrame({ savedMessageId, savedTextMasked, onReuse, onStartNew }: SavedFrameProps) {
   const [messages, setMessages] = useState<SavedMessage[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetchMessages()
-      .then(({ messages }) => setMessages(messages))
-      .catch(() => setMessages([]));
+      .then(({ messages }) => {
+        setMessages(messages);
+        setLoadError(false);
+      })
+      .catch(() => {
+        // REL-001: don't silently show an empty history — a failed fetch
+        // and a genuinely empty list must look different to the user.
+        setMessages(null);
+        setLoadError(true);
+      });
   }, [savedMessageId]);
 
   function handleCopy() {
     if (!savedMessageId) return;
-    const realName = recallName(savedMessageId);
-    const toCopy = realName ? unmaskName(savedTextMasked, realName) : savedTextMasked;
+    const tokens = recallName(savedMessageId);
+    const toCopy = tokens ? unmask(savedTextMasked, tokens) : savedTextMasked;
     navigator.clipboard.writeText(toCopy).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -79,7 +88,8 @@ export function SavedFrame({ savedMessageId, savedTextMasked, onReuse, onStartNe
         >
           Your saved messages
         </h3>
-        {messages === null && <p className="nod-eg">Loading…</p>}
+        {messages === null && !loadError && <p className="nod-eg">Loading…</p>}
+        {loadError && <p className="nod-eg">Couldn&rsquo;t load your saved messages — refresh to try again.</p>}
         {messages?.map((m) => (
           <div
             key={m.id}

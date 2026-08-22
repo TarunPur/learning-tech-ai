@@ -19,6 +19,8 @@ export type DraftState = {
   nodDraftSample: boolean;
   lastFixWhy: string;
   rewriteText: string;
+  rewriteCorePass: boolean;
+  rewriteTopMissWhy: string;
   savedMessageId: string | null;
   savedTextMasked: string;
   reuseSeed: string;
@@ -40,6 +42,8 @@ export const INITIAL_DRAFT: DraftState = {
   nodDraftSample: false,
   lastFixWhy: "",
   rewriteText: "",
+  rewriteCorePass: false,
+  rewriteTopMissWhy: "",
   savedMessageId: null,
   savedTextMasked: "",
   reuseSeed: "",
@@ -57,6 +61,8 @@ export function resetFor(frameKey: FrameKey): Partial<DraftState> {
     nodDraftSample: false,
     lastFixWhy: "",
     rewriteText: "",
+    rewriteCorePass: false,
+    rewriteTopMissWhy: "",
     savedMessageId: null,
     savedTextMasked: "",
   };
@@ -70,7 +76,15 @@ export function resetFor(frameKey: FrameKey): Partial<DraftState> {
     return clearedDraft;
   }
   if (frameKey === "draft") {
-    return { checkResult: null, lastFixWhy: "", rewriteText: "", savedMessageId: null, savedTextMasked: "" };
+    return {
+      checkResult: null,
+      lastFixWhy: "",
+      rewriteText: "",
+      rewriteCorePass: false,
+      rewriteTopMissWhy: "",
+      savedMessageId: null,
+      savedTextMasked: "",
+    };
   }
   return {};
 }

@@ -49,9 +49,15 @@ export function NodDraftFrame({ draft, loading, onGenerate, onProceed }: NodDraf
   }
 
   const lines = splitSentences(draft.nodDraftText);
+  const hasMiss = (draft.checkResult?.top_misses.length ?? 0) > 0;
   const weakQuote = draft.checkResult?.top_misses[0]?.quote ?? null;
+  // evaluate() verifies the model's quote is an exact (normalized) substring
+  // of the draft before it ever reaches the client (RUBRIC-001), so this can
+  // match on the full quote instead of an arbitrary 20-character slice
+  // (UX-001) — a real anchor, not a guess.
+  const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
   const weakIndex = weakQuote
-    ? lines.findIndex((l) => l.toLowerCase().includes(weakQuote.toLowerCase().slice(0, 20)))
+    ? lines.findIndex((l) => normalize(l).includes(normalize(weakQuote)))
     : -1;
   const revealed = tapped !== null || unsure;
 
@@ -122,9 +128,9 @@ export function NodDraftFrame({ draft, loading, onGenerate, onProceed }: NodDraf
           <p style={{ margin: "0 0 8px", fontWeight: 700, fontSize: "12.5px", color: "var(--blue-deep)" }}>
             {unsure
               ? "No problem — here's the one I'd watch."
-              : tapped === weakIndex
+              : tapped === weakIndex && weakIndex !== -1
                 ? "Nice — that's the one."
-                : weakIndex === -1
+                : !hasMiss
                   ? "Good eye."
                   : "Good instinct — but here's the one that loses them."}
           </p>

@@ -19,17 +19,25 @@ const arrow = (size = 19) => (
 
 type SituationFrameProps = {
   onPick: (scenario: ScenarioId, customText: string) => void;
+  loading?: boolean;
 };
 
-export function SituationFrame({ onPick }: SituationFrameProps) {
+export function SituationFrame({ onPick, loading = false }: SituationFrameProps) {
   const [showEscape, setShowEscape] = useState(false);
   const [text, setText] = useState("");
   const [warning, setWarning] = useState(false);
+  const [refused, setRefused] = useState(false);
 
   function handleContinue() {
     const trimmed = text.trim();
     if (!trimmed) return;
     const classification = classifyTask(trimmed);
+    if (classification.kind === "abuse") {
+      setRefused(true);
+      setWarning(false);
+      return;
+    }
+    setRefused(false);
     if (classification.kind === "outreach") {
       onPick("custom", trimmed);
       return;
@@ -51,6 +59,7 @@ export function SituationFrame({ onPick }: SituationFrameProps) {
           className="nod-primary-path"
           style={{ padding: "26px 28px", marginBottom: 12 }}
           onClick={() => onPick(s.id, "")}
+          disabled={loading}
         >
           <p className="nod-pp-k">Start here</p>
           <span className="nod-pp-row">
@@ -83,10 +92,21 @@ export function SituationFrame({ onPick }: SituationFrameProps) {
                   onChange={(e) => {
                     setText(e.target.value);
                     setWarning(false);
+                    setRefused(false);
                   }}
                 />
               </div>
             </div>
+            {refused && (
+              <div className="nod-recap" style={{ marginTop: 16 }}>
+                <p style={{ margin: "0 0 8px", fontWeight: 700, fontSize: "13.5px", color: "var(--ink-2)" }}>
+                  I can&rsquo;t help with that one
+                </p>
+                <p style={{ margin: 0, fontSize: 14, color: "var(--ink-soft)" }}>
+                  Try describing the outreach message you actually want to write.
+                </p>
+              </div>
+            )}
             {warning && (
               <div className="nod-recap" style={{ marginTop: 16 }}>
                 <p style={{ margin: "0 0 8px", fontWeight: 700, fontSize: "13.5px", color: "var(--ink-2)" }}>
@@ -96,13 +116,13 @@ export function SituationFrame({ onPick }: SituationFrameProps) {
                   NOD coaches short outreach — emails, follow-ups, intros — not documents like proposals
                   or decks. If it&rsquo;s really an outreach message, we can shape it as one.
                 </p>
-                <Button onClick={() => onPick("custom", text.trim())}>
+                <Button onClick={() => onPick("custom", text.trim())} disabled={loading}>
                   Shape it as a message anyway {arrow(16)}
                 </Button>
               </div>
             )}
             <div className="nod-actions" style={{ marginTop: 18 }}>
-              <Button onClick={handleContinue} disabled={text.trim() === ""}>
+              <Button onClick={handleContinue} disabled={text.trim() === "" || loading}>
                 Continue {arrow()}
               </Button>
             </div>

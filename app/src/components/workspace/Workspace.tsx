@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrandHeader } from "@/components/ui/BrandHeader";
-import { firstName, scenario, type ScenarioId } from "@/lib/flow";
-import { maskName } from "@/lib/masking";
+import { scenario, type ScenarioId } from "@/lib/flow";
+import { buildMaskTokens, maskAllPII, scrubGenericPII } from "@/lib/masking";
 import { rememberName } from "@/lib/name-map";
 import {
   checkDraft,
@@ -27,11 +27,56 @@ import { NudgeBanner } from "./frames/NudgeBanner";
 import { Recap } from "./Recap";
 import { FRAME_ORDER, INITIAL_DRAFT, resetFor, type DraftState, type FrameKey } from "./types";
 
+// REL-001: every async workspace action funnels through here so a network,
+// model, or database failure always produces a visible, human-readable,
+// retryable state instead of a silent no-op. Retrying re-runs the exact
+// same closure, so nothing the user typed has to be re-entered.
+function friendlyErrorMessage(e: unknown): string {
+  const message = e instanceof Error ? e.message : String(e);
+  if (message.startsWith("401")) return "You've been signed out — sign in again to keep going.";
+  if (message.startsWith("400")) return "That didn't go through as expected. Try again in a moment.";
+  if (message.startsWith("404")) return "That message couldn't be found — it may have been removed.";
+  return "Couldn't reach NOD's server. Check your connection and try again — nothing you wrote was lost.";
+}
+
 export function Workspace() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [draft, setDraft] = useState<DraftState>(INITIAL_DRAFT);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastAction, setLastAction] = useState<(() => Promise<void>) | null>(null);
   const [pendingNudge, setPendingNudge] = useState<{ id: string; scenario: ScenarioId } | null>(null);
+  // DATA-002: retrying a failed action re-invokes the exact closure that
+  // failed, which closed over `draft` as it was on the render that created
+  // it — a plain `draft.savedMessageId` read inside that closure would stay
+  // stale even after a mid-flight setDraft() from that same attempt's
+  // partial success. This ref is always current, so the retry's idempotency
+  // check (see handleSave) sees the real latest state.
+  const draftRef = useRef(draft);
+  useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
+
+  async function runAction(action: () => Promise<void>) {
+    setLoading(true);
+    setError(null);
+    try {
+      await action();
+      setLastAction(null);
+    } catch (e) {
+      // Safe to log: every payload that reaches these actions has already
+      // been through the masking boundary (PRIV-001) before it's sent.
+      console.error("[NOD] action failed:", e);
+      setError(friendlyErrorMessage(e));
+      setLastAction(() => action);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function retryLastAction() {
+    if (lastAction) runAction(lastAction);
+  }
 
   useEffect(() => {
     fetchPendingNudge()
@@ -62,59 +107,57 @@ export function Workspace() {
     setActiveIndex(index);
   }
 
-  const name = firstName(draft.who);
-  const maskedWho = maskName(draft.who, name);
-  const maskedAsk = maskName(draft.ask, name);
-  const maskedCtx = maskName(draft.ctx, name);
+  const maskTokens = buildMaskTokens(draft.who);
+  const maskedWho = maskAllPII(draft.who, maskTokens);
+  const maskedAsk = maskAllPII(draft.ask, maskTokens);
+  const maskedCtx = maskAllPII(draft.ctx, maskTokens);
   const effectiveScenario: ScenarioId = (draft.scenario || "quiet") as ScenarioId;
 
-  async function handlePickSituation(sc: ScenarioId, customText: string) {
-    setLoading(true);
-    try {
-      const { id } = await createAttempt(sc, customText || undefined);
+  function handlePickSituation(sc: ScenarioId, customText: string) {
+    return runAction(async () => {
+      // The recipient isn't known yet at this frame, so a name/company can't
+      // be masked here — but a raw email or phone typed into the free-text
+      // "something else" description must never reach the server either
+      // (PRIV-001).
+      const scrubbedCustomText = customText ? scrubGenericPII(customText) : undefined;
+      const { id } = await createAttempt(sc, scrubbedCustomText);
       commitFrame("situation", { scenario: sc, customText, attemptId: id });
       advance();
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function handleDetailsContinue(values: { who: string; ask: string; ctx: string }) {
-    if (!draft.attemptId) return;
-    setLoading(true);
-    try {
-      const nm = firstName(values.who);
-      await patchAttempt(draft.attemptId, {
-        recipient_masked: maskName(values.who, nm),
-        ask: maskName(values.ask, nm),
-        context_masked: maskName(values.ctx, nm),
+  function handleDetailsContinue(values: { who: string; ask: string; ctx: string }) {
+    const attemptId = draft.attemptId;
+    if (!attemptId) return Promise.resolve();
+    return runAction(async () => {
+      const tokens = buildMaskTokens(values.who);
+      await patchAttempt(attemptId, {
+        recipient_masked: maskAllPII(values.who, tokens),
+        ask: maskAllPII(values.ask, tokens),
+        context_masked: maskAllPII(values.ctx, tokens),
       });
       commitFrame("details", values);
       advance();
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function handleChoosePath(path: "own" | "nod") {
-    if (!draft.attemptId) return;
-    setLoading(true);
-    try {
-      await patchAttempt(draft.attemptId, { path });
+  function handleChoosePath(path: "own" | "nod") {
+    const attemptId = draft.attemptId;
+    if (!attemptId) return Promise.resolve();
+    return runAction(async () => {
+      await patchAttempt(attemptId, { path });
       commitFrame("choose", { path });
       advance();
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function runCheck(draftTextMasked: string, path: "own" | "nod") {
-    if (!draft.attemptId) return;
-    setLoading(true);
-    try {
+  function runCheck(draftTextMasked: string, path: "own" | "nod") {
+    const attemptId = draft.attemptId;
+    if (!attemptId) return Promise.resolve();
+    return runAction(async () => {
       const nextCheckCount = draft.checkCount + 1;
       const result = await checkDraft({
-        attemptId: draft.attemptId,
+        attemptId,
         draftMasked: draftTextMasked,
         scenario: effectiveScenario,
         path,
@@ -134,12 +177,20 @@ export function Workspace() {
           b5: result.criteria.b5.pass,
         };
       }
-      await patchAttempt(draft.attemptId, attemptPatch);
+      await patchAttempt(attemptId, attemptPatch);
 
       if (!result.core_pass && nextCheckCount >= 3) {
         // Third check still fails — NOD writes a better version (journey.md §3 ⑤).
-        const rewrite = await rewriteDraftRequest(draftTextMasked, effectiveScenario);
-        setDraft((prev) => ({ ...prev, path, checkCount: nextCheckCount, checkResult: result, rewriteText: rewrite.text }));
+        const rewrite = await rewriteDraftRequest(attemptId, draftTextMasked, effectiveScenario);
+        setDraft((prev) => ({
+          ...prev,
+          path,
+          checkCount: nextCheckCount,
+          checkResult: result,
+          rewriteText: rewrite.text,
+          rewriteCorePass: rewrite.corePass,
+          rewriteTopMissWhy: rewrite.topMiss?.why ?? "",
+        }));
       } else {
         // A DraftFrame submission (whether the text started blank or was
         // tightened from a NOD draft) is the user's own checked text from
@@ -154,35 +205,33 @@ export function Workspace() {
         }));
       }
       goTo("feedback");
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function handleGenerateNodDraft() {
-    setLoading(true);
-    try {
+  function handleGenerateNodDraft() {
+    const attemptId = draft.attemptId;
+    if (!attemptId) return Promise.resolve();
+    return runAction(async () => {
       const { draftMasked, sample, check } = await generateNodDraft({
+        attemptId,
         scenario: effectiveScenario,
         recipientMasked: maskedWho,
         ask: maskedAsk,
         contextMasked: maskedCtx,
       });
       setDraft((prev) => ({ ...prev, nodDraftText: draftMasked, nodDraftSample: sample, checkResult: check }));
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   // ④b already has a checkResult (computed alongside generation) — this just
   // records the bookkeeping runCheck would otherwise do, without a second
   // /api/check call.
-  async function handleNodProceed() {
-    if (!draft.attemptId || !draft.checkResult) return;
-    setLoading(true);
-    try {
-      const result = draft.checkResult;
-      await patchAttempt(draft.attemptId, {
+  function handleNodProceed() {
+    const attemptId = draft.attemptId;
+    const result = draft.checkResult;
+    if (!attemptId || !result) return Promise.resolve();
+    return runAction(async () => {
+      await patchAttempt(attemptId, {
         draft_text_masked: draft.nodDraftText,
         check_count: 1,
         first_pass_criteria: {
@@ -195,9 +244,7 @@ export function Workspace() {
       });
       setDraft((prev) => ({ ...prev, checkCount: 1, lastFixWhy: result.top_misses[0]?.why ?? "" }));
       goTo("feedback");
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   function handleTighten() {
@@ -209,10 +256,19 @@ export function Workspace() {
     goTo("draft");
   }
 
-  async function handleSave() {
-    if (!draft.attemptId) return;
-    setLoading(true);
-    try {
+  // DATA-002: Save is three writes (message, attempt patch, nudge) with no
+  // real cross-table transaction available from the client — Supabase-js
+  // doesn't expose one, and a Postgres RPC function would be the properly
+  // transactional fix (a schema/infra change left to the owner). What's
+  // done here instead: each step is made idempotent, so retryLastAction()
+  // re-running this whole closure after a partial failure can never create
+  // a second message or nudge. The message insert is skipped once
+  // draft.savedMessageId is set; nudge creation is deduped server-side by
+  // attempt_id (src/app/api/nudges/route.ts).
+  function handleSave() {
+    const attemptId = draft.attemptId;
+    if (!attemptId) return Promise.resolve();
+    return runAction(async () => {
       // Server-generated text (rewriteText, nodDraftText) is already masked;
       // the user's own typed text (ownText) is raw and must be masked here.
       let authored: "own" | "nod" | "nod-rewrote";
@@ -225,36 +281,56 @@ export function Workspace() {
         finalMasked = draft.nodDraftText;
       } else {
         authored = "own";
-        finalMasked = maskName(draft.ownText, name);
+        finalMasked = maskAllPII(draft.ownText, maskTokens);
       }
-      const isCustom = draft.scenario === "custom";
-      const sc = draft.scenario && draft.scenario !== "custom" ? scenario(draft.scenario) : null;
-      const title = isCustom ? draft.customText || "A different outreach message" : sc?.title ?? "Your message";
 
-      const { id } = await saveMessage({
-        attemptId: draft.attemptId,
-        title,
-        scenario: effectiveScenario,
-        textMasked: finalMasked,
-        ask: maskedAsk,
-        authored,
-      });
+      let messageId = draftRef.current.savedMessageId;
+      if (!messageId) {
+        const isCustom = draft.scenario === "custom";
+        const sc = draft.scenario && draft.scenario !== "custom" ? scenario(draft.scenario) : null;
+        // customText may still hold a raw name/company now that the
+        // recipient is known (it was only PII-scrubbed, not name-masked,
+        // when captured in handlePickSituation) — mask it again here before
+        // it becomes a persisted title (PRIV-001).
+        const title = isCustom
+          ? maskAllPII(draft.customText, maskTokens) || "A different outreach message"
+          : sc?.title ?? "Your message";
 
-      await patchAttempt(draft.attemptId, {
-        outcome: draft.rewriteText ? "nod-rewrote" : draft.checkCount > 1 ? "tightened" : "clean",
+        const saved = await saveMessage({
+          attemptId,
+          title,
+          scenario: effectiveScenario,
+          textMasked: finalMasked,
+          ask: maskedAsk,
+          authored,
+        });
+        messageId = saved.id;
+        setDraft((prev) => ({ ...prev, savedMessageId: saved.id, savedTextMasked: finalMasked }));
+      }
+
+      // PRODUCT-001: a rewrite that never cleared B1/B2/B4 is an honest
+      // "shipped with misses", not "nod-rewrote" (which implies NOD's
+      // version met the standard) — the outcome value the ERD already
+      // reserves for exactly this case.
+      const outcome = draft.rewriteText
+        ? draft.rewriteCorePass
+          ? "nod-rewrote"
+          : "shipped-with-misses"
+        : draft.checkCount > 1
+          ? "tightened"
+          : "clean";
+      await patchAttempt(attemptId, {
+        outcome,
         loops_to_clear: draft.checkCount,
         completed_at: new Date().toISOString(),
       });
 
-      if (name !== "there") rememberName(id, name);
+      if (maskTokens.length > 0) rememberName(messageId, maskTokens);
       // The outcome-tied nudge (Decision 10) — one per completed attempt,
       // surfaced in-app on the next visit.
-      await createNudge(draft.attemptId, effectiveScenario);
-      setDraft((prev) => ({ ...prev, savedMessageId: id, savedTextMasked: finalMasked }));
+      await createNudge(attemptId, effectiveScenario);
       goTo("saved");
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   function handleReuse(textMasked: string) {
@@ -267,30 +343,26 @@ export function Workspace() {
     setActiveIndex(0);
   }
 
-  async function handleAcceptNudge() {
-    if (!pendingNudge) return;
-    setLoading(true);
-    try {
-      await patchNudge(pendingNudge.id, "clicked");
-      const { id } = await createAttempt(pendingNudge.scenario, undefined, "unaided");
-      setDraft({ ...INITIAL_DRAFT, scenario: pendingNudge.scenario, attemptId: id, attemptType: "unaided" });
+  function handleAcceptNudge() {
+    const nudge = pendingNudge;
+    if (!nudge) return Promise.resolve();
+    return runAction(async () => {
+      await patchNudge(nudge.id, "clicked");
+      const { id } = await createAttempt(nudge.scenario, undefined, "unaided");
+      setDraft({ ...INITIAL_DRAFT, scenario: nudge.scenario, attemptId: id, attemptType: "unaided" });
       setPendingNudge(null);
       // Skip situation-picking — the nudge already carries the situation.
       setActiveIndex(FRAME_ORDER.indexOf("details"));
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function handleDismissNudge() {
-    if (!pendingNudge) return;
-    setLoading(true);
-    try {
-      await patchNudge(pendingNudge.id, "dismissed");
+  function handleDismissNudge() {
+    const nudge = pendingNudge;
+    if (!nudge) return Promise.resolve();
+    return runAction(async () => {
+      await patchNudge(nudge.id, "dismissed");
       setPendingNudge(null);
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   return (
@@ -301,6 +373,20 @@ export function Workspace() {
           <Recap frameKey={prevKey} draft={draft} onEdit={() => editFrame(activeIndex - 1)} />
         </div>
         <div className="nod-col-active">
+          {error && (
+            <div className="nod-recap" style={{ marginBottom: 20, borderColor: "var(--ink-faint)" }}>
+              <p style={{ margin: "0 0 10px", fontSize: 14, color: "var(--ink-soft)" }}>{error}</p>
+              <button
+                type="button"
+                onClick={retryLastAction}
+                disabled={loading || !lastAction}
+                className="nod-btn nod-ghost"
+                style={{ padding: "8px 4px" }}
+              >
+                {loading ? "Retrying…" : "Try again"}
+              </button>
+            </div>
+          )}
           {activeKey === "situation" &&
             (pendingNudge ? (
               <NudgeBanner
@@ -310,7 +396,7 @@ export function Workspace() {
                 onDismiss={handleDismissNudge}
               />
             ) : (
-              <SituationFrame onPick={handlePickSituation} />
+              <SituationFrame onPick={handlePickSituation} loading={loading} />
             ))}
           {activeKey === "details" && (
             <DetailsFrame
@@ -318,9 +404,10 @@ export function Workspace() {
               initialAsk={draft.ask}
               initialCtx={draft.ctx}
               onContinue={handleDetailsContinue}
+              loading={loading}
             />
           )}
-          {activeKey === "choose" && <ChooseFrame onPick={handleChoosePath} />}
+          {activeKey === "choose" && <ChooseFrame onPick={handleChoosePath} loading={loading} />}
           {activeKey === "draft" &&
             (draft.checkCount > 0 || draft.path === "own" ? (
               <DraftFrame
@@ -328,7 +415,7 @@ export function Workspace() {
                 loading={loading}
                 onSubmit={(text) => {
                   setDraft((prev) => ({ ...prev, ownText: text }));
-                  runCheck(maskName(text, name), "own");
+                  runCheck(maskAllPII(text, maskTokens), "own");
                 }}
               />
             ) : (

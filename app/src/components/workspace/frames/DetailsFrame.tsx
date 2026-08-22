@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
-import { ASK_SUGGESTIONS, firstName } from "@/lib/flow";
+import { ASK_SUGGESTIONS } from "@/lib/flow";
+import { firstName } from "@/lib/masking";
 
 const arrow = (
   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -22,9 +23,10 @@ type DetailsFrameProps = {
   initialAsk: string;
   initialCtx: string;
   onContinue: (values: { who: string; ask: string; ctx: string }) => void;
+  loading?: boolean;
 };
 
-export function DetailsFrame({ initialWho, initialAsk, initialCtx, onContinue }: DetailsFrameProps) {
+export function DetailsFrame({ initialWho, initialAsk, initialCtx, onContinue, loading = false }: DetailsFrameProps) {
   const [who, setWho] = useState(initialWho);
   const [ask, setAsk] = useState(initialAsk);
   const [ctx, setCtx] = useState(initialCtx);
@@ -117,7 +119,7 @@ export function DetailsFrame({ initialWho, initialAsk, initialCtx, onContinue }:
 
       <div className="nod-actions">
         <Button
-          disabled={!canContinue}
+          disabled={!canContinue || loading}
           onClick={() => onContinue({ who: who.trim(), ask: ask.trim(), ctx: ctx.trim() })}
         >
           Continue {arrow}

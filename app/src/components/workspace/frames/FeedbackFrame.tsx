@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/Button";
 import type { DraftState } from "../types";
 
+// COPY-001: describe message quality, never a promised outcome — "gets a
+// busy person to actually reply" claims a result NOD can't guarantee.
 function cleanJudgement(wordCount: number): string {
   if (wordCount >= 40 && wordCount <= 125) {
-    return "It's short enough to take in at a glance, which is what gets a busy person to actually reply.";
+    return "It's short enough to take in at a glance — the kind of length a busy reader actually finishes.";
   }
   return "You lead with your real reason instead of a throat-clearing opener — that's what keeps a reader going.";
 }
@@ -32,6 +34,40 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave }: FeedbackFra
   // Third check still failed — NOD wrote a better version. The "we do" beat,
   // earned only after two self-edits.
   if (draft.rewriteText) {
+    // AI-001: NOD's own rewrite can itself fail to clear B1/B2/B4 (rare —
+    // it gets two tries internally and keeps the stronger one) — that must
+    // never be presented as "the version I'd send."
+    if (!draft.rewriteCorePass) {
+      return (
+        <div>
+          <h2 className="nod-f-title">
+            Still <em>one gap left.</em>
+          </h2>
+          <p className="nod-f-lede">
+            Even NOD&rsquo;s rewrite didn&rsquo;t fully clear the standard — here&rsquo;s the closest version,
+            and what&rsquo;s still off.
+          </p>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", padding: "26px 28px", marginBottom: 18 }}>
+            {draft.rewriteText.split("\n\n").map((p, i) => (
+              <p key={i} style={{ margin: "0 0 15px", fontSize: "16.5px", lineHeight: 1.74 }}>
+                {p}
+              </p>
+            ))}
+          </div>
+          {draft.rewriteTopMissWhy && (
+            <p className="nod-f-lede" style={{ marginBottom: 20 }}>
+              {draft.rewriteTopMissWhy}
+            </p>
+          )}
+          <div className="nod-actions">
+            <Button onClick={onSave} disabled={loading}>
+              Save anyway
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div>
         <h2 className="nod-f-title">
