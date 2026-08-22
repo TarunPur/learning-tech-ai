@@ -43,10 +43,10 @@
 .landing .nav .row { display: flex; align-items: center; justify-content: space-between; height: 76px; }
 .landing .mark { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
 .landing .mark .logo {
-  width: 44px; height: 44px; border-radius: 13px; background: var(--blue); display: grid;
-  place-items: center; box-shadow: var(--shadow-logo); flex: none;
+  width: 44px; height: 44px; border-radius: 13px; background: var(--card); border: 1px solid var(--line);
+  display: grid; place-items: center; box-shadow: var(--shadow-logo); flex: none;
 }
-.landing .mark .wm { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; line-height: 1; }
+.landing .mark .wm { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; line-height: 1; color: var(--ink); }
 .landing .nav .btn { font-size: 14px; font-weight: 600; padding: 10px 20px; box-shadow: 0 6px 16px -9px rgba(47,111,224,.55); }
 .landing .nav .btn:hover { transform: translateY(-1px); }
 

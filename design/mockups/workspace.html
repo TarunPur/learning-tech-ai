@@ -35,10 +35,10 @@ button,input,textarea{font-family:inherit;color:inherit;}
 /* persistent application chrome: pinned so the brand lockup never scrolls off or
    jumps between frames of different heights (locked interaction model) */
 .ghead{position:sticky;top:0;z-index:30;background:var(--bg);display:flex;align-items:center;gap:16px;min-height:78px;padding:16px 0 14px;}
-.ghead .logo{width:56px;height:56px;border-radius:16px;background:var(--blue);display:grid;place-items:center;
+.ghead .logo{width:56px;height:56px;border-radius:16px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;
   box-shadow:0 9px 20px -8px rgba(47,111,224,0.5);flex:none;}
 .ghead .gtext{display:flex;flex-direction:column;justify-content:center;}
-.ghead .gname{display:block;font-weight:800;font-size:29px;letter-spacing:-0.02em;line-height:1;}
+.ghead .gname{display:block;font-weight:800;font-size:29px;letter-spacing:-0.02em;line-height:1;color:var(--ink);}
 .ghead .gtag{display:block;font-weight:600;font-size:15px;color:var(--blue-deep);margin-top:6px;line-height:1;letter-spacing:0;white-space:nowrap;}
 .ghair{display:block;height:1px;background:var(--line);margin:20px 0 0;}
 
@@ -203,7 +203,7 @@ button,input,textarea{font-family:inherit;color:inherit;}
 <div class="stage">
 
   <header class="ghead">
-    <span class="logo" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="logo" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M8 4 L8 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M16 4 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M8 4 L11.6 11.2" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round"/><path d="M12.3 10.1 L12.64 13.28 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     <span class="gtext"><span class="gname">NOD</span><span class="gtag">Your coach against the AI slop — so the skill sticks</span></span>
   </header>
   <div class="ghair"></div>

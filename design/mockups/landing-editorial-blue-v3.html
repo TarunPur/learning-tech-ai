@@ -52,8 +52,8 @@ h1,h2,h3,p{margin:0;}
 .nav.scrolled{border-color:var(--line);background:#F6F5F1;box-shadow:0 6px 20px -14px rgba(28,40,72,0.35);}
 .nav .row{display:flex;align-items:center;justify-content:space-between;height:76px;}
 .mark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);}
-.mark .logo{width:44px;height:44px;border-radius:13px;background:var(--blue);display:grid;place-items:center;box-shadow:0 8px 18px -7px rgba(47,111,224,0.55);flex:none;}
-.mark .wm{font-weight:800;font-size:19px;letter-spacing:-0.02em;line-height:1;}
+.mark .logo{width:44px;height:44px;border-radius:13px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 8px 18px -7px rgba(47,111,224,0.55);flex:none;}
+.mark .wm{font-weight:800;font-size:19px;letter-spacing:-0.02em;line-height:1;color:var(--ink);}
 
 /* ---- hero ---- */
 .hero{position:relative;overflow:hidden;padding:clamp(40px,5vw,68px) 0 clamp(46px,5.5vw,80px);text-align:center;}
@@ -510,7 +510,7 @@ h1,h2,h3,p{margin:0;}
 <header class="nav" id="nav">
   <div class="wrap row">
     <a class="mark" href="#top" aria-label="NOD home">
-      <span class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 4 L8 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M16 4 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M8 4 L11.6 11.2" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round"/><path d="M12.3 10.1 L12.64 13.28 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <span class="wm">NOD</span>
     </a>
     <a class="btn nav-cta" href="workspace.html" data-signin>Start with your first task
@@ -821,7 +821,7 @@ h1,h2,h3,p{margin:0;}
     <div class="foot-top">
       <div class="foot-brand">
         <a class="mark" href="#top" aria-label="NOD home">
-          <span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M8 4 L8 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M16 4 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="butt"/><path d="M8 4 L11.6 11.2" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round"/><path d="M12.3 10.1 L12.64 13.28 L16 20" stroke="#2F6FE0" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <span class="wm">NOD</span>
         </a>
         <p class="foot-desc">Finish one real task — and know you can do it on your own.</p>

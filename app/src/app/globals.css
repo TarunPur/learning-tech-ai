@@ -105,7 +105,8 @@ textarea {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--blue);
+  background: var(--card);
+  border: 1px solid var(--line);
   display: grid;
   place-items: center;
   box-shadow: var(--sh-logo);
@@ -122,6 +123,7 @@ textarea {
   font-size: 29px;
   letter-spacing: -0.02em;
   line-height: 1;
+  color: var(--ink);
 }
 .nod-ghead .nod-gtag {
   display: block;

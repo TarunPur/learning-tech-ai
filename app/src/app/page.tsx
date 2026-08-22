@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { BrandMark } from "@/components/ui/BrandMark";
 import "./landing.css";
 
 // Ported from design/mockups/landing-editorial-blue-v3.html (Phase 10). The five
@@ -368,10 +369,7 @@ export default function Home() {
         <div className="wrap row">
           <a className="mark" href="#top" aria-label="NOD home">
             <span className="logo" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
-                <path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <BrandMark size={24} />
             </span>
             <span className="wm">NOD</span>
           </a>
@@ -641,10 +639,7 @@ export default function Home() {
             <div className="foot-brand">
               <a className="mark" href="#top" aria-label="NOD home">
                 <span className="logo" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v6A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
-                    <path d="M9.5 9.2l1.8 1.8 3.4-3.7" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <BrandMark size={22} />
                 </span>
                 <span className="wm">NOD</span>
               </a>
