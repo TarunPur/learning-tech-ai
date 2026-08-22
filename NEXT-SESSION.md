@@ -1,14 +1,33 @@
 # NEXT SESSION — resume here
 
-## Where we are (2026-08-22): two QA remediation rounds complete, pushed to live — Anthropic credits blocking real use
+## Where we are (2026-08-22): four QA remediation rounds complete, pushed to live — Anthropic credits blocking real use
 
-All 12 build phases from `implementation.md` are complete. This session ran two rounds of an
-external QA agent's review (`QA-CODE-REVIEW.md`) — round 1 (full scope) and round 3 (scoped,
-Google/Anthropic excluded per the owner's instruction) — and worked through both. Full detail is
-in `QA-CODE-REVIEW.md` §11 (round 1 retest evidence) and §13 (round 2/"round 3" retest evidence —
-the QA agent's own numbering skips "round 2"). The product works end-to-end and is live at:
+All 12 build phases from `implementation.md` are complete. This session ran four rounds of an
+external QA agent's review (`QA-CODE-REVIEW.md`) — full scope, then scoped (Google/Anthropic
+excluded), then a visual-only screenshot regression, then a full Chrome E2E pass with Google
+included — and worked through all of them. Full detail is in `QA-CODE-REVIEW.md` §11, §13, and §15
+(retest evidence per round). **Google sign-in now works end-to-end**, confirmed by the round-5 QA
+pass driving the real OAuth flow in Chrome. The product is live at:
 
 **https://learning-tech-ai.vercel.app**
+
+## One thing genuinely worth your decision, asked directly (not deferred again)
+
+QA has now flagged, three rounds running, that `checks`/`nudges` only have **app-level** duplicate
+protection (idempotent inserts, checked-then-act), not a **database-level** unique constraint. It's
+technically closeable with an additive, low-risk migration — but it's a change to the live
+production database, which I won't run without your explicit yes. Exact SQL, if you want it:
+
+```sql
+create unique index if not exists checks_attempt_revision_uniq
+  on public.checks (attempt_id, revision_index);
+create unique index if not exists nudges_attempt_uniq
+  on public.nudges (attempt_id);
+```
+Run this yourself in the Supabase SQL editor, or tell me to do it and I will (once I have a working
+way to run it — the Supabase MCP connection's OAuth client is currently broken on Supabase's own
+side, "Unrecognized client_id", so for now this needs either you running it or me finding another
+path in).
 
 `journey.md`, `design.md`, `ERD.md`, `implementation.md`, `v1PRD.md` are still the canonical specs;
 nothing in them changed. The historical handoffs below the `---` divider are pre-build
