@@ -131,11 +131,20 @@ export function Workspace() {
     if (!attemptId) return Promise.resolve();
     return runAction(async () => {
       const tokens = buildMaskTokens(values.who);
-      await patchAttempt(attemptId, {
+      const patch: Record<string, string> = {
         recipient_masked: maskAllPII(values.who, tokens),
         ask: maskAllPII(values.ask, tokens),
         context_masked: maskAllPII(values.ctx, tokens),
-      });
+      };
+      // PRIV-001 (round 3): the "something else" custom task was only PII-
+      // scrubbed (email/phone), not name/company-masked, when it was first
+      // sent in handlePickSituation — the recipient wasn't known yet. Now
+      // that it is, re-mask and re-persist it before it's used as anything
+      // else (e.g. the saved message's title).
+      if (draft.scenario === "custom" && draft.customText) {
+        patch.custom_task_masked = maskAllPII(draft.customText, tokens);
+      }
+      await patchAttempt(attemptId, patch);
       commitFrame("details", values);
       advance();
     });
@@ -169,12 +178,17 @@ export function Workspace() {
         check_count: nextCheckCount,
       };
       if (nextCheckCount === 1) {
+        // RUBRIC-001 (round 3): first_pass_criteria was dropping the
+        // personalized criterion entirely — first_pass_criteria is meant to
+        // be "which criteria passed on the FIRST check" (ERD.md), and
+        // personalized is a real 6th scored dimension, not just b1-b5.
         attemptPatch.first_pass_criteria = {
           b1: result.criteria.b1.pass,
           b2: result.criteria.b2.pass,
           b3: result.criteria.b3.pass,
           b4: result.criteria.b4.pass,
           b5: result.criteria.b5.pass,
+          ...Object.fromEntries(result.criteria.personalized.map((p) => [p.id, p.pass])),
         };
       }
       await patchAttempt(attemptId, attemptPatch);
@@ -190,6 +204,7 @@ export function Workspace() {
           rewriteText: rewrite.text,
           rewriteCorePass: rewrite.corePass,
           rewriteTopMissWhy: rewrite.topMiss?.why ?? "",
+          aiTurns: prev.aiTurns + 1,
         }));
       } else {
         // A DraftFrame submission (whether the text started blank or was
@@ -219,7 +234,13 @@ export function Workspace() {
         ask: maskedAsk,
         contextMasked: maskedCtx,
       });
-      setDraft((prev) => ({ ...prev, nodDraftText: draftMasked, nodDraftSample: sample, checkResult: check }));
+      setDraft((prev) => ({
+        ...prev,
+        nodDraftText: draftMasked,
+        nodDraftSample: sample,
+        checkResult: check,
+        aiTurns: prev.aiTurns + 1,
+      }));
     });
   }
 
@@ -240,6 +261,7 @@ export function Workspace() {
           b3: result.criteria.b3.pass,
           b4: result.criteria.b4.pass,
           b5: result.criteria.b5.pass,
+          ...Object.fromEntries(result.criteria.personalized.map((p) => [p.id, p.pass])),
         },
       });
       setDraft((prev) => ({ ...prev, checkCount: 1, lastFixWhy: result.top_misses[0]?.why ?? "" }));
@@ -252,6 +274,25 @@ export function Workspace() {
       ...prev,
       ownText: prev.ownText || prev.nodDraftText,
       checkResult: null,
+      helpRequests: prev.helpRequests + 1,
+    }));
+    goTo("draft");
+  }
+
+  // AI-001 (round 3): NOD's own rewrite still failed the standard — route to
+  // a final hand-edit instead of a one-click Save. draft.checkCount stays
+  // at 3 (the loop cap), which DraftFrame's onSubmit below reads as
+  // "finalizing" and skips straight to Save rather than another check.
+  function handleEditRewrite() {
+    setDraft((prev) => ({
+      ...prev,
+      ownText: prev.rewriteText,
+      path: "own",
+      rewriteText: "",
+      rewriteCorePass: false,
+      rewriteTopMissWhy: "",
+      checkResult: null,
+      helpRequests: prev.helpRequests + 1,
     }));
     goTo("draft");
   }
@@ -265,7 +306,11 @@ export function Workspace() {
   // a second message or nudge. The message insert is skipped once
   // draft.savedMessageId is set; nudge creation is deduped server-side by
   // attempt_id (src/app/api/nudges/route.ts).
-  function handleSave() {
+  // `overrideOwnText` is used by the DraftFrame "finalizing" submit path
+  // below — setDraft()'s ownText update wouldn't be visible yet inside this
+  // same closure (React state updates aren't synchronous), so the freshly
+  // typed text is passed straight through instead of read back off `draft`.
+  function handleSave(overrideOwnText?: string) {
     const attemptId = draft.attemptId;
     if (!attemptId) return Promise.resolve();
     return runAction(async () => {
@@ -281,7 +326,7 @@ export function Workspace() {
         finalMasked = draft.nodDraftText;
       } else {
         authored = "own";
-        finalMasked = maskAllPII(draft.ownText, maskTokens);
+        finalMasked = overrideOwnText ?? maskAllPII(draft.ownText, maskTokens);
       }
 
       let messageId = draftRef.current.savedMessageId;
@@ -323,6 +368,11 @@ export function Workspace() {
         outcome,
         loops_to_clear: draft.checkCount,
         completed_at: new Date().toISOString(),
+        // ANALYTICS-001: only meaningful for unaided_completed's capability
+        // read, but harmless to send always — the route only uses these for
+        // event properties, never as attempts columns.
+        help_requests: draft.helpRequests,
+        ai_turns: draft.aiTurns,
       });
 
       if (maskTokens.length > 0) rememberName(messageId, maskTokens);
@@ -415,8 +465,18 @@ export function Workspace() {
                 loading={loading}
                 onSubmit={(text) => {
                   setDraft((prev) => ({ ...prev, ownText: text }));
-                  runCheck(maskAllPII(text, maskTokens), "own");
+                  const masked = maskAllPII(text, maskTokens);
+                  // The loop cap (3 checks) was already hit and NOD's own
+                  // rewrite still didn't clear the standard — this is the
+                  // user's final hand-edit, save it directly rather than
+                  // spending a 4th evaluator call.
+                  if (draft.checkCount >= 3) {
+                    handleSave(masked);
+                  } else {
+                    runCheck(masked, "own");
+                  }
                 }}
+                onStuck={() => setDraft((prev) => ({ ...prev, helpRequests: prev.helpRequests + 1 }))}
               />
             ) : (
               <NodDraftFrame
@@ -424,10 +484,17 @@ export function Workspace() {
                 loading={loading}
                 onGenerate={handleGenerateNodDraft}
                 onProceed={handleNodProceed}
+                onUnsure={() => setDraft((prev) => ({ ...prev, helpRequests: prev.helpRequests + 1 }))}
               />
             ))}
           {activeKey === "feedback" && (
-            <FeedbackFrame draft={draft} loading={loading} onTighten={handleTighten} onSave={handleSave} />
+            <FeedbackFrame
+              draft={draft}
+              loading={loading}
+              onTighten={handleTighten}
+              onSave={handleSave}
+              onEditRewrite={handleEditRewrite}
+            />
           )}
           {activeKey === "saved" && (
             <SavedFrame

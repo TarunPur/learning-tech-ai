@@ -17,10 +17,11 @@ type FeedbackFrameProps = {
   loading: boolean;
   onTighten: () => void;
   onSave: () => void;
+  onEditRewrite: () => void;
 };
 
 // ⑤ — the rejoin + the LOCKED coaching loop. journey.md §3 ⑤.
-export function FeedbackFrame({ draft, loading, onTighten, onSave }: FeedbackFrameProps) {
+export function FeedbackFrame({ draft, loading, onTighten, onSave, onEditRewrite }: FeedbackFrameProps) {
   if (loading) {
     return (
       <div>
@@ -34,9 +35,14 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave }: FeedbackFra
   // Third check still failed — NOD wrote a better version. The "we do" beat,
   // earned only after two self-edits.
   if (draft.rewriteText) {
-    // AI-001: NOD's own rewrite can itself fail to clear B1/B2/B4 (rare —
-    // it gets two tries internally and keeps the stronger one) — that must
-    // never be presented as "the version I'd send."
+    // AI-001 (round 3): NOD's own rewrite can itself fail to clear B1/B2/B4
+    // (rare — it gets two tries internally and keeps the stronger one).
+    // Round 1 fixed the dishonest "the version I'd send" framing but still
+    // offered a one-click Save on content NOD's own check had just flagged
+    // — undermining "coach, not generator." The coaching loop is capped at
+    // three checks (locked product model), so this can't just run another
+    // check; instead it requires the user to actually touch the text before
+    // it can be saved, without spending a 4th evaluator call.
     if (!draft.rewriteCorePass) {
       return (
         <div>
@@ -44,8 +50,8 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave }: FeedbackFra
             Still <em>one gap left.</em>
           </h2>
           <p className="nod-f-lede">
-            Even NOD&rsquo;s rewrite didn&rsquo;t fully clear the standard — here&rsquo;s the closest version,
-            and what&rsquo;s still off.
+            Even NOD&rsquo;s rewrite didn&rsquo;t fully clear the standard. Take a pass on it yourself
+            before sending.
           </p>
           <div style={{ background: "var(--card)", border: "1px solid var(--line)", padding: "26px 28px", marginBottom: 18 }}>
             {draft.rewriteText.split("\n\n").map((p, i) => (
@@ -60,8 +66,8 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave }: FeedbackFra
             </p>
           )}
           <div className="nod-actions">
-            <Button onClick={onSave} disabled={loading}>
-              Save anyway
+            <Button onClick={onEditRewrite} disabled={loading}>
+              Edit it myself
             </Button>
           </div>
         </div>

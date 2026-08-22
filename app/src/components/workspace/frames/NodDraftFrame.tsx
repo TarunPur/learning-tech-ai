@@ -25,10 +25,11 @@ type NodDraftFrameProps = {
   loading: boolean;
   onGenerate: () => void;
   onProceed: () => void;
+  onUnsure?: () => void;
 };
 
 // ④b — NOD drafts it, the user spots what's weak first. journey.md §3 ④b.
-export function NodDraftFrame({ draft, loading, onGenerate, onProceed }: NodDraftFrameProps) {
+export function NodDraftFrame({ draft, loading, onGenerate, onProceed, onUnsure }: NodDraftFrameProps) {
   const [tapped, setTapped] = useState<number | null>(null);
   const [unsure, setUnsure] = useState(false);
 
@@ -65,6 +66,7 @@ export function NodDraftFrame({ draft, loading, onGenerate, onProceed }: NodDraf
     if (revealed) return;
     setUnsure(isUnsure);
     setTapped(isUnsure ? null : index);
+    if (isUnsure) onUnsure?.();
   }
 
   const why = draft.checkResult?.top_misses[0]?.why ?? "This draft reads clean by the standard — nice work.";

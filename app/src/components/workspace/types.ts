@@ -25,6 +25,13 @@ export type DraftState = {
   savedTextMasked: string;
   reuseSeed: string;
   attemptType: "guided" | "unaided";
+  // ANALYTICS-001 (round 3): the unaided_completed capability signal —
+  // help_requests (tighten/edit-rewrite/NOD-draft "I'm not sure" taps) and
+  // ai_turns (NOD draft generations + rewrite calls) for this attempt.
+  // Reset only on a genuinely new attempt (situation reset), not on an
+  // in-attempt edit.
+  helpRequests: number;
+  aiTurns: number;
 };
 
 export const INITIAL_DRAFT: DraftState = {
@@ -48,6 +55,8 @@ export const INITIAL_DRAFT: DraftState = {
   savedTextMasked: "",
   reuseSeed: "",
   attemptType: "guided",
+  helpRequests: 0,
+  aiTurns: 0,
 };
 
 // Editing a prior frame must never leave contradictory downstream state —
@@ -70,7 +79,17 @@ export function resetFor(frameKey: FrameKey): Partial<DraftState> {
     // reuseSeed deliberately survives a situation commit — it's only
     // consumed once the draft frame mounts, and handleReuse() is the only
     // place that sets it, always immediately before a fresh situation pick.
-    return { ...clearedDraft, who: "", ask: "", ctx: "", path: "own", attemptId: null };
+    // helpRequests/aiTurns reset here too — this is a genuinely new attempt.
+    return {
+      ...clearedDraft,
+      who: "",
+      ask: "",
+      ctx: "",
+      path: "own",
+      attemptId: null,
+      helpRequests: 0,
+      aiTurns: 0,
+    };
   }
   if (frameKey === "details" || frameKey === "choose") {
     return clearedDraft;
