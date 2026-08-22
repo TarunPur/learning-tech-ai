@@ -13,21 +13,17 @@ pass driving the real OAuth flow in Chrome. The product is live at:
 
 ## One thing genuinely worth your decision, asked directly (not deferred again)
 
-QA has now flagged, three rounds running, that `checks`/`nudges` only have **app-level** duplicate
-protection (idempotent inserts, checked-then-act), not a **database-level** unique constraint. It's
-technically closeable with an additive, low-risk migration — but it's a change to the live
-production database, which I won't run without your explicit yes. Exact SQL, if you want it:
+**DONE (2026-08-22, owner-authorized):** the `checks`/`nudges` database-level unique constraints
+QA flagged across rounds 1/3/5 are live. The Supabase CLI (`supabase`, already installed and
+linked to `nod-v1` from an earlier session — the MCP connection is broken on Supabase's own side,
+"Unrecognized client_id", but the CLI is a separate, working path) applied
+`app/supabase/migrations/0003_checks_nudges_unique_constraints.sql` via `supabase db push`,
+verified with `supabase db query --linked`:
 
-```sql
-create unique index if not exists checks_attempt_revision_uniq
-  on public.checks (attempt_id, revision_index);
-create unique index if not exists nudges_attempt_uniq
-  on public.nudges (attempt_id);
-```
-Run this yourself in the Supabase SQL editor, or tell me to do it and I will (once I have a working
-way to run it — the Supabase MCP connection's OAuth client is currently broken on Supabase's own
-side, "Unrecognized client_id", so for now this needs either you running it or me finding another
-path in).
+- `checks_attempt_revision_uniq` on `checks(attempt_id, revision_index)`
+- `nudges_attempt_uniq` on `nudges(attempt_id)`
+
+Both additive/non-destructive, applied cleanly (confirming no pre-existing duplicate rows).
 
 `journey.md`, `design.md`, `ERD.md`, `implementation.md`, `v1PRD.md` are still the canonical specs;
 nothing in them changed. The historical handoffs below the `---` divider are pre-build

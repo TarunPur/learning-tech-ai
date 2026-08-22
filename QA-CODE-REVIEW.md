@@ -1123,13 +1123,6 @@ counts).
 
 ### Not changed, with reasoning
 
-- **`DATA-001`/`DATA-002` database-level guarantees** — still app-level only (idempotent inserts,
-  ownership checks), not a DB unique constraint or transaction. This needs a migration against the
-  **live production database** — a different risk category from an app-code change. Asking the
-  owner directly this round instead of deferring again: **do you want me to add a unique
-  constraint on `(attempt_id, revision_index)` on `checks` and `(attempt_id)` on `nudges`?** It's
-  additive and low-risk (no data loss), but it's still a live-infra change I won't make without an
-  explicit yes.
 - **`RESP-001` mobile verification** — attempted this round via the available browser tooling
   (`resize_window` to 390×844 on the live landing page). The call reports success but the
   rendered/screenshotted viewport stays desktop-width regardless — a tooling limitation, not
@@ -1149,6 +1142,24 @@ counts).
 **Round 5 disposition after this pass:** `UX-003` and `UX-004` resolved. `COPY-001` resolved (one
 real violation found and fixed on re-check; the disagreement on the other phrase stands, now
 against the actual banned-word list rather than a general impression). `PRIV-001` meaningfully
-strengthened, not fully closed — the residual gap is architectural, not an oversight. `DATA-001`/
-`DATA-002`'s DB-level ask is now a direct question to the owner rather than a repeated deferral.
-`RESP-001` and `OPS-002` reconfirmed as tooling/environment, not app, issues.
+strengthened, not fully closed — the residual gap is architectural, not an oversight. `RESP-001`
+and `OPS-002` reconfirmed as tooling/environment, not app, issues.
+
+### `DATA-001`/`DATA-002` — RESOLVED (owner-authorized, same session)
+
+The owner authorized the database-level unique constraint directly after this doc's own question
+above. Applied to the live `nod-v1` project via the Supabase CLI (already installed and linked
+from an earlier session — a separate, working path from the still-broken Supabase MCP OAuth
+client) as `app/supabase/migrations/0003_checks_nudges_unique_constraints.sql`:
+
+```sql
+create unique index if not exists checks_attempt_revision_uniq
+  on public.checks (attempt_id, revision_index);
+create unique index if not exists nudges_attempt_uniq
+  on public.nudges (attempt_id);
+```
+
+`supabase db push` applied cleanly (confirming no pre-existing duplicate rows violated either
+constraint) and `supabase db query --linked` confirmed both indexes exist on the live database.
+App-level idempotency (checked-then-act, added in earlier rounds) now has a real database backstop
+instead of being the only guarantee.
