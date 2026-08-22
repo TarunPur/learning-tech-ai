@@ -537,3 +537,28 @@ button.nod-card:focus-visible {
   color: var(--ink-faint);
   line-height: 1.5;
 }
+
+/* Neutral marker (design.md "Fix-targets... neutral marker, dotted ink
+   underline / faint wash — never red/green"). Points at attention, not a
+   wrong answer, so it stays ink, never a status color. */
+.nod-mark-neutral {
+  background: none;
+  color: inherit;
+  font: inherit;
+  border-bottom: 2px dotted var(--ink-faint);
+  padding-bottom: 1px;
+}
+.nod-draft-view {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 26px 28px;
+}
+.nod-draft-view p {
+  margin: 0 0 15px;
+  font-size: 16.5px;
+  line-height: 1.74;
+  color: var(--ink);
+}
+.nod-draft-view p:last-child {
+  margin-bottom: 0;
+}

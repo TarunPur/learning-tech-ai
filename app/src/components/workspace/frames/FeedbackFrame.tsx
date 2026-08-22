@@ -3,6 +3,32 @@
 import { Button } from "@/components/ui/Button";
 import type { DraftState } from "../types";
 
+// Renders the draft with the flagged line wrapped in the neutral dotted
+// marker (design.md: "the fix-target in the draft gets a neutral dotted
+// marker") instead of pulling the line out into its own isolated box —
+// the reader sees the miss in the sentence it actually lives in.
+function DraftWithMark({ text, quote }: { text: string; quote: string | null }) {
+  const paragraphs = text.split("\n\n");
+  return (
+    <div className="nod-draft-view">
+      {paragraphs.map((p, i) => {
+        const idx = quote ? p.toLowerCase().indexOf(quote.toLowerCase()) : -1;
+        if (idx === -1) return <p key={i}>{p}</p>;
+        const before = p.slice(0, idx);
+        const match = p.slice(idx, idx + quote!.length);
+        const after = p.slice(idx + quote!.length);
+        return (
+          <p key={i}>
+            {before}
+            <mark className="nod-mark-neutral">{match}</mark>
+            {after}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 // COPY-001: describe message quality, never a promised outcome — "gets a
 // busy person to actually reply" claims a result NOD can't guarantee.
 function cleanJudgement(wordCount: number): string {
@@ -53,11 +79,9 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave, onEditRewrite
             Even NOD&rsquo;s rewrite didn&rsquo;t fully clear the standard. Take a pass on it yourself
             before sending.
           </p>
-          <div style={{ background: "var(--card)", border: "1px solid var(--line)", padding: "26px 28px", marginBottom: 18 }}>
+          <div className="nod-draft-view" style={{ marginBottom: 18 }}>
             {draft.rewriteText.split("\n\n").map((p, i) => (
-              <p key={i} style={{ margin: "0 0 15px", fontSize: "16.5px", lineHeight: 1.74 }}>
-                {p}
-              </p>
+              <p key={i}>{p}</p>
             ))}
           </div>
           {draft.rewriteTopMissWhy && (
@@ -82,11 +106,9 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave, onEditRewrite
         <p className="nod-f-lede">
           Two tries in, this is the version I&rsquo;d send — built from what you told me.
         </p>
-        <div style={{ background: "var(--card)", border: "1px solid var(--line)", padding: "26px 28px", marginBottom: 18 }}>
+        <div className="nod-draft-view" style={{ marginBottom: 18 }}>
           {draft.rewriteText.split("\n\n").map((p, i) => (
-            <p key={i} style={{ margin: i === 0 ? "0 0 15px" : "0 0 15px", fontSize: "16.5px", lineHeight: 1.74 }}>
-              {p}
-            </p>
+            <p key={i}>{p}</p>
           ))}
         </div>
         <p style={{ fontSize: "13.5px", color: "var(--ink-soft)", marginBottom: 20 }}>
@@ -142,14 +164,9 @@ export function FeedbackFrame({ draft, loading, onTighten, onSave, onEditRewrite
       <h2 className="nod-f-title">
         One thing <em>to tighten.</em>
       </h2>
-      {miss?.quote && (
-        <div className="nod-recap" style={{ marginBottom: 20 }}>
-          <p style={{ margin: "0 0 4px", fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
-            Your line
-          </p>
-          <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 16, color: "var(--ink)" }}>
-            &ldquo;{miss.quote}&rdquo;
-          </p>
+      {draft.ownText && (
+        <div style={{ marginBottom: 18 }}>
+          <DraftWithMark text={draft.ownText} quote={miss?.quote ?? null} />
         </div>
       )}
       <p className="nod-f-lede">{miss?.why}</p>
