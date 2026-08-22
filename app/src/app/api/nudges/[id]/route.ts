@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-type PatchBody = { status: "sent" | "clicked" | "dismissed" };
+import { parseJson, patchNudgeSchema } from "@/lib/api-validation";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,7 +12,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as PatchBody;
+  const parsed = await parseJson(request, patchNudgeSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
   const patch: Record<string, unknown> = { status: body.status };
   if (body.status === "clicked") patch.clicked_at = new Date().toISOString();
 

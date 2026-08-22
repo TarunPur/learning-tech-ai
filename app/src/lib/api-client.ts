@@ -47,17 +47,22 @@ export function checkDraft(input: {
   );
 }
 
-export function rewriteDraftRequest(draftMasked: string, scenario: ScenarioId) {
-  return json<{ text: string; corePass: boolean }>(
+export function rewriteDraftRequest(attemptId: string, draftMasked: string, scenario: ScenarioId) {
+  return json<{
+    text: string;
+    corePass: boolean;
+    topMiss: { criterion: string; quote: string | null; why: string | null } | null;
+  }>(
     fetch("/api/rewrite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ draftMasked, scenario }),
+      body: JSON.stringify({ attemptId, draftMasked, scenario }),
     })
   );
 }
 
 export function generateNodDraft(input: {
+  attemptId: string;
   scenario: ScenarioId;
   recipientMasked: string;
   ask: string;

@@ -27,5 +27,17 @@ describe("evaluateB4", () => {
     const result = evaluateB4(shortGood);
     expect(result.sentence_count).toBeGreaterThan(0);
     expect(result.reading_level).toBeGreaterThanOrEqual(0);
+    expect(result.paragraph_count).toBe(1);
+  });
+
+  it("fails a degenerate near-empty draft", () => {
+    const result = evaluateB4("Hi?");
+    expect(result.pass).toBe(false);
+    expect(result.why).toMatch(/short/i);
+  });
+
+  it("counts paragraphs by blank-line breaks", () => {
+    const result = evaluateB4("First paragraph here.\n\nSecond paragraph here.");
+    expect(result.paragraph_count).toBe(2);
   });
 });
