@@ -1,137 +1,131 @@
 # NEXT SESSION — resume here
 
-## Where we are (2026-08-22): four QA remediation rounds complete, pushed to live — Anthropic credits blocking real use
+## Where we are (2026-08-22): five QA remediation rounds complete, pushed to live — Anthropic credits are the one real blocker left
 
-All 12 build phases from `implementation.md` are complete. This session ran four rounds of an
-external QA agent's review (`QA-CODE-REVIEW.md`) — full scope, then scoped (Google/Anthropic
-excluded), then a visual-only screenshot regression, then a full Chrome E2E pass with Google
-included — and worked through all of them. Full detail is in `QA-CODE-REVIEW.md` §11, §13, and §15
-(retest evidence per round). **Google sign-in now works end-to-end**, confirmed by the round-5 QA
-pass driving the real OAuth flow in Chrome. The product is live at:
+All 12 build phases from `implementation.md` are complete. This session ran an external QA agent
+through five rounds against the live app — full scope, scoped (Google/Anthropic excluded),
+scoped again, a visual-only screenshot regression, and a full Chrome E2E pass with Google included
+— and worked through all of them across 15 commits. Full blow-by-blow is in `QA-CODE-REVIEW.md`
+§11/§13/§15 (retest evidence per round); this section is the consolidated, currently-accurate
+summary — trust this over anything that sounds contradictory further down the file, which reflects
+earlier points in the session.
 
-**https://learning-tech-ai.vercel.app**
+**Confirmed working, not just claimed:** Google sign-in end-to-end (round 5 QA drove the real
+OAuth flow in Chrome and reached the authenticated workspace), the two-frame workspace layout, the
+full pre-AI flow (situation → details → choose → draft), abuse/off-scope refusal, and the landing
+page. Live at:
 
-## One thing genuinely worth your decision, asked directly (not deferred again)
+**https://learning-tech-ai.vercel.app** — current deployed commit: `dd46f43` on `feedback-pass-20aug`.
 
-**DONE (2026-08-22, owner-authorized):** the `checks`/`nudges` database-level unique constraints
-QA flagged across rounds 1/3/5 are live. The Supabase CLI (`supabase`, already installed and
-linked to `nod-v1` from an earlier session — the MCP connection is broken on Supabase's own side,
-"Unrecognized client_id", but the CLI is a separate, working path) applied
-`app/supabase/migrations/0003_checks_nudges_unique_constraints.sql` via `supabase db push`,
-verified with `supabase db query --linked`:
+## The one real blocker: Anthropic API credits are exhausted
 
-- `checks_attempt_revision_uniq` on `checks(attempt_id, revision_index)`
-- `nudges_attempt_uniq` on `nudges(attempt_id)`
+Real calls (Check, NOD draft, Rewrite — anything hitting the evaluator) return `"Your credit
+balance is too low to access the Anthropic API."` This is a billing issue, not a code defect —
+`RUBRIC-VALIDATION.md` shows a clean 100%-accuracy run from earlier the same session, before the
+session's own test runs burned through what was left. **The live app's core coaching loop
+(Check/NOD-draft/Rewrite, and everything downstream of them) is very likely non-functional right
+now** until credits are topped up at console.anthropic.com — the owner's decision (amount / whether
+to add a spending cap), not something to resolve unattended. Once credits are back: re-run
+`npm test` (the 3 real-Anthropic integration tests + the 32-fixture rubric discrimination suite
+were last green before credits ran out, not re-confirmed since), and do a full authenticated
+click-through of the AI-backed screens (NOD-draft, feedback, rewrite, save, reuse, nudge, unaided)
+— those haven't had a live pass since the masking/validation rewrite.
 
-Both additive/non-destructive, applied cleanly (confirming no pre-existing duplicate rows).
-
-`journey.md`, `design.md`, `ERD.md`, `implementation.md`, `v1PRD.md` are still the canonical specs;
-nothing in them changed. The historical handoffs below the `---` divider are pre-build
-mockup-phase notes, superseded by the real app.
-
-## Two things still open
-
-1. **Anthropic API credits are exhausted.** Real calls (Check, NOD draft, Rewrite — anything
-   hitting the evaluator) return `"Your credit balance is too low to access the Anthropic API."`
-   This is a billing issue, not a code defect — confirmed by `RUBRIC-VALIDATION.md` showing a clean
-   100%-accuracy run earlier the same session, before the running test suite (which makes real
-   Anthropic calls) burned through what was left. **The live app's core coaching loop is very
-   likely non-functional right now until credits are topped up** at console.anthropic.com — this
-   needs the owner's decision (top-up amount / whether to add a spending cap), not something to
-   resolve unattended.
-2. **The owner still needs to do the real Google sign-in smoke test** on the live URL — deliberately
-   not done by the agent, same reasoning as before (driving someone's real Google account through
-   consent isn't something to do on their behalf). If it fails, check Supabase → Authentication →
-   URL Configuration → Redirect URLs includes `https://learning-tech-ai.vercel.app/auth/callback`
-   and that the Google Cloud Console OAuth client's authorized redirect URI is the **Supabase**
-   callback (`https://tuwdvuzmjeezzxrgygej.supabase.co/auth/v1/callback`), not the app's own.
-   AUTH-001 (below) means a failed sign-in now shows a real reason instead of a dead end.
-
-## The one product-behavior change worth knowing about (round 2 of QA)
+## A genuine interaction-model change worth knowing about
 
 When NOD's own rewrite (the "third strike" fallback) still doesn't clear the standard, the
-FeedbackFrame no longer offers a one-click Save at all — it now says "Edit it myself," routes back
-to the draft box pre-filled with NOD's attempt, and the next thing the user types is what gets
-saved (no further evaluator call — the 3-check cap is preserved). Round 1 had made this state
-honest (no longer claimed "the version I'd send"); round 2 removed the ability to ship it
-untouched. This is a genuine interaction-model change, reasoned through in `QA-CODE-REVIEW.md` §13
-point 2 — flagging it here in case it's worth a quick look before broad use.
+FeedbackFrame no longer offers a one-click Save at all — it says "Edit it myself," routes back to
+the draft box pre-filled with NOD's attempt, and the next thing the user types is what gets saved
+(no further evaluator call — the 3-check cap stays intact). This changed the interaction, not just
+the copy: earlier the same rewrite state was save-able with one click. Reasoned through in
+`QA-CODE-REVIEW.md` §13 point 2.
 
-## This session's QA remediation (full detail in `QA-CODE-REVIEW.md`)
+## This session's QA remediation, consolidated (full detail in `QA-CODE-REVIEW.md`)
 
-An external review agent tested the live app (source review + partial live testing — it couldn't
-complete the Google OAuth leg either) and filed one P0 and nine P1 findings plus several P2s.
-All were worked this session, verified via `npx tsc --noEmit`, `npm run lint`, `npm run build`
-(both Turbopack and `--webpack`), and the non-network parts of `npm test` (26/26 passing; the 3
-real-Anthropic-call integration tests are blocked by the credits issue above, not broken by these
-changes — confirmed passing earlier in the same session before credits ran out).
+Five QA rounds, 15 commits, one P0 and roughly a dozen P1/P2 findings addressed. Grouped by area,
+not by round (rounds re-touched several of these):
 
-- **PRIV-001 (P0)** — the masking boundary was rebuilt. The old `firstName()`/`maskName()` only
-  caught `/\b[A-Z][a-z]+\b/` — lowercase, ALL-CAPS, accented names, and company names all reached
-  the server (and `attempts.recipient_masked`/`custom_task_masked`) unmasked. Now: robust
-  name+company extraction (`src/lib/masking.ts`), generic email/phone scrubbing on every field, and
-  a shared server-side guard (`src/lib/pii-guard.ts`) independently re-checked on every route that
-  persists text or calls the model — it inspects content, never trusts a `*_masked` field name.
-- **REL-001** — every workspace action now funnels through one `runAction()` wrapper: failures get a
-  visible, human-readable message and a "Try again" retry that replays the same action (typed
-  content is never lost). Buttons across the intake frames are now disabled while a request is in
-  flight (previously only some were).
-- **AUTH-001** — the OAuth callback used to collapse every failure to the same `?error=auth`
-  dead end. Now it distinguishes provider refusal / missing code / exchange failure and shows a
-  real message on `/signin`, which was also brought onto the brand design system (UX-002).
-- **DATA-001** — the NOD-draft and rewrite paths now write their own `checks` audit row (previously
-  only the write-your-own `/api/check` path did).
-- **SEC-001** — `/api/check`, `/api/messages`, `/api/nudges`, `/api/nod-draft`, `/api/rewrite` now
-  verify the caller owns the `attemptId` before writing — previously any signed-in user could
-  attach a row to a stranger's attempt.
-- **API-001** — every route validates its body against a zod schema (`src/lib/api-validation.ts`)
-  instead of a raw TS cast; malformed/oversized requests get a controlled 400.
-- **AI-001** — a rewrite that doesn't clear B1/B2/B4 (rare — the model gets two internal tries) is
-  no longer shown as "the version I'd send"; it's honestly labelled and saved (if the user still
-  chooses to) as `outcome: shipped-with-misses`, never `nod-rewrote`.
-- **DATA-002** — Save is now idempotent against a retry (the message-insert step is skipped once
-  `savedMessageId` is set; nudge creation is deduped server-side by `attempt_id`). Caught and fixed
-  a subtle bug in this fix itself: the retry closure was reading a stale `draft` snapshot, which
-  would have defeated the idempotency check — fixed with a `useRef` kept in sync via effect.
-- **FUN-001** — `classifyTask()` now has an `abuse` classification (regex-based prompt-injection and
-  clearly-unsafe-content patterns), checked before the outreach/offscope split, enforced both
-  client-side and server-side. A genuinely off-scope request the user chooses to "shape anyway" now
-  writes a `roadmap_signals` row (previously unused).
-- **RUBRIC-001** — B4 now computes and returns `paragraph_count`; `criteria.b4` carries its own
-  metrics matching the ERD's documented shape (previously only under a separate `deterministic`
-  key); evaluator quotes are verified as real substrings of the draft before reaching the client
-  (fixes NOD-draft's "weak line" tap matching too — UX-001). **Judgment call, not silently
-  changed:** QA wanted the unused 50-word floor enforced; doing that would fail the already-tuned
-  100%-accuracy discrimination fixture set and an existing intentional unit test (a ~40-word message
-  is supposed to pass). Left the 50-125 band directional (same reasoning this file already uses for
-  the reading-level threshold) and added only a much lower floor (15 words) that catches genuinely
-  degenerate input.
-- **PRODUCT-001** — partially addressed: `shipped-with-misses` is now a real, reachable outcome
-  (see AI-001). Not touched: whether a "keep mine" save-with-a-miss affordance should exist
-  mid-loop (design docs mention it; the built FeedbackFrame never exposed it) — that's a UX/product
-  scope question outside what QA flagged, not built.
-- **ANALYTICS-001** — 4 of the 6 PRD §14 events now fire (`attempt_started`, `draft_completed`,
-  `feedback_acted`, `nudge_sent`, `unaided_started`), plus `unaided_completed`'s `rubric_pass` and
-  `time_to_done` fields. **Not implemented and flagged, not silently decided:**
-  `unaided_completed`'s `help_requests`/`ai_turns` fields — populating them needs new client-side
-  instrumentation (a "Stuck?" tap counter, an AI-turn counter), which is new product work, not a
-  bug fix, and re-opens the Phase 8 deferral you'd already explicitly made once.
-- **OPS-001** — Anthropic calls now go through one shared client (`src/lib/anthropic-client.ts`)
-  with an explicit 30s timeout and bounded retry. **Not implemented and flagged:** real rate
-  limiting/a circuit breaker needs either a paid limiter service or a Supabase-backed token-bucket
-  table — an infra/cost call left to the owner.
-- **OPS-002** — the QA-reported default-Turbopack-build failure did not reproduce here; both
-  `npm run build` and `npm run build -- --webpack` pass clean in this environment.
-- **UX-002, COPY-001, SEC-002** — sign-in page redesigned to the brand system; two outcome-promising
-  copy lines fixed (`FeedbackFrame`'s "gets a busy person to actually reply", the landing page's
-  "partner users" claim contradicting its own research disclaimer just above it); CSP,
-  X-Frame-Options, Referrer-Policy, Permissions-Policy headers added via `next.config.ts`.
-- **TEST-001** — added regression tests at the library level (masking/PII edge cases: lowercase/
-  ALL-CAPS/accented names, company extraction, email/phone scrubbing; B4 boundary cases). **Not
-  added:** route-level integration tests (ownership-rejection 400s, schema-validation 400s) — there
-  was no existing harness for testing Next.js route handlers + Supabase in this repo, and standing
-  one up is an infra decision, not attempted unilaterally. These were verified manually via curl
-  instead (see `QA-CODE-REVIEW.md` retest evidence).
+- **Privacy (PRIV-001, P0)** — the masking boundary was rebuilt from scratch. The old
+  `firstName()`/`maskName()` only caught `/\b[A-Z][a-z]+\b/` — lowercase, ALL-CAPS, accented names,
+  and company names all reached the server unmasked. Now: robust name+company extraction
+  (`src/lib/masking.ts`), generic email/phone scrubbing on every field, deferred re-masking of the
+  "something else" custom task once the recipient is known, a shared server-side guard
+  (`src/lib/pii-guard.ts`) independently re-checked on every persistence/model route, and (round 5)
+  a targeted `at/from/with CapitalizedWord` detector as one more defense-in-depth layer. **Residual,
+  architectural, not an oversight:** a name/company mentioned without one of those trigger words
+  can't be caught deterministically without NER or an LLM redaction call on free text — the latter
+  is a real per-request cost, a decision for the owner, especially with credits at zero right now.
+- **Reliability (REL-001, DATA-002)** — every workspace action funnels through one `runAction()`
+  wrapper: failures get a visible, human-readable message and a "Try again" retry that replays the
+  same action (nothing typed is lost). Save is idempotent against a retry (message-insert skipped
+  once already saved; nudge creation deduped server-side). `checks`/`nudges` now also have a
+  **database-level** unique constraint (`app/supabase/migrations/0003_...sql`, applied to the live
+  `nod-v1` project this session via the Supabase CLI — see "Repo / deploy facts" below for how).
+- **Auth (AUTH-001)** — the OAuth callback used to collapse every failure to `?error=auth`. Now it
+  distinguishes provider refusal / missing code / exchange failure and shows a real message on
+  `/signin`, which was also rebuilt onto the brand design system.
+- **Ownership & validation (SEC-001, API-001)** — every route that writes a row referencing an
+  `attemptId` (`check`, `messages`, `nudges`, `nod-draft`, `rewrite`) verifies the caller owns that
+  attempt first. Every route validates its body against a zod schema instead of a raw TS cast.
+- **Audit trail (DATA-001)** — NOD-draft and rewrite now write their own `checks` row (previously
+  only the write-your-own path did), and `/api/check`/`/api/rewrite` dedupe by
+  `(attempt_id, revision_index)` before spending a model call — a retry reuses the existing
+  evaluation instead of a duplicate row *and* a duplicate Anthropic call.
+- **Coaching-loop honesty (AI-001, PRODUCT-001)** — a rewrite that fails NOD's own standard can no
+  longer be saved with one click (see the interaction-model note above); it's saved as
+  `outcome: "shipped-with-misses"`, never `"nod-rewrote"`, when that happens.
+- **Abuse/off-scope (FUN-001)** — `classifyTask()` has an `abuse` classification (regex-based
+  prompt-injection + clearly-unsafe-content patterns), checked before the outreach/offscope split,
+  enforced client- and server-side. A user-confirmed off-scope request now writes a
+  `roadmap_signals` row.
+- **Rubric (RUBRIC-001)** — `criteria.b4` now carries its own word/sentence/paragraph/reading-level
+  metrics (previously only under a separate `deterministic` key); every criterion's `quote` is
+  verified as a real substring of the draft before reaching the client (this also fixed NOD-draft's
+  "weak line" tap-matching). **Judgment call, not silently changed:** the PRD's 50-word floor is
+  still not hard-enforced — doing that would fail the already-tuned 100%-accuracy discrimination
+  fixtures and an existing intentional test. A lenient 15-word degenerate-input floor was added
+  instead.
+- **Analytics (ANALYTICS-001)** — all 6 PRD §14 events fire, including real `help_requests`/
+  `ai_turns` counters on `unaided_completed` (client-side counts on "tighten" / "edit rewrite" /
+  NOD-draft "I'm not sure" / "Stuck?" / each NOD generation or rewrite call, threaded through as
+  event-only fields on the attempts PATCH — never persisted as attempts columns). Completion events
+  are deduped per attempt so a Save retry can't double-log one.
+- **Ops (OPS-001)** — Anthropic calls go through one shared client with an explicit 30s timeout and
+  bounded retry. **Not implemented, flagged:** real rate limiting/a circuit breaker — needs a paid
+  limiter service or a Supabase-backed token-bucket table, an infra/cost call for the owner.
+- **UI bugs found via direct inspection, not just source review** — `Card.tsx` was silently
+  dropping its own `nod-card` base class whenever a caller also passed a `className` (a JSX-spread
+  ordering bug), which made every situation/choose-path card render with no visible box/border/
+  shadow at all in production — found by reproducing the owner's screenshot via a throwaway
+  Supabase session against the same production DB, not source inspection (source review alone
+  said this should have worked). Also fixed: a malformed CSS class string
+  (`"nod-secondary-path .nod-sp-link"`, stray leading dot) that silently broke a button's styling,
+  and the landing FAQ accordion letting multiple answers stay open instead of one at a time.
+- **Copy (COPY-001)** — one genuine miss corrected on re-check: `page.tsx`'s "you learn to write it
+  yourself" used a word ("learn") that's explicitly on the product's own banned-UI-words list
+  (`journey.md:62`, `design.md:103` — also bans *course/lesson/grade/score/quiz/streak/bench*) —
+  scan the rest of the codebase against that exact list before assuming any other UI copy is clear.
+  Also fixed: the landing page's "partner users" FAQ header, which contradicted its own
+  research-not-testimonials disclaimer directly above it; and two outcome-promising lines
+  (`FeedbackFrame`'s "gets a busy person to actually reply", `flow.ts`'s "I'll help it earn a
+  reply"). **Deliberately left unchanged, reasoning given each time it was re-raised:** "give them
+  a thing to say yes to" (`page.tsx`) — reads as describing the ask's clarity (B1), not a promised
+  outcome, and isn't on the actual banned-word list.
+- **Security headers (SEC-002)** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
+  Permissions-Policy added via `next.config.ts`.
+- **Tests (TEST-001)** — 49 non-network unit/component tests now exist (masking/PII edge cases,
+  B4 boundaries, `classifyTask` abuse detection, `pii-guard`, the `Card` regression, the FAQ
+  single-open regression) — up from 9 at the start of this session. Writing the abuse-detection
+  tests caught a real bug: the injection regex for "ignore ... instructions" required exactly one
+  qualifier word and missed "ignore **all previous** instructions." **Not added:** route-handler/
+  API-contract/ownership E2E tests — no existing harness for testing Next.js route handlers +
+  Supabase in this repo; standing one up is an infra decision, not attempted unilaterally.
+- **Build (OPS-002)** and **mobile viewport (RESP-001)** — both re-investigated when QA flagged
+  them; neither is a real app defect. The reported Turbopack/DNS build failures didn't reproduce
+  across many clean builds in this environment (reads as QA's own sandbox network restriction).
+  Mobile visual verification isn't achievable through the available browser automation — a resize
+  call reports success but the actual rendered/screenshotted viewport stays desktop-width
+  regardless. Real mobile sign-off still needs an actual device or manual DevTools.
 
 ## What's built
 
@@ -153,17 +147,22 @@ unaided with lighter scaffolding. The marketing landing page is live at `/`.
   key, `NOD_EVALUATOR_MODEL`, `NEXT_PUBLIC_SITE_URL`)
 - **Supabase project:** `nod-v1` (ref `tuwdvuzmjeezzxrgygej`), free tier — **auto-pauses after ~7
   days of inactivity**; if the live app stops responding, resume it from the Supabase dashboard
-- **Latest commit:** `a8e443a` on `feedback-pass-20aug`, currently deployed to production
+- **Latest commit:** `dd46f43` on `feedback-pass-20aug`, currently deployed to production
+- **Supabase CLI:** installed (`/opt/homebrew/bin/supabase`) and already linked to `nod-v1` —
+  `supabase db push` / `supabase db query --linked` work as a real path to the production DB. The
+  Supabase **MCP** connection is separately broken on Supabase's own side ("Unrecognized
+  client_id" on their OAuth authorize endpoint) — don't burn time retrying it, use the CLI instead.
+- **Migrations:** `app/supabase/migrations/0001_init.sql` → `0003_checks_nudges_unique_constraints.sql`,
+  all applied to the live project (`supabase migration list` confirms local==remote).
 
 ## Three amendments to the locked docs (owner, 2026-08-21) — already applied throughout
 
 1. Evaluator model is `claude-opus-4-8` (not the docs' default `claude-opus-5`)
-2. Google sign-on is required for users (not optional)
-3. Analytics (PRD §14 / implementation.md Phase 8) is **deferred** — not built. No event-emission
-   or `logEvent` calls exist anywhere in the codebase yet. This is the only implementation.md phase
-   not done.
+2. Google sign-on is required for users (not optional) — **confirmed working end-to-end, round 5 QA**
+3. Analytics (PRD §14 / implementation.md Phase 8) — **originally deferred, now fully built** (see
+   "Analytics" in the consolidated remediation summary above). All 6 events fire.
 
-## What's verified (this session's local + production checks)
+## What's verified (original build session, before the QA rounds — see the consolidated remediation summary above for this session's own verification)
 
 - Full local E2E walkthrough on a **production build** (`npm run build && npm run start`), one
   continuous signed-in session via a throwaway-user technique (see below): sign-in, all frames,
@@ -200,21 +199,21 @@ The approved execution plan that drove the autonomous build is at
 
 ## Open decisions for the owner (not urgent unless marked otherwise)
 
-1. **Anthropic credits — urgent, see "Two things still open" above.**
-2. **Analytics' `help_requests`/`ai_turns` fields** — the rest of PRD §14 is now wired (see
-   ANALYTICS-001 above); these two fields on `unaided_completed` need new client-side counters.
-   Needed before the guided→unaided capability-delta question (the actual North Star measurement)
-   can be answered precisely.
-3. **B4's word-floor calibration** — currently a lenient 15-word sanity floor, not the PRD's
-   "~50-125" band's low end enforced literally (see RUBRIC-001 above for why). Revisit if real
-   usage shows short-but-weak drafts passing that shouldn't.
-4. **Evaluator rate limiting / circuit breaker** — still not implemented; needs either a paid
+1. **Anthropic credits — urgent, see "The one real blocker" above.**
+2. **B4's word-floor calibration** — currently a lenient 15-word sanity floor, not the PRD's
+   "~50-125" band's low end enforced literally (see the rubric point in the remediation summary
+   above for why). Revisit if real usage shows short-but-weak drafts passing that shouldn't.
+3. **Evaluator rate limiting / circuit breaker** — still not implemented; needs either a paid
    limiter service or a Supabase-backed token-bucket table.
-5. **Supabase free tier** — fine for early beta, but the 7-day auto-pause means the app can go
+4. **Supabase free tier** — fine for early beta, but the 7-day auto-pause means the app can go
    dark if unused; worth deciding when to upgrade if real users are onboarded.
-6. **A "keep mine" save-with-a-miss affordance** — mentioned in the design docs, never built into
+5. **A "keep mine" save-with-a-miss affordance** — mentioned in the design docs, never built into
    the real FeedbackFrame (it only offers "Let me tighten it" on a miss, or Save once clean/rewrite
    completes). Not something QA flagged; noted here as a product-fidelity gap worth a look.
+6. **PII redaction for free text beyond the "who" field's own name/company** — the residual
+   `PRIV-001` gap (see "Privacy" in the remediation summary above). Closing it fully needs either
+   NER or an LLM call on free-text fields before persistence — a real per-request cost decision,
+   not something to build silently, especially with Anthropic credits at zero right now.
 
 ---
 
