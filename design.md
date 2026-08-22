@@ -102,7 +102,7 @@ Deliberately rejected worlds: a heritage "brass/instrument" look (too formal/old
 
 - **Name: NOD** — the honest "yes, that's good — send it." Warm, human, banned-word-safe. (Retired the earlier placeholder "Outreach Bench": in Indian professional culture "on the bench / benched" reads as *idle / unstaffed* — wrong signal for this audience. Do not reintroduce "bench" anywhere.)
 - **Tagline: "Your coach against the AI slop — so the skill sticks."** (Owner's call, 2026-08-21 — now the on-screen brand line across all app screens' mark. It leans into the resolved Decision 11 "get-better coach" spine and the anti-generic-AI positioning; "skill sticks" echoes the landing's demo copy for a consistent brand voice. *Superseded:* "Know it's good before you send — and get sharper each time" (still fine as a product/one-liner descriptor; the earlier "…and then learn" was dropped because **"learn" is a banned UI word**.))
-- **Logo — "the N-turn mark"** (owner's call, 2026-08-22): a geometric signal-blue N on a card-white rounded-square tile (52px, 15px radius, hairline border). The N's diagonal stroke breaks and kicks upward before completing — first attempt, correction, the skill sticking — replacing the earlier message-bubble+checkmark glyph (retired: read too close to generic chat/AI iconography, and the checkmark specifically echoed the grading language the product deliberately avoids).
+- **Logo — the circuit-node N mark** (owner's call, 2026-08-22, superseding the earlier "N-turn" mark of the same day): a geometric N built from rounded traces and node dots (two small branch stubs off the main strokes, plus dots at each joint), filled with a signal-blue gradient (light blue → signal-blue → signal-blue-deep) on a card-white rounded-square tile (52px, 15px radius, hairline border).
 
 ## Colors
 
@@ -211,7 +211,7 @@ The signature is the tension between **sharp cards and soft controls**. Cards ha
 - Plain rows (blue tick, situation title, date, one-line peek, hover "Reuse →"). The freshest row carries a small "just saved" chip. Called **"Your saved messages"** (never "bench").
 
 ### Brand Mark
-- Card-white tile (hairline border) with the signal-blue N-turn mark + name in Hanken 800 ink + tagline in Hanken 600 Signal-Blue-Deep beneath.
+- Card-white tile (hairline border) with the circuit-node N mark (signal-blue gradient) + name in Hanken 800 ink + tagline in Hanken 600 Signal-Blue-Deep beneath.
 
 ### Motion
 - **Entrance:** one staggered reveal (translateY(12px) + fade, `cubic-bezier(.16,1,.3,1)`, ~0.66s), sequenced down the page. **Micro-interactions:** hover lifts, arrow slides, live reshape of the draft when a decision chip changes. **All motion respects `prefers-reduced-motion`** (entrance reveals are gated behind `no-preference`, so reduced-motion yields finished states). Never animate layout properties (width/height/padding/margin) — use transform/opacity.
