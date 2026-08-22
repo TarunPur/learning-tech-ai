@@ -248,6 +248,9 @@ button.nod-card:focus-visible {
   line-height: 1.5;
   resize: none;
 }
+.nod-field textarea {
+  overflow: hidden;
+}
 .nod-field input:focus,
 .nod-field textarea:focus {
   outline: none;

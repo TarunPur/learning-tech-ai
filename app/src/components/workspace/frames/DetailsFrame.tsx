@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { ASK_SUGGESTIONS } from "@/lib/flow";
@@ -26,10 +26,17 @@ type DetailsFrameProps = {
   loading?: boolean;
 };
 
+function autosize(el: HTMLTextAreaElement | null) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+}
+
 export function DetailsFrame({ initialWho, initialAsk, initialCtx, onContinue, loading = false }: DetailsFrameProps) {
   const [who, setWho] = useState(initialWho);
   const [ask, setAsk] = useState(initialAsk);
   const [ctx, setCtx] = useState(initialCtx);
+  const ctxRef = useRef<HTMLTextAreaElement | null>(null);
 
   const askShown = who.trim().length >= 2;
   const ctxShown = askShown && ask.trim().length >= 2;
@@ -107,10 +114,17 @@ export function DetailsFrame({ initialWho, initialAsk, initialCtx, onContinue, l
           <div className="nod-ipt">
             <textarea
               id="ctx"
-              rows={2}
+              ref={(el) => {
+                ctxRef.current = el;
+                autosize(el);
+              }}
+              rows={1}
               placeholder="A reason it's worth reaching out today"
               value={ctx}
-              onChange={(e) => setCtx(e.target.value)}
+              onChange={(e) => {
+                setCtx(e.target.value);
+                autosize(ctxRef.current);
+              }}
             />
           </div>
           <p className="nod-eg">e.g. we spoke at the expo and she asked me to follow up</p>
