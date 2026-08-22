@@ -733,6 +733,76 @@ Live response headers now include CSP, `X-Frame-Options: DENY`, `X-Content-Type-
 
 ---
 
+# 13. Round 4 Visual QA — Screenshot Regression
+
+**Source:** Owner-provided authenticated workspace screenshot.
+
+**Status:** `OPEN — P1 visual/design regression`
+
+## VIS-001 — Situation cards are rendering as unstyled text rows
+
+### Expected behavior from the finalized design
+
+Per `design.md:160-162` and `design.md:233`, the four situation choices must be:
+
+- Equal, full-width primary cards.
+- White card surfaces on the warm paper background.
+- Square corners.
+- Hairline border.
+- Soft ambient shadow.
+- Left-aligned title/subtitle content.
+- Hover/focus lift and blue border treatment.
+
+### Actual behavior in the screenshot
+
+- The four choices appear as floating text with no visible card surface.
+- The border, white background, shadow, and full-width button treatment are missing.
+- The large vertical gaps make the frame feel unfinished and materially different from the locked workspace design.
+
+### Root cause
+
+`app/src/components/ui/Card.tsx:6-17` computes the shared `nod-card` class, but then spreads `buttonProps`/`divProps` after `className={classes}`:
+
+```tsx
+return <button type="button" className={classes} {...buttonProps} />;
+```
+
+Because `buttonProps` still contains the original `className="nod-primary-path"`, it overwrites the computed value. The rendered element receives `nod-primary-path` but not `nod-card`.
+
+That prevents these required rules from applying:
+
+- `globals.css:197-202` — background, border, shadow.
+- `globals.css:203-208` — block display, full width, text alignment, cursor.
+- `globals.css:210-216` — hover/focus lift and border.
+
+The same prop-spread bug exists for the `div` branch.
+
+### Required fix
+
+Destructure `className` from the incoming props and spread the remaining props before applying the computed class, for example:
+
+```tsx
+const { as, className, ...rest } = props;
+return <button type="button" {...rest} className={classes} />;
+```
+
+Apply the equivalent correction to the `div` branch.
+
+### Acceptance criteria
+
+- Rendered situation buttons have both `nod-card` and `nod-primary-path` classes.
+- Four cards are visibly full-width, white, bordered, square-cornered, and elevated.
+- Hover/focus state lifts the card and changes the border to blue.
+- Choose-frame cards use the same corrected surface treatment.
+- Screenshot comparison at desktop width matches the finalized workspace composition.
+- Add a component smoke test that asserts the shared `nod-card` class is retained when a custom class is supplied.
+
+## QA process correction
+
+The prior QA reports described the workspace design as source-aligned, but that was not a visual sign-off. This screenshot proves that source-level token inspection was insufficient: the shared component’s prop-spread behavior was not caught without inspecting the rendered result. The visual status is now explicitly open until a browser screenshot confirms the corrected frame.
+
+---
+
 ## 11. Retest evidence (build-agent remediation pass, 2026-08-22)
 
 All findings in §4–§7 and the implementation order in §8 were worked this session. Full detail
@@ -851,3 +921,234 @@ previously untested despite covering round-1 additions).
 as needing the owner's sign-off (a DB migration for hard uniqueness; Anthropic/Google, excluded
 from this round's scope by the owner's own instruction) and one explicit disagreement (§8 above,
 reasoning given rather than silently complying).
+
+---
+
+# 14. Round 5 Chrome UI/UX E2E QA — Google included, Anthropic excluded
+
+**Review date:** 2026-08-22
+
+**Browser:** Google Chrome, owner-authenticated profile
+
+**Live URL:** https://learning-tech-ai.vercel.app/
+
+**Scope:** Complete non-Anthropic UI/UX pass against the locked landing page, workspace, design
+system, journey, PRD, implementation plan, and ERD. Google OAuth was explicitly included in this
+round. Anthropic-dependent NOD drafting, evaluation, feedback, rewrite, and any state that requires
+those calls remain intentionally excluded per the owner's instruction.
+
+**Important deployment note:** The production deployment changed during this pass. The initial
+owner screenshot and the first authenticated tab showed the pre-`46a1bb1` stale render. A fresh
+reload after commit `46a1bb1` was live showed the corrected card classes and computed styles. The
+old plain-row screenshot must not be used as evidence against the current deployment; it is kept
+as historical evidence of the defect that was fixed.
+
+## 14.1 Browser test result matrix
+
+| Area | Result | Evidence / boundary |
+|---|---|---|
+| Landing hero, nav, CTA, typography, paper/blue treatment | **PASS — desktop** | Rendered in Chrome and visually compared with `landing-editorial-blue-v3.html`. |
+| Landing product-demo section | **PASS — desktop** | Demo card, timeline, transitions, CTA and research proof rendered. |
+| Landing “uniquely powerful” section | **PASS — desktop** | Three bordered cards, arrows, source strip and 70M+ note rendered. |
+| Landing research section | **PASS — desktop** | Heading, research explanation and horizontal insight-card marquee rendered. |
+| Landing FAQ section and footer | **PASS — structure; FAIL interaction noted below** | Six sections plus footer present; footer links and CTA targets resolved. |
+| Landing CTA routing | **PASS** | All visible “Start with your first task” links route to `/signin?next=/app`. |
+| Sign-in screen | **PASS — desktop** | Branded header, Google button, email field, magic-link action and loading-capable controls rendered. |
+| Google OAuth initiation | **PASS** | Chrome reached the real Google account chooser with the configured Supabase callback. |
+| Google OAuth completion | **PASS** | The requested owner account selection returned to authenticated `/app`; workspace loaded. No password or OTP was handled by QA. |
+| OAuth denial presentation | **PASS** | `/auth/callback?error=access_denied` returned to sign-in with the human-readable cancellation message. |
+| Authenticated workspace header and two-frame desktop layout | **PASS — desktop** | Sticky brand header, hairline, recap-left / active-right composition and top anchoring rendered. |
+| Situation frame | **PASS on fresh deployment** | Four equal buttons render with `nod-card nod-primary-path`, white background, hairline border, ambient shadow and block/full-width styling. |
+| Situation → details transition | **PASS** | A real situation selection created the attempt and reached progressive details. |
+| Details progressive fields | **PASS** | Recipient appears first; ask appears after recipient input; optional context appears after ask input; Continue stays disabled until required values exist. |
+| Details masking message | **PASS — UI** | The frame visibly explains that names are masked before processing. Server/database privacy remains separately open under `PRIV-001`. |
+| Details → choose transition | **PASS** | Recap retained recipient, context and ask; choose frame rendered. |
+| Choose-path primary card | **PASS on fresh deployment** | Independently verified the choose card also retains `nod-card`, white surface, border, shadow and block display. |
+| Choose-path hierarchy | **PASS** | Write-your-own is the loud primary card; NOD draft is a quiet secondary link. |
+| Choose → write-your-own draft | **PASS — pre-AI** | Draft frame rendered with situation brief, recipient/context/ask rows, textarea and disabled empty-state CTA. |
+| Recap Edit navigation | **PASS** | Clicking Edit from the details recap returned to the situation frame. |
+| Custom in-scope outreach | **PASS** | Custom outreach text reached the same details frame and retained the custom task title. |
+| Abuse/refusal boundary | **PASS — tested example** | Injection-style text produced “I can’t help with that one” and did not advance. |
+| Off-scope boundary | **PASS — tested example** | Proposal/deck request produced the soft “bigger than a message” explanation and “Shape it as a message anyway”. |
+| FAQ accordion single-open behavior | **FAIL — `UX-004`** | Clicking the second question left the first open; both had `aria-expanded="true"`. |
+| Workspace mobile layout | **NOT VERIFIED** | Chrome’s window-bounds API refused the resize in this environment. CSS media rules were inspected, but that is not a browser/device visual pass. |
+| Landing mobile layout | **NOT VERIFIED** | Same browser resize limitation; no mobile screenshot is claimed. |
+| NOD-draft, rubric feedback, rewrite, saved artifact, reuse, nudge, unaided screens | **NOT TESTED — intentional scope exclusion** | These states require Anthropic calls or a completed AI-backed save. They must be tested in a separate AI-enabled pass. |
+
+## 14.2 New issue for the build agent
+
+### P2 — UX-004: Landing FAQ allows multiple answers open at once
+
+**Requirement:** The finalized landing mockup’s FAQ behavior is a one-answer-at-a-time accordion
+(`design/mockups/landing-editorial-blue-v3.html`, FAQ script). The UI should keep the FAQ focused
+and avoid expanding several long answers simultaneously.
+
+**Live reproduction in Chrome:**
+
+1. Open the landing page.
+2. Scroll to “A few questions that came up in our research.”
+3. The first answer is open by default.
+4. Click “What kind of messages can NOD help with?”
+5. The first answer remains open and the second answer opens.
+
+**Observed DOM state after step 4:**
+
+```text
+FAQ 1: aria-expanded="true", class="faq-item open"
+FAQ 2: aria-expanded="true", class="faq-item open"
+FAQ 3: aria-expanded="false"
+FAQ 4: aria-expanded="false"
+```
+
+**Source cause:** `app/src/app/page.tsx:119-127` stores a `Set<number>` and adds the clicked
+index without clearing the previous index. `app/src/app/page.tsx:604-608` renders every member of
+that set as open.
+
+**Required fix:** When opening item `i`, replace the open state with only `i`; when clicking the
+currently open item, either close it or preserve the canonical mockup’s chosen behavior. Do not
+allow two answers open simultaneously.
+
+**Acceptance criteria:**
+
+- Initial FAQ state matches the finalized design.
+- Opening any question closes the previously open question.
+- `aria-expanded` and the visual `.open` class always describe the same single active answer.
+- Keyboard activation has the same behavior as pointer activation.
+- Add a component interaction test for the single-open invariant.
+
+## 14.3 Resolved visual issue from Round 4
+
+### `VIS-001` — RESOLVED on the fresh live deployment
+
+Commit `46a1bb1` corrected `app/src/components/ui/Card.tsx` by removing `className` from the
+spread props in both branches. Fresh Chrome verification showed:
+
+```text
+Situation: class="nod-card nod-primary-path"
+background: rgb(255, 255, 255)
+border: 1px solid rgb(228, 227, 220)
+display: block
+ambient shadow present
+
+Choose: class="nod-card nod-primary-path"
+background: rgb(255, 255, 255)
+border: 1px solid rgb(228, 227, 220)
+display: block
+ambient shadow present
+```
+
+The previous report’s visual defect is therefore closed for the current deployment. Keep the
+component smoke-test acceptance criterion from Round 4; it would prevent a regression of this exact
+shared-prop bug.
+
+## 14.4 Existing issues that remain open after this browser pass
+
+The following are not closed by successful Google sign-in or desktop UI rendering:
+
+| ID | Current status | Why it remains open |
+|---|---|---|
+| `PRIV-001` | **OPEN — P0** | The build-agent remediation still explicitly leaves direct authenticated API submissions containing raw names/company identifiers unresolved. Client-side remasking of custom text after details does not prove the server-side invariant. |
+| `AI-001` | **Source-fixed; AI-backed browser state not verified** | Failed rewrite save gating is corrected in source, but the Anthropic-dependent state was excluded from live execution. |
+| `DATA-001` / `DATA-002` | **OPEN / partial** | Audit persistence and completion/nudge operations still lack the database-level guarantees described in the earlier findings. |
+| `PRODUCT-001` / `RUBRIC-001` | **OPEN / calibration** | Full feedback loop, personalized criteria, loop semantics and B4 calibration were not executable without Anthropic; the documented low-end B4 decision remains open. |
+| `COPY-001` | **OPEN** | The live landing accessible label at `page.tsx:459` still contains banned UI language (“learn”), and the live demo copy at `page.tsx:471`/`481` uses “say yes to”. The finalized design/implementation rules prohibit banned learning/course language and outcome-adjacent phrasing. Resolve the product-copy disagreement explicitly; do not treat the visible desktop screenshot alone as closure. |
+| `UX-003` | **OPEN** | `NodDraftFrame.tsx` still contains the malformed class string `nod-secondary-path .nod-sp-link`. The NOD-draft screen was AI-excluded, so this was not visually exercised. |
+| `RESP-001` | **OPEN verification blocker — P1** | The required Chrome/mobile or real-device pass at the ≤1160/≤560 breakpoints has not been completed. Source CSS inspection is not sign-off. |
+| `OPS-002` | **OPEN / environment evidence mixed** | The latest local Webpack build attempt was blocked fetching Google Fonts (`fonts.googleapis.com` DNS failure); previous local runs reported the default Turbopack issue. CI/Vercel must prove the documented production build command is green. |
+| `TEST-001` | **OPEN — P1/P2** | No browser/component/API/ownership/analytics E2E harness exists for the risky authenticated and AI-backed paths. |
+
+## 14.5 Verification commands from this round
+
+| Check | Result |
+|---|---|
+| Chrome authenticated Google flow | **PASS** — chooser → callback → `/app` |
+| `npm run lint` | **PASS** |
+| Focused non-network tests | **PASS — 4 files, 38 tests** |
+| `npm run build -- --webpack` | **BLOCKED in this environment** by DNS resolution for `fonts.googleapis.com`; do not reinterpret this network failure as a TypeScript failure. |
+| Mobile Chrome visual pass | **NOT VERIFIED** — window resize API rejected by Chrome |
+
+**Round 5 disposition:** `NO-GO` — Google sign-in and the desktop non-Anthropic flow are verified,
+the card regression is resolved, but `PRIV-001` remains P0, `UX-004` is a new P2 interaction defect,
+mobile visual sign-off is still missing, and the AI-dependent loop plus existing data/reliability
+findings remain outside or unresolved.
+
+---
+
+## 15. Response to Round 5 (§14) — build-agent remediation pass 3
+
+Verified: `npx tsc --noEmit` clean, `npm run lint` clean, `npm run build` and
+`npm run build -- --webpack` both clean (fresh `.next`, ruling out a stale-cache explanation),
+`npx vitest run` on the non-network suite — 6 files, **49/49 passing** (11 new: 6 for the
+`nod-card` regression + `UNMASKED_COMPANY_RE`, 2 FAQ single-open component tests, plus the earlier
+counts).
+
+### Fixed this pass
+
+- **UX-004** — the FAQ `Set<number>` accumulated open indices instead of replacing them.
+  Rebuilt as a single nullable index (`openFaq: number | null`): opening a question now closes
+  whichever was open, clicking the open one closes it. Added a component test (`page.test.tsx`)
+  asserting exactly one `aria-expanded="true"` at a time — the exact regression guard §14.2 asked
+  for.
+- **UX-003** — `NodDraftFrame.tsx`'s "I'm not sure" button had `className="nod-secondary-path
+  .nod-sp-link"` — a stray leading dot turned the second token into a literal, non-matching class
+  name (`.nod-sp-link` is not a valid space-separated class, so no CSS ever matched it). Fixed to
+  `"nod-sp-link"`, matching every other use of that class in the codebase.
+- **`VIS-001`'s own acceptance criterion** — added `Card.test.tsx`: asserts `nod-card` survives
+  alongside a caller's `className` on both the `div` and `button` branches, plus an explicit
+  "does not leak the raw className" regression guard. This is the component smoke test both
+  Round 4 and Round 5 asked for.
+- **`COPY-001` — I was wrong in Round 13/§13, corrected now.** I'd judged `page.tsx:459`'s "you
+  learn to write it yourself" as a compliant capability claim without checking whether "learn"
+  specifically was on a formal banned list. It is: `journey.md:62` and `design.md:103` both
+  explicitly ban *course/lesson/learn/grade/score/quiz/streak* (and *bench*) as **UI words**.
+  Fixed the aria-label to "you can write it yourself next time." Scanned the rest of the codebase
+  for the same list — the only other hits are internal DOM ids/class names (`demoLesson`), code
+  comments about the Flesch-Kincaid *Grade* Level algorithm, and LLM system-prompt instructions
+  ("never grade," "score this as") — none of those are user-facing UI copy, so they're not in
+  scope of a rule about banned **UI** words. **Still maintained, now on firmer ground:** the "give
+  them a thing to say yes to" phrasing is not on this actual banned-word list, and I still read it
+  as describing the ask's clarity (B1) rather than a promised outcome.
+- **`PRIV-001` — strengthened with one more targeted (not blanket) check.** Added
+  `UNMASKED_COMPANY_RE` to the shared `looksUnmasked()` guard: it flags the literal pattern
+  `at/from/with <Capitalized word>` that isn't already a `[placeholder]` — the *exact* structural
+  shape `buildMaskTokens()` is supposed to have already replaced. This is narrower and lower-risk
+  than a blanket "two capitalized words" scan (which would false-positive on ordinary phrases like
+  "Q3 Roadmap"): it only fires on the specific at/from/with construction, and 5 new tests confirm
+  it doesn't fire on lowercase words or already-masked text. **What this still doesn't close** (and
+  what I don't think any deterministic regex can): a company or name mentioned without one of those
+  three trigger words, or a name that isn't the client's own extracted "who" token. Closing that
+  gap fully needs either NER or an LLM redaction pass on free-text fields — the latter is a real
+  per-request cost and a decision for the owner, not something to add silently, especially with
+  Anthropic credits currently at zero.
+
+### Not changed, with reasoning
+
+- **`DATA-001`/`DATA-002` database-level guarantees** — still app-level only (idempotent inserts,
+  ownership checks), not a DB unique constraint or transaction. This needs a migration against the
+  **live production database** — a different risk category from an app-code change. Asking the
+  owner directly this round instead of deferring again: **do you want me to add a unique
+  constraint on `(attempt_id, revision_index)` on `checks` and `(attempt_id)` on `nudges`?** It's
+  additive and low-risk (no data loss), but it's still a live-infra change I won't make without an
+  explicit yes.
+- **`RESP-001` mobile verification** — attempted this round via the available browser tooling
+  (`resize_window` to 390×844 on the live landing page). The call reports success but the
+  rendered/screenshotted viewport stays desktop-width regardless — a tooling limitation, not
+  something either QA's environment or this one can get past. Real mobile sign-off still needs an
+  actual device or the owner's own browser DevTools.
+- **`OPS-002`** — re-verified clean on both build commands with a fully wiped `.next` cache in this
+  environment. The Google Fonts DNS failure this round's environment hit didn't reproduce here —
+  reads as that environment's outbound network restriction, not a reproducible app defect.
+- **`PRODUCT-001`/`RUBRIC-001` calibration** — unchanged from Round 3's reasoning (§13 point 6);
+  still correctly an open, documented calibration decision, not a bug.
+- **`AI-001`, and the NOD-draft/feedback/rewrite/saved/reuse/nudge/unaided screens generally** —
+  can't be exercised live while Anthropic credits are at zero; source-level fix stands from Round 3.
+- **`TEST-001`** — route-handler/API-contract/ownership E2E tests still not added (same
+  no-existing-harness reasoning as before); component-level coverage did grow this round (Card,
+  FAQ).
+
+**Round 5 disposition after this pass:** `UX-003` and `UX-004` resolved. `COPY-001` resolved (one
+real violation found and fixed on re-check; the disagreement on the other phrase stands, now
+against the actual banned-word list rather than a general impression). `PRIV-001` meaningfully
+strengthened, not fully closed — the residual gap is architectural, not an oversight. `DATA-001`/
+`DATA-002`'s DB-level ask is now a direct question to the owner rather than a repeated deferral.
+`RESP-001` and `OPS-002` reconfirmed as tooling/environment, not app, issues.
