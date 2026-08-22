@@ -34,7 +34,7 @@ export function ChooseFrame({ onPick, loading = false }: ChooseFrameProps) {
       <Card
         as="button"
         className="nod-primary-path"
-        style={{ padding: "26px 28px" }}
+        style={{ padding: "17px 24px" }}
         onClick={() => onPick("own")}
         disabled={loading}
       >

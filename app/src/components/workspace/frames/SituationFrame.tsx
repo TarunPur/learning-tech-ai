@@ -57,7 +57,7 @@ export function SituationFrame({ onPick, loading = false }: SituationFrameProps)
           as="button"
           key={s.id}
           className="nod-primary-path"
-          style={{ padding: "26px 28px", marginBottom: 12 }}
+          style={{ padding: "17px 24px", marginBottom: 10 }}
           onClick={() => onPick(s.id, "")}
           disabled={loading}
         >

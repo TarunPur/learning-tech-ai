@@ -298,7 +298,7 @@ button.nod-card:focus-visible {
   gap: 64px;
   align-items: start;
   align-content: start;
-  padding-top: 52px;
+  padding-top: 30px;
 }
 @media (max-width: 1160px) {
   .nod-cols {
@@ -398,14 +398,14 @@ button.nod-card:focus-visible {
   font-size: clamp(28px, 3.4vw, 39px);
   line-height: 1.08;
   letter-spacing: -0.018em;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
 }
 .nod-f-title em {
   font-style: italic;
   color: var(--blue-deep);
 }
 .nod-f-lede {
-  margin: 0 0 36px;
+  margin: 0 0 20px;
   color: var(--ink-soft);
   font-size: 15.5px;
   line-height: 1.55;
@@ -427,7 +427,7 @@ button.nod-card:focus-visible {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--blue-deep);
-  margin: 0 0 14px;
+  margin: 0 0 8px;
 }
 .nod-primary-path .nod-pp-row {
   display: flex;
@@ -451,7 +451,7 @@ button.nod-card:focus-visible {
   transform: translateX(4px);
 }
 .nod-primary-path .nod-pp-sub {
-  margin: 10px 0 0;
+  margin: 6px 0 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--ink-soft);
@@ -459,8 +459,8 @@ button.nod-card:focus-visible {
 }
 
 .nod-secondary-path {
-  margin-top: 30px;
-  padding-top: 26px;
+  margin-top: 18px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 .nod-secondary-path .nod-sp-q {
