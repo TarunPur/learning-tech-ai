@@ -404,6 +404,335 @@ When fixes are complete, append:
 
 ---
 
+# 11. Round 2 Regression QA — Build Agent “All Issues Fixed” Claim
+
+**Review date:** 2026-08-22
+
+**Deployment status:** The new deployment became live during this review. The first two live polls still served the old build; the third and subsequent probes served the new build.
+
+**Round 2 disposition:** `NO-GO`
+
+The build agent fixed several issues, but not all of them. The P0 masking invariant is still open. Authenticated browser E2E and database verification remain blocked because the owner’s private Google session was not used.
+
+## 11.1 Post-deploy live smoke results
+
+| Check | Result | Evidence |
+|---|---|---|
+| Landing page | PASS | HTTP 200; new deployment ETag observed. |
+| `/app` without session | PASS | HTTP 307 to `/signin?next=%2Fapp`. |
+| `/api/messages` without session | PASS | HTTP 401 `unauthorized`. |
+| OAuth denial callback | PASS | Redirects to `/signin?next=%2Fapp&error=access_denied`. |
+| OAuth success/account completion | BLOCKED | Requires owner’s private Google session. |
+| CSP | PASS live | `Content-Security-Policy` present. |
+| Clickjacking protection | PASS live | `X-Frame-Options: DENY` and `frame-ancestors 'none'`. |
+| Referrer/permissions headers | PASS live | Both present. |
+| `access-control-allow-origin: *` | OPEN | Still present on public HTML responses; review whether this is intentional. |
+
+The live callback behavior is now different from the first review, so `AUTH-001` is fixed at the callback boundary. The actual Google account/session exchange is still unverified.
+
+## 11.2 Local verification results
+
+| Check | Result | Notes |
+|---|---|---|
+| ESLint | PASS | `cd app && npm run lint`. |
+| Focused unit tests | PASS | 2 files, 26 tests passed: masking and B4. |
+| Full test suite | BLOCKED | 3 real Anthropic integration tests fail because `api.anthropic.com` cannot resolve in this environment; 26 tests pass and 2 are skipped. |
+| `npm run build` | FAIL | Turbopack still panics on `landing.css` with process/port permission error. |
+| `npm run build -- --webpack` | PASS | TypeScript and 14 static pages generated successfully. |
+| Authenticated browser E2E | BLOCKED | No private Google sign-in session available. |
+| Supabase row verification | BLOCKED | Requires authenticated live session/database access. |
+
+## 11.3 Finding status matrix
+
+| ID | Round 2 status | QA conclusion |
+|---|---|---|
+| `PRIV-001` | **OPEN — P0** | Generic email/phone scrubbing was added, but raw names/company identifiers can still bypass masking. |
+| `REL-001` | **PARTIAL — OPEN** | Main workspace and history errors now surface, but nudge loading and clipboard failures remain silent. |
+| `AUTH-001` | **FIXED at callback boundary; live account flow BLOCKED** | Safe callback error codes and messages are now implemented and live. |
+| `DATA-001` | **PARTIAL — OPEN** | NOD/rewrite checks are inserted, but insert failures are ignored and retries can duplicate evaluator rows. |
+| `SEC-001` | **MOSTLY FIXED** | Ownership checks added to insert routes; nudge PATCH still returns success for nonexistent/foreign IDs. |
+| `API-001` | **PARTIAL — OPEN** | Zod schemas exist, but semantic/state validation and API regression tests are missing. |
+| `AI-001` | **OPEN — P1** | A failed rewrite still has a “Save anyway” action. |
+| `DATA-002` | **PARTIAL — OPEN** | Client/server dedupe was attempted, but no transaction or database uniqueness makes it race-safe. |
+| `FUN-001` | **PARTIAL — OPEN** | Abuse/injection keyword guard and roadmap insert exist, but safety coverage is narrow and untested. |
+| `ANALYTICS-001` | **PARTIAL — OPEN** | Event names are wired, but required capability fields, error handling, dedupe, and verification are incomplete. |
+| `RUBRIC-001` | **PARTIAL** | B4 metrics and quote validation were added; low-end threshold remains an unresolved product calibration decision. |
+| `PRODUCT-001` | **OPEN — P1** | Personalized first-pass criteria and accurate loop/outcome semantics are still incomplete. |
+| `UX-001` | **FUNCTIONALLY FIXED** | Full verified quotes are used; malformed class remains separately open. |
+| `UX-002` | **FIXED in source/live build** | Sign-in now uses branded components, labels, and loading state; visual browser pass remains blocked. |
+| `COPY-001` | **PARTIAL — OPEN** | Partner-user claim was corrected and feedback copy improved, but landing still contains outcome-adjacent/banned wording. |
+| `OPS-001` | **PARTIAL** | Timeout and bounded retry were added; rate limiting/circuit breaker remain absent. |
+| `OPS-002` | **OPEN — P1** | Default documented build still fails under Turbopack; only Webpack succeeds. |
+| `SEC-002` | **FIXED live, with CORS review open** | Security headers are now live; permissive HTML CORS header remains. |
+| `TEST-001` | **OPEN — P1/P2** | New masking/B4 tests exist, but no API, ownership, analytics, state-machine, or browser E2E tests. |
+
+## 11.4 Remaining open findings
+
+### P0 — PRIV-001 remains open: names and companies can still be raw
+
+The new code improves masking but does not close the invariant.
+
+1. `Workspace.tsx:122-124` only applies `scrubGenericPII()` to custom task text before the first network request. It scrubs email/phone patterns but cannot know or mask a person/company name before the details frame. A custom task such as `Write to Priya at Acme about the renewal` can still be stored raw in `custom_task_masked`.
+2. `pii-guard.ts:20-25` only detects email addresses and phone numbers. A direct authenticated API caller can submit `Priya`, `Acme`, or another raw identifier in a `*_masked` field and pass the guard.
+3. `buildMaskTokens()` creates one full-name token. If the user enters `Priya Sharma` in the recipient field but writes `Hi Priya` in the ask/context, the first name is not necessarily masked because only `Priya Sharma` is registered as the token.
+4. Company extraction is bounded to four words and can leave longer company identifiers partially raw.
+5. The comments claim the masking boundary is complete, but the current implementation still has an unavoidable pre-details raw custom-task path.
+
+**Required resolution:** Do not persist custom free text until the recipient/company details are known, or use an explicit local identifier map that masks all supplied identifiers before the first request. Add tests for full name versus first name, long company names, custom tasks containing names, and direct API submissions containing raw names/company names.
+
+### P1 — AI-001 remains open: failed rewrite can still be saved
+
+`FeedbackFrame.tsx:40-67` correctly identifies a rewrite that failed the core standard, but still renders:
+
+`Save anyway`
+
+That contradicts the requirement that the rewrite pass B1/B2/B4 before being treated as a completed NOD rewrite. Either:
+
+- block Save and require another user edit, or
+- explicitly implement and document “ship with misses” as an allowed path with the correct product language and outcome handling.
+
+The current UI silently allows a failed rewrite to become a saved artifact.
+
+### P1 — DATA-001 remains partial: evaluator-row failures are swallowed
+
+The new NOD and rewrite routes insert `checks` rows, but both ignore the returned Supabase error:
+
+- `app/src/app/api/nod-draft/route.ts:51-62`
+- `app/src/app/api/rewrite/route.ts:41-52`
+
+The API can return a successful draft while the required audit row was not written. Also, there is no uniqueness or idempotency protection for repeated NOD/rewrite requests, so the same revision can create duplicate `checks` rows.
+
+**Required resolution:** Check insert errors and fail/retry safely. Add a database uniqueness strategy or idempotency key for `(attempt_id, revision_index, evaluator_kind)` as appropriate to the product model.
+
+### P1 — DATA-002 remains partial: save/nudge operations are not race-safe
+
+The client now skips a message after `savedMessageId` is set, and the nudge route performs a prior lookup. However:
+
+- Message idempotency exists only in client memory.
+- Two concurrent Save requests can both insert messages.
+- Two concurrent nudge requests can both pass the lookup and insert rows.
+- The migration has no unique constraint on `nudges.attempt_id`.
+- There is still no transaction spanning message insert, attempt completion, and nudge creation.
+
+**Required resolution:** Add a server-side idempotent completion operation or Postgres RPC/transaction, plus a unique constraint for one nudge per attempt.
+
+### P1 — PRODUCT-001 remains open: capability data is still incomplete
+
+`Workspace.tsx:171-178` still records only B1–B5 in `first_pass_criteria`; personalized criteria are omitted.
+
+`Workspace.tsx:322-325` still stores `loops_to_clear` as `draft.checkCount`, which counts evaluator checks rather than clearly representing user revision loops. The owner should resolve the intended definition and test it against the PRD/ERD terminology.
+
+The `kept` outcome is allowed by the schema but is not actually produced by the save flow.
+
+### P1 — ANALYTICS-001 remains partial
+
+The six event names now appear in source and are emitted from the main routes, but this is not yet complete instrumentation:
+
+- `help_requests` and `ai_turns` are not captured in `unaided_completed`.
+- `logEvent()` awaits the Supabase insert but never checks the returned `{ error }`; Supabase insert failures are therefore silently discarded.
+- `draft_completed` and `unaided_completed` are emitted whenever a PATCH contains `completed_at`, so a repeated Save/retry can duplicate completion events.
+- No event contract tests or authenticated database verification were provided.
+
+If analytics remain intentionally deferred, the release DoD must say so explicitly. If they are required, the missing fields and idempotency must be implemented.
+
+### P1 — API-001 remains partial
+
+Runtime Zod validation is now present, but semantic checks are still missing:
+
+- `patchAttemptSchema` does not validate that the patch matches the attempt’s current scenario/path/state.
+- `saveMessageSchema` does not prevent a message scenario from differing from the attempt scenario.
+- `checkDraftSchema` allows a valid owned attempt with an unrelated scenario.
+- `PATCH /api/nudges/[id]` returns `{ ok: true }` even when the ID does not exist or belongs to another user, because it does not check affected-row count.
+- No API-level tests exercise malformed JSON, invalid UUIDs, oversized bodies, raw identifiers, foreign attempt IDs, or invalid state transitions.
+
+### P1 — FUN-001 remains partial: abuse handling is keyword-only
+
+The new `classifyTask()` has abuse/injection patterns and the server checks them. This is an improvement, but it is not equivalent to robust abuse handling:
+
+- Variants, obfuscation, indirect instructions, and many unsafe requests will not match the patterns.
+- There are no classifier tests in the current test suite.
+- The implementation explicitly describes the guard as a best-effort keyword net.
+
+At minimum, add a documented safe fallback for ambiguous harmful requests and regression tests for injection variants and unsafe content.
+
+### P2 — COPY-001 remains open
+
+The “partner users” wording was corrected, and the feedback sentence no longer explicitly promises a reply. However, the landing page still includes:
+
+- `page.tsx:459` — “you learn to write it yourself” in accessible UI text.
+- `page.tsx:471` — “nothing simple to say yes to.”
+- `page.tsx:481` — “a single, easy thing to say yes to.”
+- `b4.ts:91` — “Outreach that gets replies is usually…” in evaluator feedback copy.
+
+Align all visible and accessible copy with the rule: claim message quality and user capability, never recipient behavior or reply outcomes.
+
+### P2 — UX-003 remains open: malformed CSS class
+
+`NodDraftFrame.tsx:115` still uses:
+
+```tsx
+className="nod-secondary-path .nod-sp-link"
+```
+
+The class string contains a selector fragment and will not match either intended class selector. Use the intended class name(s) without the embedded dot.
+
+### P2 — OPS-001 remains partial
+
+The shared Anthropic client now has a 30-second timeout and two retries. There is still no rate limiter, circuit breaker, or per-user/model cost guard. This remains an operational risk for a public deployment.
+
+### P1 — OPS-002 remains open: default build is not green
+
+The build agent’s source compiles under:
+
+```bash
+npm run build -- --webpack
+```
+
+But the documented/default command still fails:
+
+```bash
+npm run build
+```
+
+It fails with a Turbopack internal error while processing `landing.css`, caused by process/port permission failure. This must be resolved or the supported CI/Vercel build command must be made explicit and enforced.
+
+### P2 — TEST-001 remains open
+
+The focused unit suite grew from 9 to 26 passing tests, which is good progress. Coverage is still missing for:
+
+- `classifyTask()` abuse/off-scope branches.
+- Full-name/first-name/company masking edge cases.
+- API route schemas and direct bypass requests.
+- Ownership checks.
+- NOD/rewrite check-row persistence and error handling.
+- Save retry/idempotency.
+- Analytics event dedupe and required properties.
+- OAuth callback UI in a browser.
+- Authenticated workspace E2E.
+
+## 11.5 What is verified fixed in the new deployment
+
+- OAuth provider-denial callback now preserves a safe error code.
+- Live callback redirects to `/signin?next=%2Fapp&error=access_denied`.
+- Live sign-in route is served with the new build.
+- CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy` are live.
+- Unauthenticated `/app` and API protection still work.
+- Local lint passes.
+- Local focused masking/B4 tests pass: 26 tests.
+- Local Webpack production build passes.
+- Source contains ownership checks for check/message/nudge inserts.
+- Source contains NOD/rewrite check-row insertion.
+- Source contains shared request validation and visible workspace error/retry UI.
+
+## 11.6 Required next actions before QA sign-off
+
+- [ ] Close `PRIV-001` completely, including pre-details custom-task identifiers.
+- [ ] Remove or properly formalize `Save anyway` for a failed rewrite.
+- [ ] Make check inserts error-aware and idempotent.
+- [ ] Make Save/nudge completion server-transactional or truly idempotent.
+- [ ] Complete or explicitly defer analytics with owner approval; do not silently omit required fields.
+- [ ] Add semantic API state validation and route tests.
+- [ ] Fix remaining claims/banned copy and malformed CSS class.
+- [ ] Decide and fix the default build command failure.
+- [ ] Complete authenticated browser E2E using the owner’s own session.
+- [ ] Verify Supabase rows for masking, ownership, checks, nudges, events, and roadmap signals.
+
+**Round 2 QA disposition:** `NO-GO — live deployment is updated, but P0 masking and multiple P1 correctness/idempotency issues remain open.`
+
+---
+
+# 12. Round 3 Scoped QA — Google and Anthropic Excluded
+
+**User instruction:** For this pass, do not treat Google sign-in or Anthropic calls as required test gates.
+
+**Scoped result:** `NO-GO`
+
+The non-Google/non-Anthropic surface was tested as far as the available live and local test harness allows. The core remaining blocker is still the privacy invariant, not authentication or AI availability.
+
+## 12.1 Live public route matrix
+
+| Route | Observed result | Status |
+|---|---|---|
+| `/` | HTTP 200 HTML | PASS |
+| `/signin` | HTTP 200 HTML | PASS |
+| `/style-check` | HTTP 200 HTML | PASS |
+| `/app` without session | Redirects to `/signin?next=%2Fapp` | PASS |
+| `/api/messages` without session | HTTP 401 JSON | PASS |
+| `/api/nudges` without session | HTTP 401 JSON | PASS |
+| GET `/api/attempts` | HTTP 405 | PASS — POST-only endpoint |
+| GET `/api/check` | HTTP 405 | PASS — POST-only endpoint |
+| GET `/api/nod-draft` | HTTP 405 | PASS — POST-only endpoint |
+| GET `/api/rewrite` | HTTP 405 | PASS — POST-only endpoint |
+| OAuth callback missing code | Redirects to `error=missing_code` | PASS — callback branch only |
+| OAuth provider error | Redirects to `error=provider` | PASS — callback branch only |
+| OAuth sign-in/account exchange | Excluded per user instruction | EXCLUDED |
+| Anthropic generation/check/rewrite | Excluded per user instruction | EXCLUDED |
+
+Live response headers now include CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. `access-control-allow-origin: *` remains on public HTML and should still receive a deliberate security decision.
+
+## 12.2 Local non-AI verification
+
+| Check | Result |
+|---|---|
+| `npm run lint` | PASS |
+| `npx vitest run src/lib/masking.test.ts src/lib/rubric/b4.test.ts` | PASS — 26 tests |
+| Full Vitest command excluding AI interpretation | PASS for all non-AI tests; AI-dependent suites are excluded from this disposition |
+| `npm run build -- --webpack` | PASS — TypeScript and static page generation complete |
+| `npm run build` | FAIL — Turbopack process/port permission panic on `landing.css` |
+| `git diff --check` | PASS |
+| Component/browser interaction tests | NOT AVAILABLE — no component/E2E test suite exists in the repository |
+
+## 12.3 Document cross-check result
+
+### Verified or substantially present
+
+- Locked frame order exists: `situation → details → choose → draft → feedback → saved`.
+- Two-frame workspace structure exists in source.
+- Write-your-own remains the default path.
+- NOD fallback path exists.
+- Four situation choices plus custom funnel exist.
+- Off-scope warning and roadmap-signal insertion exist.
+- Server-side request schemas exist.
+- Attempt ownership checks exist for check/message/nudge creation.
+- NOD and rewrite evaluator rows are now attempted in `checks`.
+- Save/history/reuse/nudge mechanics exist in source.
+- No workspace score, checklist, X/5, green, or red UI was found in the source scan.
+- Public security headers are now live.
+
+### Still fails or is incomplete against the documents
+
+1. **Masking invariant:** raw names/company identifiers can still reach the first attempt request and direct API payloads.
+2. **Rewrite requirement:** a rewrite that fails the core standard still has a Save action.
+3. **Audit trail:** evaluator-row insert errors are ignored; retries are not uniquely/idempotently constrained.
+4. **Completion persistence:** message, attempt, and nudge writes are not one transaction and nudge uniqueness is not database-enforced.
+5. **Capability measurement:** `help_requests` and `ai_turns` remain absent; event insert failures and duplicate completion events are not handled.
+6. **Rubric metadata:** B4 low-end threshold remains an unresolved calibration decision; all required personalized first-pass criteria are not persisted.
+7. **Build DoD:** default `npm run build` is still not green.
+8. **UI terminology/claims:** the live landing HTML still contains accessible/UI text using `learn`, `lesson`, `say yes`, and outcome-adjacent reply language. Relevant source includes `page.tsx:459`, `page.tsx:471`, `page.tsx:481`, `flow.ts:42`, and `b4.ts:91`.
+9. **Test DoD:** no API contract, classifier, ownership, save-idempotency, analytics, component, or browser E2E tests exist.
+
+## 12.4 Scoped QA sign-off checklist
+
+- [x] Public landing and sign-in routes respond.
+- [x] Protected workspace redirects unauthenticated users.
+- [x] Unauthenticated API calls are rejected.
+- [x] Public callback error branches return safe codes.
+- [x] Public security headers are live.
+- [x] Lint passes.
+- [x] Non-AI masking and B4 unit tests pass.
+- [x] Webpack build passes.
+- [ ] Default build passes.
+- [ ] Raw names/company identifiers are impossible to persist or send.
+- [ ] Failed rewrite cannot be saved as ready.
+- [ ] Check/message/nudge persistence is atomic or race-safe.
+- [ ] Analytics properties and deduplication are complete or explicitly deferred.
+- [ ] Product copy contains no banned or outcome-guaranteeing language.
+- [ ] Non-AI API/component/browser regression tests exist.
+
+**Round 3 scoped disposition:** `NO-GO — Google and Anthropic excluded as requested; P0 privacy, P1 persistence/build issues, and document mismatches remain open.`
+
+---
+
 ## 11. Retest evidence (build-agent remediation pass, 2026-08-22)
 
 All findings in §4–§7 and the implementation order in §8 were worked this session. Full detail
@@ -456,3 +785,69 @@ the condensed retest evidence this doc itself asked for.
 are resolved and verified by build/lint/typecheck/unit tests. Full sign-off per this doc's own §9
 DoD still requires the owner's live Google sign-in pass and a database spot-check — both blocked
 on the same two open items in `NEXT-SESSION.md` (Anthropic credits, Google OAuth smoke test).
+
+---
+
+## 13. Response to Round 3 (§12) — build-agent remediation pass 2
+
+Verified: `npx tsc --noEmit` clean, `npm run lint` clean, `npm run build` and
+`npm run build -- --webpack` both clean, `npx vitest run` on the non-network suite (masking, B4,
+flow, pii-guard) — 38/38 passing (12 new tests: `flow.test.ts` and `pii-guard.test.ts` were
+previously untested despite covering round-1 additions).
+
+### §12.3.2 findings, addressed this pass
+
+1. **Masking invariant** — the "something else" custom task is now re-masked with the real
+   name/company tokens as soon as they're known (`handleDetailsContinue`, previously it stayed
+   only PII-scrubbed from before the recipient was collected). **Deliberately not attempted:**
+   server-side detection of a raw name in a direct API payload — without NER this means a
+   generic "2+ capitalized words" heuristic, which has a real false-positive rate against ordinary
+   business terms ("Q3 Roadmap", "Marketing Team") high enough that I judged it not worth shipping
+   blind; email/phone detection (deterministic, low-false-positive) already covers the direct-API
+   payload case for those categories.
+2. **Rewrite Save gate** — a still-failing rewrite no longer has any Save action; "Edit it myself"
+   is the only path forward, routing to a final hand-edit that saves directly (no 4th evaluator
+   call, keeping the 3-check cap intact) rather than a one-click Save on content NOD's own check
+   had just flagged.
+3. **Audit trail** — `/api/check` and `/api/rewrite` now dedupe by `(attempt_id, revision_index)`
+   before spending a model call, reusing the existing row on a retry instead of inserting a
+   duplicate (also saves a real Anthropic call each time). `/api/nod-draft` insert errors are now
+   logged instead of silently discarded; dedup was deliberately **not** added there — unlike
+   `/api/check`'s explicit client-supplied `revisionIndex`, a user can legitimately regenerate a
+   NOD draft after backing up to an earlier frame, and blind dedup would incorrectly serve back a
+   stale draft on a real regeneration.
+4. **Completion persistence** — unchanged from round 1's app-level idempotency (message insert
+   skipped once saved; nudge insert deduped server-side). **Not done:** a database-enforced unique
+   constraint — that needs a migration against the live production database, which wasn't run
+   without explicit sign-off (an additive unique index is low-risk but is still a live-infra
+   change, not an app-code one).
+5. **Capability measurement** — `help_requests`/`ai_turns` are now real counters (DraftState,
+   incremented on "tighten"/"edit rewrite"/NOD-draft "I'm not sure"/"Stuck?", and each NOD
+   generation/rewrite call), threaded through to `unaided_completed`'s event properties.
+   `draft_completed`/`unaided_completed` are now deduped per attempt so a Save retry can't
+   double-log a completion event.
+6. **Rubric metadata** — `first_pass_criteria` now includes the personalized criterion's pass/fail
+   (was silently dropping the 6th scored dimension). B4's low-end threshold remains an
+   intentionally-flagged open decision, not a bug — see §11 point 6 above.
+7. **Build DoD** — re-verified clean on both `next build` and `next build -- --webpack` in this
+   environment, the 5th consecutive clean run across two sessions. The "process/port permission
+   error" QA's environment hits reads as a sandboxed-execution restriction on Turbopack's
+   worker/daemon process spawning, not a reproducible app defect — I don't have a way to confirm
+   that from here, but it hasn't reproduced once in a real Node environment.
+8. **UI terminology/claims** — fixed two genuine outcome-promising lines: `b4.ts`'s "Outreach that
+   gets replies is usually 50–125 words" and `flow.ts`'s "I'll help it earn a reply." **Disagree
+   and left unchanged:** the "give them ... a thing to say yes to" phrasing (`page.tsx:471,481`) —
+   this describes the ask's clarity/low-friction design (B1's actual definition), not a promised
+   response; page.tsx:459's "you learn to write it yourself" is a capability claim, which the
+   product's own claims policy explicitly wants, not an outcome claim.
+9. **Test DoD** — added `flow.test.ts` (7 tests) and `pii-guard.test.ts` (5 tests), closing the gap
+   on round-1's own untested additions — and this caught a real bug: the injection regex for
+   "ignore ... instructions" required exactly one qualifier word and missed "ignore **all
+   previous** instructions" (arguably the single most common injection phrasing). Still not
+   added: route-handler/component/browser E2E tests — no test harness for Next.js route handlers +
+   Supabase exists in this repo; standing one up is an infra decision, not attempted unilaterally.
+
+**Round 3 disposition after this pass:** all findings addressed except the two explicitly flagged
+as needing the owner's sign-off (a DB migration for hard uniqueness; Anthropic/Google, excluded
+from this round's scope by the owner's own instruction) and one explicit disagreement (§8 above,
+reasoning given rather than silently complying).

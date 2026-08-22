@@ -1,10 +1,12 @@
 # NEXT SESSION — resume here
 
-## Where we are (2026-08-22): QA remediation pass complete, pushed to live — Anthropic credits blocking real use
+## Where we are (2026-08-22): two QA remediation rounds complete, pushed to live — Anthropic credits blocking real use
 
-All 12 build phases from `implementation.md` are complete and, this session, a full QA/code-review
-pass (`QA-CODE-REVIEW.md`, external review agent, disposition `NO-GO`) was worked through and
-pushed. The product works end-to-end and is live at:
+All 12 build phases from `implementation.md` are complete. This session ran two rounds of an
+external QA agent's review (`QA-CODE-REVIEW.md`) — round 1 (full scope) and round 3 (scoped,
+Google/Anthropic excluded per the owner's instruction) — and worked through both. Full detail is
+in `QA-CODE-REVIEW.md` §11 (round 1 retest evidence) and §13 (round 2/"round 3" retest evidence —
+the QA agent's own numbering skips "round 2"). The product works end-to-end and is live at:
 
 **https://learning-tech-ai.vercel.app**
 
@@ -29,6 +31,16 @@ mockup-phase notes, superseded by the real app.
    and that the Google Cloud Console OAuth client's authorized redirect URI is the **Supabase**
    callback (`https://tuwdvuzmjeezzxrgygej.supabase.co/auth/v1/callback`), not the app's own.
    AUTH-001 (below) means a failed sign-in now shows a real reason instead of a dead end.
+
+## The one product-behavior change worth knowing about (round 2 of QA)
+
+When NOD's own rewrite (the "third strike" fallback) still doesn't clear the standard, the
+FeedbackFrame no longer offers a one-click Save at all — it now says "Edit it myself," routes back
+to the draft box pre-filled with NOD's attempt, and the next thing the user types is what gets
+saved (no further evaluator call — the 3-check cap is preserved). Round 1 had made this state
+honest (no longer claimed "the version I'd send"); round 2 removed the ability to ship it
+untouched. This is a genuine interaction-model change, reasoned through in `QA-CODE-REVIEW.md` §13
+point 2 — flagging it here in case it's worth a quick look before broad use.
 
 ## This session's QA remediation (full detail in `QA-CODE-REVIEW.md`)
 
