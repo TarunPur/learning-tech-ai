@@ -88,7 +88,7 @@ export function evaluateB4(text: string): B4Result {
       sentence_count,
       paragraph_count,
       reading_level,
-      why: `This runs long (~${word_count} words). Outreach that gets replies is usually ${WORD_BAND_MIN}–${WORD_BAND_MAX} words — cut anything that isn't the reason or the ask.`,
+      why: `This runs long (~${word_count} words). Outreach that's easy to skim is usually ${WORD_BAND_MIN}–${WORD_BAND_MAX} words — cut anything that isn't the reason or the ask.`,
     };
   }
   if (word_count > WORD_BAND_MAX) {

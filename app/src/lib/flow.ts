@@ -39,7 +39,7 @@ export const SCENARIOS: Record<Exclude<ScenarioId, "custom">, Scenario> & {
     chip: "Cold intro · Reaching out to someone new",
     writing: "A first message",
     pHeading: "Who are you reaching out to — <em>and why now?</em>",
-    pSub: "Three quick lines — you'll use them to write a first message next; I'll help it earn a reply without sounding like a cold pitch.",
+    pSub: "Three quick lines — you'll use them to write a first message next; I'll help it read as genuine, not a cold pitch.",
     whoPh: "e.g. Arjun, who leads growth at a fintech I admire",
     askPh: "e.g. a quick 15-minute intro call",
     ctxPh: "e.g. they just opened a Pune office and I can help with X",
@@ -102,8 +102,11 @@ export type TaskClassification = { kind: "outreach" | "offscope" | "abuse"; scen
 // toward letting genuinely ambiguous text through to the normal
 // outreach/offscope check below.
 const INJECTION_PATTERNS = [
-  /ignore\s+(all|any|the|previous|prior|above)\s+instructions?/i,
-  /disregard\s+(your|the|all)\s+(system\s+)?instructions?/i,
+  // Allows any order/combination of qualifiers ("ignore all previous
+  // instructions", "ignore the above instructions", "ignore instructions")
+  // instead of requiring exactly one.
+  /ignore\s+(?:all\s+|any\s+|the\s+|previous\s+|prior\s+|above\s+)*instructions?/i,
+  /disregard\s+(?:your\s+|the\s+|all\s+|system\s+)*instructions?/i,
   /you\s+are\s+now\s+(a|an)\b/i,
   /new\s+system\s+prompt/i,
   /reveal\s+your\s+(system\s+)?prompt/i,
