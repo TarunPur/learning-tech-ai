@@ -1,19 +1,11 @@
 // ANALYTICS-001 (PRD §14 / implementation.md Phase 8): the six-event
 // instrumentation was deliberately deferred (owner amendment, 2026-08-21)
-// past the initial build. QA's re-review flagged it as required for
-// release-DoD sign-off, so the four events fully derivable from data
-// already on the attempt/check rows are wired here: attempt_started,
-// draft_completed, feedback_acted, nudge_sent, unaided_started, and
-// unaided_completed's rubric_pass/time_to_done fields.
-//
-// NOT implemented: unaided_completed's `help_requests` and `ai_turns`
-// fields (they always report 0 below). Populating them for real means new
-// client-side counters — a "Stuck?" tap, a NOD-draft generation, a rewrite
-// — threaded through every workspace action into the save payload. That's
-// new product instrumentation, not a bug fix, and re-opens a scope decision
-// the owner already made explicitly once (deferring Phase 8 entirely) —
-// so it's left for the owner to call, not silently built or silently
-// dropped.
+// past the initial build, then wired up across two QA remediation rounds.
+// All six events fire: attempt_started, draft_completed, feedback_acted,
+// nudge_sent, unaided_started, unaided_completed (incl. its help_requests/
+// ai_turns fields — counted client-side in Workspace.tsx's DraftState and
+// passed through /api/attempts/[id]'s PATCH as event-only fields, never
+// persisted as attempts columns).
 import type { createClient } from "@/lib/supabase/server";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;

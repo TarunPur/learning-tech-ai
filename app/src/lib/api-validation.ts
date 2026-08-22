@@ -26,6 +26,7 @@ export const patchAttemptSchema = z
     recipient_masked: shortText.optional(),
     ask: shortText.optional(),
     context_masked: mediumText.optional(),
+    custom_task_masked: mediumText.optional(),
     path: z.enum(["own", "nod"]).optional(),
     draft_text_masked: longText.optional(),
     check_count: z.number().int().min(0).max(3).optional(),
@@ -33,6 +34,11 @@ export const patchAttemptSchema = z
     first_pass_criteria: z.record(z.string(), z.boolean()).optional(),
     loops_to_clear: z.number().int().min(0).max(3).optional(),
     completed_at: z.string().datetime().optional(),
+    // ANALYTICS-001: event-only fields for unaided_completed's capability
+    // read — the route uses these to build the event's properties but
+    // never persists them as attempts columns (no such columns exist).
+    help_requests: z.number().int().min(0).max(1000).optional(),
+    ai_turns: z.number().int().min(0).max(1000).optional(),
   })
   .strict();
 

@@ -38,6 +38,27 @@ export async function POST(request: Request) {
     throw e;
   }
 
+  // Round 3 audit-trail idempotency: a retried check for a revision that
+  // already has a checks row must not insert a duplicate audit row (nor
+  // spend a second real model call) — reconstruct the previous result
+  // instead of re-evaluating.
+  const { data: existingCheck } = await supabase
+    .from("checks")
+    .select("core_pass, criteria, top_misses, deterministic, model, latency_ms")
+    .eq("attempt_id", body.attemptId)
+    .eq("revision_index", body.revisionIndex)
+    .maybeSingle();
+  if (existingCheck) {
+    return NextResponse.json({
+      core_pass: existingCheck.core_pass,
+      criteria: existingCheck.criteria,
+      top_misses: existingCheck.top_misses,
+      deterministic: existingCheck.deterministic,
+      model: existingCheck.model,
+      latency_ms: existingCheck.latency_ms,
+    });
+  }
+
   const result = await evaluate(body.draftMasked, body.scenario);
 
   // ANALYTICS-001: feedback_acted fires when this check is itself a

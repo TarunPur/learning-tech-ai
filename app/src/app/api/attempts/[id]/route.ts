@@ -24,6 +24,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       ask: body.ask,
       context_masked: body.context_masked,
       draft_text_masked: body.draft_text_masked,
+      custom_task_masked: body.custom_task_masked,
     });
   } catch (e) {
     if (e instanceof UnmaskedPayloadError) {
@@ -32,9 +33,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     throw e;
   }
 
+  // help_requests/ai_turns are event-only (ANALYTICS-001) — the attempts
+  // table has no such columns, so they must never reach .update().
+  const { help_requests, ai_turns, ...attemptColumns } = body;
+
   const { data, error, count } = await supabase
     .from("attempts")
-    .update(body, { count: "exact" })
+    .update(attemptColumns, { count: "exact" })
     .eq("id", id)
     .eq("user_id", user.id)
     .select("attempt_type, started_at, completed_at")
@@ -49,18 +54,39 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   // ANALYTICS-001 (PRD §14): this PATCH is "completion" exactly when it's
   // the one that sets completed_at (handleSave() in the client) — never
   // fire draft_completed/unaided_completed for the intermediate detail/path
-  // patches that happen earlier in the same attempt.
+  // patches that happen earlier in the same attempt. Round 3: a Save retry
+  // can call this same PATCH twice (with a new completed_at timestamp each
+  // time) if the message insert already succeeded but a later step failed —
+  // check for an existing event of each name first so a retry can't
+  // double-log either one.
   if (body.completed_at) {
+    const alreadyLogged = async (name: "draft_completed" | "unaided_completed") => {
+      const { data: existing } = await supabase
+        .from("events")
+        .select("id")
+        .eq("attempt_id", id)
+        .eq("name", name)
+        .maybeSingle();
+      return !!existing;
+    };
+
     const rubricPass = body.outcome !== "shipped-with-misses";
     const properties = { rubric_pass: rubricPass, revision_count: body.loops_to_clear ?? null };
-    await logEvent(supabase, user.id, "draft_completed", id, properties);
-    if (data.attempt_type === "unaided") {
+
+    if (!(await alreadyLogged("draft_completed"))) {
+      await logEvent(supabase, user.id, "draft_completed", id, properties);
+    }
+    if (data.attempt_type === "unaided" && !(await alreadyLogged("unaided_completed"))) {
       const timeToDoneMs =
         data.started_at && data.completed_at
           ? new Date(data.completed_at).getTime() - new Date(data.started_at).getTime()
           : null;
-      // help_requests/ai_turns intentionally omitted — see events.ts.
-      await logEvent(supabase, user.id, "unaided_completed", id, { ...properties, time_to_done: timeToDoneMs });
+      await logEvent(supabase, user.id, "unaided_completed", id, {
+        ...properties,
+        time_to_done: timeToDoneMs,
+        help_requests: help_requests ?? null,
+        ai_turns: ai_turns ?? null,
+      });
     }
   }
 

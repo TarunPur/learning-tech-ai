@@ -47,8 +47,15 @@ export async function POST(request: Request) {
   // DATA-001: NOD's first-draft evaluation is the same "revision 0" audit
   // event the write-your-own path gets from /api/check — it must not be
   // dropped just because it happened alongside generation instead of a
-  // separate check call.
-  await supabase.from("checks").insert({
+  // separate check call. Round 3: the insert error was previously discarded
+  // entirely (silent audit-trail gap); now at least logged. Deliberately
+  // NOT deduped by (attempt_id, revision_index) the way /api/check is —
+  // unlike /api/check's explicit client-supplied revisionIndex (a precise
+  // "which check is this" contract), a user can legitimately re-choose the
+  // NOD-draft path after backing up to an earlier frame and get a genuinely
+  // new revision-0 draft; a blind dedup here would incorrectly serve the
+  // stale first draft back on a real regeneration.
+  const { error: checksInsertError } = await supabase.from("checks").insert({
     attempt_id: body.attemptId,
     user_id: user.id,
     revision_index: 0,
@@ -60,6 +67,9 @@ export async function POST(request: Request) {
     model: check.model,
     latency_ms: check.latency_ms,
   });
+  if (checksInsertError) {
+    console.error("[NOD] failed to write NOD-draft checks audit row:", checksInsertError.message);
+  }
 
   return NextResponse.json({ draftMasked: text, sample, check });
 }
