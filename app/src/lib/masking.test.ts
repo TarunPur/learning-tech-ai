@@ -123,6 +123,30 @@ describe("looksUnmasked (server-side PII guard)", () => {
   it("does not flag ordinary masked outreach text", () => {
     expect(looksUnmasked("Hi [name], following up on our call at [company].")).toBe(false);
   });
+
+  // PRIV-001 (round 5): a company mentioned via "at/from/with X" that
+  // survived unmasked is the exact structural gap buildMaskTokens() is
+  // supposed to close — catching it here is a real, narrow defense-in-depth
+  // check rather than a blanket capitalized-word scan.
+  it("flags an unmasked company after 'at'", () => {
+    expect(looksUnmasked("following up on our call at Acme Corp")).toBe(true);
+  });
+
+  it("flags an unmasked company after 'from'", () => {
+    expect(looksUnmasked("reaching out from Initech")).toBe(true);
+  });
+
+  it("flags an unmasked company after 'with'", () => {
+    expect(looksUnmasked("a quick call with Google's team")).toBe(true);
+  });
+
+  it("does not flag 'at/from/with' followed by a lowercase word", () => {
+    expect(looksUnmasked("we spoke at the expo and she asked me to follow up")).toBe(false);
+  });
+
+  it("does not flag 'at/from/with' followed by an existing placeholder", () => {
+    expect(looksUnmasked("a follow-up from [company] about the demo")).toBe(false);
+  });
 });
 
 describe("firstName", () => {

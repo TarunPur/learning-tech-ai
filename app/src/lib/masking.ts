@@ -104,6 +104,21 @@ export function buildMaskTokens(who: string): MaskToken[] {
 export const EMAIL_RE = /[\p{L}0-9._%+-]+@[\p{L}0-9.-]+\.[\p{L}]{2,}/gu;
 export const PHONE_RE = /(?:\+?\d[\s().-]?){8,}\d/g;
 
+// PRIV-001 (round 5): targeted, not blanket — a generic "any two capitalized
+// words" name/company detector has a real false-positive rate against
+// ordinary business terms ("Q3 Roadmap") that isn't worth shipping blind.
+// This instead looks for the *exact* structural pattern buildMaskTokens()
+// is supposed to have already replaced: "at/from/with <Capitalized word>"
+// that ISN'T followed by a placeholder. If masking worked, this construction
+// should never survive as anything but "at/from/with [company]" — so
+// catching it here is a real defense-in-depth check on the masking
+// invariant itself, narrower than a bare capitalized-word scan, at the cost
+// of not catching a company/name mentioned without one of these three
+// trigger words (a residual gap that's architecturally unavoidable without
+// either NER or an LLM redaction call — both flagged separately, not
+// silently built).
+export const UNMASKED_COMPANY_RE = /\b(?:at|from|with)\s+(?!\[)\p{Lu}[\p{L}0-9&.'-]*/gu;
+
 export function scrubGenericPII(text: string): string {
   return text.replace(EMAIL_RE, "[email]").replace(PHONE_RE, "[phone]");
 }
@@ -111,7 +126,8 @@ export function scrubGenericPII(text: string): string {
 export function looksUnmasked(text: string): boolean {
   EMAIL_RE.lastIndex = 0;
   PHONE_RE.lastIndex = 0;
-  return EMAIL_RE.test(text) || PHONE_RE.test(text);
+  UNMASKED_COMPANY_RE.lastIndex = 0;
+  return EMAIL_RE.test(text) || PHONE_RE.test(text) || UNMASKED_COMPANY_RE.test(text);
 }
 
 // The one function every field should pass through before it's sent to a
