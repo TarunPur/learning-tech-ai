@@ -598,7 +598,7 @@ export default function Home() {
         <section className="section faq" id="faq">
           <div className="wrap">
             <div className="faq-head rise">
-              <p className="eyebrow-q">A few questions asked by our <em>partner users.</em></p>
+              <p className="eyebrow-q">A few questions that came up in our <em>research.</em></p>
             </div>
             <div className="faq-list rise">
               {FAQS.map((item, i) => {
