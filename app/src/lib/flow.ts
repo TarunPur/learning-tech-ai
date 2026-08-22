@@ -90,6 +90,34 @@ export function scenario(id: ScenarioId): Scenario {
   return SCENARIOS[id] ?? SCENARIOS.quiet;
 }
 
+export type TaskClassification = { kind: "outreach" | "offscope" | "abuse"; scenario: ScenarioId };
+
+// FUN-001: a deterministic, best-effort guard against (a) obvious
+// prompt-injection attempts aimed at the evaluator/generator LLM calls and
+// (b) clearly unsafe/abusive content — checked before anything else so
+// neither category can reach the model. This is intentionally NOT a full
+// safety classifier (that would mean an extra moderation model call, a
+// cost/latency tradeoff for the owner to decide, not a silent addition) —
+// it is a keyword/pattern net that catches the unambiguous cases and errs
+// toward letting genuinely ambiguous text through to the normal
+// outreach/offscope check below.
+const INJECTION_PATTERNS = [
+  /ignore\s+(all|any|the|previous|prior|above)\s+instructions?/i,
+  /disregard\s+(your|the|all)\s+(system\s+)?instructions?/i,
+  /you\s+are\s+now\s+(a|an)\b/i,
+  /new\s+system\s+prompt/i,
+  /reveal\s+your\s+(system\s+)?prompt/i,
+  /act\s+as\s+(?!.*(outreach|sales|marketer|marketing))\w+/i,
+  /pretend\s+(you('| a)?re|to\s+be)\b/i,
+  /\bDAN\b|jailbreak/i,
+];
+const ABUSE_PATTERNS = [
+  /\b(kill|murder|rape|assault)\s+(myself|yourself|him|her|them|you)\b/i,
+  /\bhow\s+to\s+(make|build)\s+a\s+(bomb|weapon|explosive)\b/i,
+  /\b(child|minor)\s+(porn|sexual|abuse)/i,
+  /\bsuicide\s+(method|instructions?)\b/i,
+];
+
 const OFFSCOPE = [
   "proposal", "report", "deck", "presentation", "slide", "spreadsheet", "excel", "sheet",
   "blog", "article", "post", "linkedin post", "resume", "cv", "essay", "contract", "invoice",
@@ -103,11 +131,17 @@ const OUTREACH = [
   "meeting", "demo", "call", "dm",
 ];
 
-export type TaskClassification = { kind: "outreach" | "offscope"; scenario: ScenarioId };
+export function looksLikeAbuseOrInjection(text: string): boolean {
+  return [...INJECTION_PATTERNS, ...ABUSE_PATTERNS].some((re) => re.test(text));
+}
 
 // The soft funnel (PRD §13): a lightweight intent check on the "something
 // else" free-text task. When unsure, treat it as outreach.
 export function classifyTask(text: string): TaskClassification {
+  if (looksLikeAbuseOrInjection(text)) {
+    return { kind: "abuse", scenario: "quiet" };
+  }
+
   const t = text.toLowerCase();
 
   let sc: ScenarioId = "quiet";
@@ -120,10 +154,4 @@ export function classifyTask(text: string): TaskClassification {
   const kind = hasOff && !hasOut ? "offscope" : "outreach";
 
   return { kind, scenario: sc };
-}
-
-// First name from the "who" line, for greetings and reassurance.
-export function firstName(who: string): string {
-  const m = who.match(/\b([A-Z][a-z]{1,})\b/);
-  return m?.[1] ?? "there";
 }

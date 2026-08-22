@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { mask, unmask, maskName, unmaskName } from "./masking";
+import {
+  mask,
+  unmask,
+  maskName,
+  unmaskName,
+  extractIdentifiers,
+  buildMaskTokens,
+  maskAllPII,
+  scrubGenericPII,
+  looksUnmasked,
+  firstName,
+} from "./masking";
 
 describe("masking", () => {
   it("masks a name inside a sentence", () => {
@@ -37,5 +48,89 @@ describe("masking", () => {
     ];
     expect(mask("Priya works at Acme.", tokens)).toBe("[name] works at [company].");
     expect(unmask("[name] works at [company].", tokens)).toBe("Priya works at Acme.");
+  });
+});
+
+// PRIV-001 regression coverage: the old firstName()/maskName() combo only
+// caught /\b[A-Z][a-z]+\b/ — lowercase, ALL-CAPS, accented, and surnamed
+// recipients all sailed through unmasked. These pin the fix.
+describe("extractIdentifiers (PRIV-001)", () => {
+  it("extracts a lowercase name", () => {
+    expect(extractIdentifiers("priya, a marketing lead").name).toBe("priya");
+  });
+
+  it("extracts an ALL-CAPS name", () => {
+    expect(extractIdentifiers("PRIYA SHARMA who leads growth").name).toBe("PRIYA SHARMA");
+  });
+
+  it("extracts an accented name", () => {
+    expect(extractIdentifiers("Renée, our contact at the expo").name).toBe("Renée");
+  });
+
+  it("extracts a company after 'at'", () => {
+    const { company } = extractIdentifiers("Priya Sharma, a marketing lead at Acme Corp");
+    expect(company).toBe("Acme Corp");
+  });
+
+  it("extracts a company after 'from'", () => {
+    const { company } = extractIdentifiers("Arjun from Initech who emailed last week");
+    expect(company).toBe("Initech");
+  });
+
+  it("returns empty identifiers for blank input", () => {
+    expect(extractIdentifiers("   ")).toEqual({ name: "", company: null });
+  });
+});
+
+describe("buildMaskTokens + maskAllPII (PRIV-001)", () => {
+  it("masks a lowercase name that the old regex missed", () => {
+    const tokens = buildMaskTokens("priya, a marketing lead at acme");
+    const masked = maskAllPII("Hi priya, following up on our chat with acme.", tokens);
+    expect(masked).not.toMatch(/priya/i);
+    expect(masked).not.toMatch(/acme/i);
+    expect(masked).toContain("[name]");
+  });
+
+  it("scrubs an email address anywhere in the text, not just the who field", () => {
+    const tokens = buildMaskTokens("Priya, a lead");
+    const masked = maskAllPII("Reply to me at tarun171093@gmail.com by Friday.", tokens);
+    expect(masked).not.toContain("tarun171093@gmail.com");
+    expect(masked).toContain("[email]");
+  });
+
+  it("scrubs a phone number anywhere in the text", () => {
+    const tokens = buildMaskTokens("Priya, a lead");
+    const masked = maskAllPII("Call me on 9876543210 if easier.", tokens);
+    expect(masked).not.toContain("9876543210");
+    expect(masked).toContain("[phone]");
+  });
+
+  it("does not scrub ordinary numbers that aren't phone-length", () => {
+    const masked = scrubGenericPII("Would 15-minute call at 3pm work? That's 125 words.");
+    expect(masked).toBe("Would 15-minute call at 3pm work? That's 125 words.");
+  });
+});
+
+describe("looksUnmasked (server-side PII guard)", () => {
+  it("flags an email address", () => {
+    expect(looksUnmasked("contact me at a@b.com")).toBe(true);
+  });
+
+  it("flags a 10-digit phone number", () => {
+    expect(looksUnmasked("call 9876543210")).toBe(true);
+  });
+
+  it("does not flag ordinary masked outreach text", () => {
+    expect(looksUnmasked("Hi [name], following up on our call at [company].")).toBe(false);
+  });
+});
+
+describe("firstName", () => {
+  it("preserves the case the user typed instead of forcing a capital", () => {
+    expect(firstName("priya, a marketing lead")).toBe("priya");
+  });
+
+  it("falls back to 'there' for empty input", () => {
+    expect(firstName("")).toBe("there");
   });
 });
