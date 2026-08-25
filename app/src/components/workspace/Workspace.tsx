@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import posthog from "posthog-js";
 import { BrandHeader } from "@/components/ui/BrandHeader";
 import { scenario, type ScenarioId } from "@/lib/flow";
 import { buildMaskTokens, maskAllPII, scrubGenericPII } from "@/lib/masking";
@@ -39,7 +40,11 @@ function friendlyErrorMessage(e: unknown): string {
   return "Couldn't reach NOD's server. Check your connection and try again — nothing you wrote was lost.";
 }
 
-export function Workspace() {
+export function Workspace({ userId }: { userId: string }) {
+  useEffect(() => {
+    posthog.identify(userId);
+  }, [userId]);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [draft, setDraft] = useState<DraftState>(INITIAL_DRAFT);
   const [loading, setLoading] = useState(false);

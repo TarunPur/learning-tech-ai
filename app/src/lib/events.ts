@@ -7,6 +7,7 @@
 // passed through /api/attempts/[id]'s PATCH as event-only fields, never
 // persisted as attempts columns).
 import type { createClient } from "@/lib/supabase/server";
+import { posthogServer } from "@/lib/posthog-server";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -36,5 +37,18 @@ export async function logEvent(
     });
   } catch (e) {
     console.error("[NOD analytics] failed to log event:", name, e);
+  }
+
+  // Best-effort, same as above — PostHog is a parallel read on top of the
+  // `events` table (which stays the source of truth for the PRD §16
+  // capability-delta measurement), not a replacement for it.
+  try {
+    posthogServer?.capture({
+      distinctId: userId,
+      event: name,
+      properties: { ...properties, attempt_id: attemptId },
+    });
+  } catch (e) {
+    console.error("[NOD analytics] failed to log posthog event:", name, e);
   }
 }
